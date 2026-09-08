@@ -1,0 +1,95 @@
+{
+  "observed_at_utc": "2026-09-07T18:09:16.485194+00:00",
+  "reference_commit": "f54b393847f7c4929846c0824dc5b4986bd8194b",
+  "python": "3.14.4",
+  "scenario": "original_static_8x8_three_parcels",
+  "scope": "Offline planner only; no executor, LLM, Gazebo, or full paper reproduction",
+  "smoke_tests": {
+    "status": "passed",
+    "stdout": "============================================================\nWAREHOUSEBOT SMOKE TESTS\n============================================================\n\nRunning test_astar_edge_cases... PASS\nRunning test_cost_matrix_symmetry... PASS\nRunning test_sequencing_feasibility... PASS\n\n============================================================\nALL TESTS PASSED \u2713\n============================================================\n"
+  },
+  "settings": {
+    "seed": 42,
+    "hill_climb": {
+      "max_iters": 1000,
+      "neighbors_per_iter": 30,
+      "restarts": 5
+    },
+    "simulated_annealing": {
+      "max_iters": 2000,
+      "t0": 50.0,
+      "alpha": 0.995
+    }
+  },
+  "results": {
+    "greedy": {
+      "route": [
+        0,
+        1,
+        5,
+        2,
+        6,
+        3,
+        4
+      ],
+      "stop_names": [
+        "START",
+        "P0",
+        "P2",
+        "D0",
+        "D2",
+        "P1",
+        "D1"
+      ],
+      "distance_grid_cells": 30.0,
+      "seconds": 1.8996011931449175e-05,
+      "independent_route_check": "passed"
+    },
+    "hill_climb": {
+      "route": [
+        0,
+        3,
+        1,
+        5,
+        4,
+        2,
+        6
+      ],
+      "stop_names": [
+        "START",
+        "P1",
+        "P0",
+        "P2",
+        "D1",
+        "D0",
+        "D2"
+      ],
+      "distance_grid_cells": 27.0,
+      "seconds": 0.004049818002386019,
+      "independent_route_check": "passed"
+    },
+    "simulated_annealing": {
+      "route": [
+        0,
+        3,
+        1,
+        5,
+        4,
+        2,
+        6
+      ],
+      "stop_names": [
+        "START",
+        "P1",
+        "P0",
+        "P2",
+        "D1",
+        "D0",
+        "D2"
+      ],
+      "distance_grid_cells": 27.0,
+      "seconds": 0.004889528994681314,
+      "independent_route_check": "passed"
+    }
+  }
+}

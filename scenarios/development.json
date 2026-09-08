@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "kind": "development_acceptance_contracts_not_executable_scenarios",
+  "world": {
+    "id": "empty_8x8_v1",
+    "rows": 8,
+    "columns": 8,
+    "blocked_cells": [],
+    "coordinate_order": [
+      "row",
+      "column"
+    ],
+    "connectivity": 4,
+    "locations": {
+      "HOME": [
+        0,
+        0
+      ],
+      "PICK_A": [
+        1,
+        1
+      ],
+      "PICK_B": [
+        1,
+        4
+      ],
+      "PICK_C": [
+        4,
+        1
+      ],
+      "DROP_A": [
+        6,
+        6
+      ],
+      "DROP_B": [
+        6,
+        4
+      ],
+      "DROP_C": [
+        4,
+        6
+      ]
+    },
+    "parcels": {
+      "P1": {
+        "pickup": "PICK_A",
+        "drop": "DROP_A"
+      },
+      "P2": {
+        "pickup": "PICK_B",
+        "drop": "DROP_B"
+      },
+      "P3": {
+        "pickup": "PICK_C",
+        "drop": "DROP_C"
+      }
+    }
+  },
+  "missions": [
+    {
+      "id": "M01",
+      "text": "Deliver P1.",
+      "expected": {
+        "outcome": "accepted",
+        "jobs": [
+          "P1"
+        ],
+        "delivered": [
+          "P1"
+        ]
+      }
+    },
+    {
+      "id": "M02",
+      "text": "Deliver P1, P2, and P3.",
+      "expected": {
+        "outcome": "accepted",
+        "jobs": [
+          "P1",
+          "P2",
+          "P3"
+        ],
+        "delivered": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "M03",
+      "text": "Deliver P1, P2, and P3. Prioritize P3.",
+      "expected": {
+        "outcome": "accepted",
+        "jobs": [
+          "P1",
+          "P2",
+          "P3"
+        ],
+        "first_delivered": "P3"
+      }
+    },
+    {
+      "id": "M04",
+      "text": "Deliver P2 and P1. If a stop fails twice, defer that job and continue reachable work.",
+      "expected": {
+        "outcome": "accepted",
+        "jobs": [
+          "P1",
+          "P2"
+        ],
+        "total_navigation_attempts": 2,
+        "failure_policy": "defer_and_continue"
+      }
+    },
+    {
+      "id": "M05",
+      "text": "Deliver P1 to the other loading dock.",
+      "expected": {
+        "outcome": "clarification_required",
+        "state_mutation": false,
+        "reason": "unknown_or_ambiguous_destination"
+      }
+    }
+  ],
+  "changes": [
+    {
+      "id": "U01",
+      "base_mission": "M02",
+      "text": "Prioritize P3.",
+      "precondition": {
+        "P1": "awaiting_pickup",
+        "P2": "awaiting_pickup",
+        "P3": "awaiting_pickup",
+        "active_action": "navigate_to_PICK_A"
+      },
+      "trigger": "while_navigation_is_active_before_any_pickup",
+      "expected": {
+        "outcome": "effective_at_action_boundary",
+        "first_delivered_after_revision": "P3",
+        "retained_jobs": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "U02",
+      "base_mission": "M02",
+      "text": "Deliver everything onboard before collecting anything else.",
+      "precondition": {
+        "P1": "onboard",
+        "P2": "awaiting_pickup",
+        "P3": "awaiting_pickup",
+        "active_action": null
+      },
+      "trigger": "after_P1_pickup_acknowledgement_before_next_dispatch",
+      "expected": {
+        "outcome": "effective_at_action_boundary",
+        "must_precede": [
+          [
+            "drop:P1",
+            "pickup:P2"
+          ],
+          [
+            "drop:P1",
+            "pickup:P3"
+          ]
+        ],
+        "onboard_first_snapshot": [
+          "P1"
+        ]
+      }
+    },
+    {
+      "id": "U03",
+      "base_mission": "M02",
+      "text": "Cancel P2.",
+      "precondition": {
+        "P1": "delivered",
+        "P2": "awaiting_pickup",
+        "P3": "awaiting_pickup",
+        "active_action": "navigate_to_PICK_B"
+      },
+      "trigger": "before_P2_pickup_dispatch_even_if_navigation_succeeds",
+      "expected": {
+        "outcome": "effective_at_action_boundary",
+        "P2_physical": "awaiting_pickup",
+        "P2_disposition": "cancelled",
+        "forbidden_actions": [
+          "pickup:P2",
+          "drop:P2"
+        ],
+        "retained_jobs": [
+          "P3"
+        ]
+      }
+    },
+    {
+      "id": "U04",
+      "base_mission": "M02",
+      "text": "Cancel P2.",
+      "precondition": {
+        "P1": "delivered",
+        "P2": "onboard",
+        "P3": "awaiting_pickup",
+        "active_action": null
+      },
+      "trigger": "after_P2_pickup_acknowledgement",
+      "expected": {
+        "outcome": "clarification_required",
+        "P2_physical": "onboard",
+        "P2_disposition": "active",
+        "new_dispatch_held": true,
+        "choices": [
+          "continue_original_delivery",
+          "pause_with_cargo_onboard"
+        ],
+        "retained_obligations": [
+          "drop:P2",
+          "pickup:P3",
+          "drop:P3"
+        ]
+      }
+    },
+    {
+      "id": "U05",
+      "base_mission": "M02",
+      "text": "Cancel P2.",
+      "precondition": {
+        "P1": "delivered",
+        "P2": "awaiting_pickup",
+        "P3": "awaiting_pickup",
+        "active_action": "pickup:P2"
+      },
+      "trigger": "proposal_based_on_pre_pickup_state_returns_after_P2_pickup_acknowledgement",
+      "expected": {
+        "outcome": "stale_rejection_then_clarification",
+        "old_proposal_effective": false,
+        "P2_physical": "onboard",
+        "new_dispatch_held": true,
+        "retained_obligations": [
+          "drop:P2",
+          "pickup:P3",
+          "drop:P3"
+        ]
+      }
+    }
+  ]
+}

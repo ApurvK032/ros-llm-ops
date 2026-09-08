@@ -1,0 +1,27 @@
+{
+  "name": "warehouse_mvp",
+  "bounds": [-5.0, -4.0, 5.0, 4.0],
+  "shelves": [
+    {"name": "shelf_south", "center": [0.0, -1.65], "size": [1.2, 1.5]},
+    {"name": "shelf_north", "center": [0.0, 1.65], "size": [1.2, 1.5]}
+  ],
+  "map_resolution": 0.05,
+  "planning_resolution": 0.2,
+  "planning_inflation": 0.35,
+  "arrival_tolerance": 0.35,
+  "navigation_timeout": 150.0,
+  "waypoints": {
+    "HOME": [-3.8, -2.8, 0.0],
+    "PICK_A": [-3.0, -1.8, 0.0],
+    "PICK_B": [-3.0, 0.0, 0.0],
+    "PICK_C": [-3.0, 1.8, 0.0],
+    "DROP_A": [3.0, -1.8, 0.0],
+    "DROP_B": [3.0, 0.0, 0.0],
+    "DROP_C": [3.0, 1.8, 0.0]
+  },
+  "parcels": {
+    "P1": {"pickup": "PICK_A", "drop": "DROP_A"},
+    "P2": {"pickup": "PICK_B", "drop": "DROP_B"},
+    "P3": {"pickup": "PICK_C", "drop": "DROP_C"}
+  }
+}

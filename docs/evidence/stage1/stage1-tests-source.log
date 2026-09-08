@@ -1,0 +1,20 @@
+test_natural_language_status_uses_application_cargo (test_cli.CliTests.test_natural_language_status_uses_application_cargo) ... ok
+test_pause_supersedes_pending_model_create (test_cli.CliTests.test_pause_supersedes_pending_model_create) ... ok
+test_cancel_waits_for_terminal_and_suppresses_pickup (test_mission.MissionTests.test_cancel_waits_for_terminal_and_suppresses_pickup) ... ok
+test_language_inference_fences_cargo (test_mission.MissionTests.test_language_inference_fences_cargo) ... ok
+test_onboard_cancel_holds_and_preserves_cargo (test_mission.MissionTests.test_onboard_cancel_holds_and_preserves_cargo) ... ok
+test_onboard_first_overrides_priority (test_mission.MissionTests.test_onboard_first_overrides_priority) ... ok
+test_priority_preserves_all_obligations (test_mission.MissionTests.test_priority_preserves_all_obligations) ... ok
+test_success_outside_tolerance_does_not_pick_up (test_mission.MissionTests.test_success_outside_tolerance_does_not_pick_up) ... ok
+test_three_deliveries_preserve_cargo_order (test_mission.MissionTests.test_three_deliveries_preserve_cargo_order) ... ok
+test_two_failures_defer_and_continue (test_mission.MissionTests.test_two_failures_defer_and_continue) ... ok
+test_unknown_ids_do_not_start_mission (test_mission.MissionTests.test_unknown_ids_do_not_start_mission) ... ok
+test_cancelled_parcel_remains_at_pickup (test_visuals.VisualTests.test_cancelled_parcel_remains_at_pickup) ... ok
+test_deferred_onboard_cargo_stays_on_robot (test_visuals.VisualTests.test_deferred_onboard_cargo_stays_on_robot) ... ok
+test_remaining_list_matches_dispatch_and_hides_superseded_order (test_visuals.VisualTests.test_remaining_list_matches_dispatch_and_hides_superseded_order) ... ok
+test_visuals_wait_for_pickup_ack_then_follow_and_deliver (test_visuals.VisualTests.test_visuals_wait_for_pickup_ack_then_follow_and_deliver) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.470s
+
+OK

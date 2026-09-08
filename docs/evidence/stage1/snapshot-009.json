@@ -1,0 +1,273 @@
+{
+  "state": {
+    "revision": 7,
+    "paused": false,
+    "language_pending": false,
+    "pose": [
+      3.0909237251710273,
+      -1.795154234626564,
+      -0.15456111608580878
+    ],
+    "priority": null,
+    "onboard_first": [],
+    "active": null,
+    "remaining_stops": [],
+    "plan_pending": false,
+    "closed": true,
+    "cancel_requested": false,
+    "parcels": {
+      "P1": {
+        "pickup": "PICK_A",
+        "drop": "DROP_A",
+        "state": "delivered",
+        "disposition": "active"
+      },
+      "P2": {
+        "pickup": "PICK_B",
+        "drop": "DROP_B",
+        "state": "delivered",
+        "disposition": "active"
+      },
+      "P3": {
+        "pickup": "PICK_C",
+        "drop": "DROP_C",
+        "state": "delivered",
+        "disposition": "active"
+      }
+    },
+    "finished": true
+  },
+  "visuals": [
+    {
+      "key": 10,
+      "shape": "text",
+      "position": [
+        -3.8,
+        -2.8,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "HOME",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 11,
+      "shape": "text",
+      "position": [
+        -3.0,
+        -1.8,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "PICK A",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 12,
+      "shape": "text",
+      "position": [
+        -3.0,
+        0.0,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "PICK B",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 13,
+      "shape": "text",
+      "position": [
+        -3.0,
+        1.8,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "PICK C",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 14,
+      "shape": "text",
+      "position": [
+        3.0,
+        -1.8,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "DROP A\nP1 \u00b7 Delivered",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 15,
+      "shape": "text",
+      "position": [
+        3.0,
+        0.0,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "DROP B\nP2 \u00b7 Delivered",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 16,
+      "shape": "text",
+      "position": [
+        3.0,
+        1.8,
+        0.85
+      ],
+      "scale": [
+        0,
+        0,
+        0.24
+      ],
+      "color": [
+        0.08,
+        0.13,
+        0.22,
+        1.0
+      ],
+      "text": "DROP C\nP3 \u00b7 Delivered",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 100,
+      "shape": "box",
+      "position": [
+        3.0,
+        -1.8,
+        0.2
+      ],
+      "scale": [
+        0.32,
+        0.32,
+        0.36
+      ],
+      "color": [
+        0.1,
+        0.67,
+        0.39,
+        1.0
+      ],
+      "text": "",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 102,
+      "shape": "box",
+      "position": [
+        3.0,
+        0.0,
+        0.2
+      ],
+      "scale": [
+        0.32,
+        0.32,
+        0.36
+      ],
+      "color": [
+        0.1,
+        0.67,
+        0.39,
+        1.0
+      ],
+      "text": "",
+      "yaw": 0.0,
+      "points": []
+    },
+    {
+      "key": 104,
+      "shape": "box",
+      "position": [
+        3.0,
+        1.8,
+        0.2
+      ],
+      "scale": [
+        0.32,
+        0.32,
+        0.36
+      ],
+      "color": [
+        0.1,
+        0.67,
+        0.39,
+        1.0
+      ],
+      "text": "",
+      "yaw": 0.0,
+      "points": []
+    }
+  ],
+  "gazebo_connected": true
+}

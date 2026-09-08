@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(warehouse_marker_bridge LANGUAGES CXX)
+find_package(gz-transport13 REQUIRED)
+find_package(gz-msgs10 REQUIRED)
+add_executable(warehouse_marker_bridge main.cpp)
+target_compile_features(warehouse_marker_bridge PRIVATE cxx_std_17)
+target_link_libraries(warehouse_marker_bridge PRIVATE gz-transport13::core gz-msgs10::gz-msgs10)

@@ -1,0 +1,52 @@
+{
+  "date": "2026-09-07",
+  "backend": "ROS 2 Jazzy / Nav2 / Gazebo Harmonic",
+  "model": "qwen3.5:4b",
+  "model_duration_s": 0.784979529,
+  "mission_duration_s": 83.03900012202212,
+  "navigation_successes": 6,
+  "pickups": 3,
+  "deliveries": 3,
+  "max_position_error_m": 0.2637522709409827,
+  "result": "complete",
+  "initial_pose": [
+    3.140341860363737,
+    -1.7532993179307619,
+    -0.16675158228913714
+  ],
+  "notes": [
+    "Started from the previous test end pose, using existing AMCL localization.",
+    "Logical cargo transfers; no manipulator or perception model.",
+    "One successful run, not a reliability benchmark."
+  ],
+  "live_update_checks": [
+    "pause_acknowledged_without_pickup",
+    "model_cancel_during_navigation",
+    "live_updates_complete"
+  ],
+  "core_tests_passed": 11,
+  "clean_start_launcher": {
+    "result": "complete",
+    "mission_duration_s": 63.080316109990235,
+    "initial_pose": [
+      -3.80000000000023,
+      -2.8000000000001015,
+      3.270670634498005e-16
+    ],
+    "navigation_successes": 6,
+    "deliveries": 3,
+    "max_position_error_m": 0.22823115901295912,
+    "process_exit_code": 0,
+    "gui_processes_closed": true,
+    "shutdown_note": "Launcher exited 0 and all simulator processes closed. Gazebo/RViz/Nav2 emitted native shutdown errors after mission completion; not a clean native shutdown."
+  },
+  "launcher_exit_check": {
+    "exit_code": 0,
+    "remaining_simulator_processes": 0,
+    "notes": "Startup followed by /quit verified after resetting inherited background SIGINT handling. Native simulator/ROS shutdown errors remain in logs."
+  },
+  "known_issues": [
+    "Gazebo/RViz/Nav2 emit native errors during shutdown on this WSL setup; successful mission execution is independently recorded.",
+    "RViz logs a GLSL sampler diagnostic on the initial map message."
+  ]
+}

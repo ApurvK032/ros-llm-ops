@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-08",
+  "backend": "ROS 2 Jazzy / Nav2 / Gazebo Harmonic",
+  "instruction": "Deliver all three parcels",
+  "start": "fresh HOME",
+  "result": "complete",
+  "navigation_successes": 6,
+  "pickups": 3,
+  "deliveries": 3,
+  "elapsed_seconds": 63.779,
+  "maximum_arrival_error_m": 0.2379,
+  "arrival_tolerance_m": 0.35,
+  "observed_visual_transitions": {
+    "P1": [
+      "awaiting_pickup",
+      "onboard",
+      "delivered"
+    ],
+    "P2": [
+      "awaiting_pickup",
+      "onboard",
+      "delivered"
+    ],
+    "P3": [
+      "awaiting_pickup",
+      "onboard",
+      "delivered"
+    ]
+  },
+  "snapshot_station_positions_verified": true,
+  "onboard_boxes_follow_reported_robot_pose": true,
+  "final_remaining_stops": [],
+  "automated_tests": {
+    "Python 3.14": 15,
+    "Python 3.12": 15
+  },
+  "notes": [
+    "One successful development acceptance run; not a reliability benchmark.",
+    "The final cosmetic edit raises the onboard caption to avoid overlap; recorded cargo/goal behavior is unchanged.",
+    "Native shutdown diagnostics remain a known WSL integration issue."
+  ],
+  "headless_smoke": {
+    "nav2_and_localization_ready": true,
+    "latched_visual_topic_received": true,
+    "parcel_boxes": 3,
+    "station_captions": 7,
+    "frame": "map"
+  }
+}

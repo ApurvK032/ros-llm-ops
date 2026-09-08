@@ -1,0 +1,7 @@
+ros-jazzy-desktop	0.11.0-1noble.20260616.084553
+ros-jazzy-gz-sim-vendor	0.0.10-1noble.20260604.111001
+ros-jazzy-nav2-bringup	1.3.12-1noble.20260616.082701
+ros-jazzy-nav2-minimal-tb3-sim	1.0.1-1noble.20260616.074421
+ros-jazzy-rviz2	14.1.22-1noble.20260615.174609
+Python 3.12.3
+ollama version is 0.33.3

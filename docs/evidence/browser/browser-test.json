@@ -1,0 +1,20 @@
+{
+  "browser_login": "passed",
+  "browser_keyboard_command": "confirmed in current journal",
+  "navigation_successes": 6,
+  "cargo_events": 6,
+  "result": "complete",
+  "elapsed_seconds": 63.171,
+  "journal": "delivery.jsonl",
+  "page_errors": [],
+  "final_parcels": {
+    "P1": "delivered",
+    "P2": "delivered",
+    "P3": "delivered"
+  },
+  "renderer": "Mesa llvmpipe software rendering on a private virtual X display",
+  "ssh_host_http_access": "HTTP 200 from the source WSL distribution",
+  "fresh_restart_browser_login": "passed",
+  "browser_taskbar_rviz_access": "passed",
+  "stop_process_cleanup": "passed"
+}
