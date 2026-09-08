@@ -6,9 +6,9 @@ ROS LLM Ops connects a local language model to a working ROS 2 warehouse simulat
 
 **Stack:** ROS 2 Jazzy · Gazebo Harmonic · Nav2 · Python · Ollama / Qwen3.5 4B
 
-![Gazebo warehouse with labeled stations and three confirmed deliveries](docs/evidence/stage1/gazebo-delivered.png)
+![Expanded maze warehouse with seven shelf sections and separate parcel approach poses](docs/evidence/maze/maze-ready.png)
 
-*Captured from the actual Gazebo simulation after all three deliveries. The same simulation can be operated through a browser over SSH.*
+*The actual 18 × 14 m Gazebo warehouse, ready for a mission. Shelf-side parcels and robot approach circles are separate. The simulation can be operated through a browser over SSH.*
 
 [Quick start](#quick-start) · [Example missions](#example-missions) · [Browser access](#watch-and-control-it-in-a-browser) · [How it works](#how-it-works) · [Results](#verified-results) · [Roadmap](#roadmap)
 
@@ -16,9 +16,9 @@ ROS LLM Ops connects a local language model to a working ROS 2 warehouse simulat
 
 - **Local language control:** Qwen interprets requests through Ollama; inference needs no hosted API or API key.
 - **Delivery planning:** A* estimates travel costs, and a greedy planner sequences the remaining stops with pickup-before-drop, priority, and onboard-first constraints.
-- **Simulated navigation:** Nav2 drives one TurtleBot3 through a 10 × 8 m warehouse with two shelf obstacles and six delivery stations.
+- **Simulated navigation:** Nav2 drives one TurtleBot3 through an 18 × 14 m warehouse with seven shelf sections arranged as a maze and six delivery stations.
 - **Mission updates:** change a parcel's priority, cancel an uncollected order, pause, resume, or query cargo during execution.
-- **Verified cargo changes:** pickup and drop require both a successful navigation result and a measured station distance within 0.35 m.
+- **Approach and face:** the robot stops in front of each parcel, facing it. Pickup and drop require navigation success, approach-position and heading checks, and clearance from the parcel.
 - **Live visualization:** labeled stations, moving parcel markers, a current-goal indicator, RViz, and a read-only mission panel.
 - **Remote operation:** the actual desktop is available through noVNC and an SSH tunnel.
 - **Execution records:** JSONL journals capture requests, interpreted intent, routes, navigation results, and cargo changes.
@@ -52,7 +52,21 @@ At each stop, the supervisor checks arrival before updating cargo. An unsuccessf
 | P2 | `PICK_B` | `DROP_B` |
 | P3 | `PICK_C` | `DROP_C` |
 
-The robot starts at `HOME`. Geometry, waypoints, parcel assignments, and arrival tolerances live in [config/warehouse.json](config/warehouse.json). The simulator world and both planning maps are generated from the same geometry. The language prompt currently describes these three fixed parcel assignments.
+The robot starts at `HOME`. Geometry, waypoints, parcel assignments, and arrival tolerances live in [config/warehouse.json](config/warehouse.json). Robot approach poses are separate from parcel positions: the robot stops 1.0 m from each parcel centre and faces it before transfer. The simulator world and both planning maps are generated from the same geometry. The language prompt currently describes these three fixed parcel assignments.
+
+![Maze warehouse with parcel locations, approach circles, and facing arrows](docs/warehouse-layout.svg)
+
+See the [warehouse layout guide](docs/warehouse-layout.md) for the floor plan, approach geometry, and transfer checks.
+
+| Current configuration | Value |
+| --- | --- |
+| Floor area | 18 × 14 m (252 m²) |
+| Shelf layout | Seven rack sections with staggered aisles and L-shaped corners |
+| Delivery task | Three parcels, three shelf pickups, three delivery pedestals |
+| Robot stopping point | 1.0 m from the parcel centre, facing the parcel |
+| Transfer checks | Position ≤ 0.20 m; heading ≤ 0.22 rad; facing ≤ 0.25 rad; clearance ≥ 0.20 m |
+
+To change the layout, edit the configuration and restart the simulator. It regenerates the Gazebo world, Nav2 map, planning grid, spawn pose, and overview camera. Both Gazebo screenshots on this page show this configuration; older captures are retained only as historical evidence.
 
 ## Quick start
 
@@ -186,9 +200,26 @@ Connection alternatives and troubleshooting: [browser access guide](docs/browser
 
 ## Verified results
 
-![Mission panel reporting all three parcels delivered and no remaining stops](docs/evidence/stage1/panel-complete.png)
+![All three parcels delivered to their pedestals in the expanded warehouse](docs/evidence/maze/maze-delivered.png)
 
-The following are recorded development runs, not a reliability benchmark or performance guarantee:
+The expanded maze completed three pickups and three deliveries in **123.044 seconds** after intent acceptance, with all six Nav2 goals succeeding. Every transfer also passed an independent comparison with Gazebo's actual robot pose.
+
+| Current maze check | Recorded result |
+| --- | --- |
+| Largest actual distance from an approach pose at transfer | 0.132 m; limit 0.20 m |
+| Largest actual facing error toward the parcel | 10.1°; limit about 14.3° |
+| Smallest conservative actual parcel clearance | 0.422 m; minimum 0.20 m |
+| Automated core, CLI, visual-state, and geometry tests | 22 passing on Python 3.12 and 3.14 |
+
+[Results and ground-truth measurements](docs/evidence/maze/results.json) · [Delivery journal](docs/evidence/maze/delivery.jsonl) · [Validation notes](docs/evidence/maze/README.md)
+
+These are development checks, not a reliability benchmark. Localization was adjusted after the first larger-scene run exposed a pose jump during a turn.
+
+<details>
+<summary>Earlier results from the original 10 × 8 m MVP</summary>
+
+The following runs used the earlier layout and position-only transfer checks:
+
 
 | Check | Recorded result | Evidence |
 | --- | --- | --- |
@@ -197,6 +228,8 @@ The following are recorded development runs, not a reliability benchmark or perf
 | Browser-operated delivery | Browser login and keyboard input verified; all 3 deliveries completed in 63.171 s after intent acceptance | [Browser check](docs/evidence/browser/browser-test.json) · [Journal](docs/evidence/browser/delivery.jsonl) |
 | Mid-mission updates | Pause, resume, cancellation, priority, status, and onboard-first exercised against Nav2/Gazebo | [Live-update journal](docs/evidence/gazebo-live-updates.jsonl) |
 | Automated core, CLI, and visual-state checks | 15 tests passed on Python 3.12 and 3.14 using a simulated backend double | [Python 3.12 log](docs/evidence/stage1/stage1-tests-ros.log) · [Python 3.14 log](docs/evidence/stage1/stage1-tests-source.log) |
+
+</details>
 
 Run journals are written under `artifacts/episodes/` in the runtime checkout. The ROS topic `/warehouse/status` publishes the current mission as JSON in `std_msgs/String`.
 
@@ -224,6 +257,7 @@ Generated worlds, local model/runtime files, build outputs, and routine logs are
 - [x] Local language model → mission planner → ROS 2/Nav2 → Gazebo delivery pipeline.
 - [x] Verified logical pickup/drop and mid-mission controls.
 - [x] Live cargo visualization, mission panel, and remote browser access.
+- [x] Expanded shelf maze with separate parcel positions and verified approach-and-face transfers.
 - [ ] Dedicated operator interface for submitting and managing instructions.
 - [ ] Improve startup and native simulator shutdown behavior.
 - [ ] Repeatable scenarios and systematic failure injection.

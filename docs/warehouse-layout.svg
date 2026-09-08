@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 810">
+<rect width="100%" height="100%" fill="#f4f7fb"/>
+<style>text{font-family:Arial,sans-serif;fill:#183047}.small{font-size:13px}.station{font-size:12px;font-weight:bold}</style>
+<text x="90" y="35" font-size="25" font-weight="bold">Warehouse maze · 18 × 14 metres</text>
+<text x="90" y="61" font-size="14">Circles: robot stopping poses  ·  Squares: parcel positions  ·  Arrows: facing direction</text>
+<rect x="90" y="95" width="792.0" height="616.0" fill="white" stroke="#6b7e91" stroke-width="5"/>
+<rect x="244.0" y="191.8" width="44.0" height="352.0" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="129.60000000000002" y="169.8" width="158.4" height="44.0" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="420.0" y="385.4" width="44.0" height="281.6" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="420.0" y="363.4" width="176.0" height="44.0" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="376.0" y="169.8" width="330.0" height="44.0" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="662.0" y="196.2" width="44.0" height="281.6" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<rect x="662.0" y="561.4" width="44.0" height="88.0" rx="2" fill="#284764" stroke="#df8b34" stroke-width="3"/>
+<circle cx="169.2" cy="649.4" r="10" fill="white" stroke="#357ae8" stroke-width="3"/>
+<text x="169.2" y="675.4" text-anchor="middle" class="station">HOME</text>
+<circle cx="208.8" cy="469.0" r="10" fill="white" stroke="#e49523" stroke-width="3"/>
+<path d="M208.8,469.0 L233.8,469.0" stroke="#e49523" stroke-width="3"/>
+<path d="M226.8,473.0 L233.8,469.0 L226.8,465.0" stroke="#e49523" fill="none" stroke-width="3"/>
+<rect x="244.8" y="461.0" width="16" height="16" rx="2" fill="#e49523" stroke="white" stroke-width="2"/>
+<text x="208.8" y="495.0" text-anchor="middle" class="station">PICK A</text>
+<circle cx="552.0" cy="442.6" r="10" fill="white" stroke="#e49523" stroke-width="3"/>
+<path d="M552.0,442.6 L552.0,417.6" stroke="#e49523" stroke-width="3"/>
+<path d="M556.0,424.6 L552.0,417.6 L548.0,424.6" stroke="#e49523" fill="none" stroke-width="3"/>
+<rect x="544.0" y="390.6" width="16" height="16" rx="2" fill="#e49523" stroke="white" stroke-width="2"/>
+<text x="552.0" y="468.6" text-anchor="middle" class="station">PICK B</text>
+<circle cx="741.2" cy="315.0" r="10" fill="white" stroke="#e49523" stroke-width="3"/>
+<path d="M741.2,315.0 L716.2,315.0" stroke="#e49523" stroke-width="3"/>
+<path d="M723.2,311.0 L716.2,315.0 L723.2,319.0" stroke="#e49523" fill="none" stroke-width="3"/>
+<rect x="689.2" y="307.0" width="16" height="16" rx="2" fill="#e49523" stroke="white" stroke-width="2"/>
+<text x="741.2" y="341.0" text-anchor="middle" class="station">PICK C</text>
+<circle cx="798.4000000000001" cy="614.2" r="10" fill="white" stroke="#189c72" stroke-width="3"/>
+<path d="M798.4000000000001,614.2 L823.4000000000001,614.2" stroke="#189c72" stroke-width="3"/>
+<path d="M816.4000000000001,618.2 L823.4000000000001,614.2 L816.4000000000001,610.2" stroke="#189c72" fill="none" stroke-width="3"/>
+<rect x="834.4000000000001" y="606.2" width="16" height="16" rx="2" fill="#189c72" stroke="white" stroke-width="2"/>
+<text x="798.4000000000001" y="640.2" text-anchor="middle" class="station">DROP A</text>
+<circle cx="798.4000000000001" cy="403.0" r="10" fill="white" stroke="#189c72" stroke-width="3"/>
+<path d="M798.4000000000001,403.0 L823.4000000000001,403.0" stroke="#189c72" stroke-width="3"/>
+<path d="M816.4000000000001,407.0 L823.4000000000001,403.0 L816.4000000000001,399.0" stroke="#189c72" fill="none" stroke-width="3"/>
+<rect x="834.4000000000001" y="395.0" width="16" height="16" rx="2" fill="#189c72" stroke="white" stroke-width="2"/>
+<text x="798.4000000000001" y="429.0" text-anchor="middle" class="station">DROP B</text>
+<circle cx="798.4000000000001" cy="191.8" r="10" fill="white" stroke="#189c72" stroke-width="3"/>
+<path d="M798.4000000000001,191.8 L823.4000000000001,191.8" stroke="#189c72" stroke-width="3"/>
+<path d="M816.4000000000001,195.8 L823.4000000000001,191.8 L816.4000000000001,187.8" stroke="#189c72" fill="none" stroke-width="3"/>
+<rect x="834.4000000000001" y="183.8" width="16" height="16" rx="2" fill="#189c72" stroke="white" stroke-width="2"/>
+<text x="798.4000000000001" y="217.8" text-anchor="middle" class="station">DROP C</text>
+<text x="90" y="752" font-size="15">The robot stops 1.0 m from the parcel centre, then verifies position and heading.</text>
+<text x="90" y="778" font-size="14">Shelf geometry is shared by Gazebo, the Nav2 occupancy map, and the A* cost planner.</text>
+</svg>

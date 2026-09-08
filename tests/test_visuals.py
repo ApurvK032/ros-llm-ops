@@ -16,7 +16,7 @@ class VisualTests(unittest.TestCase):
 
     def test_visuals_wait_for_pickup_ack_then_follow_and_deliver(self):
         self.start(["P1"])
-        pickup = tuple(self.world.waypoints["PICK_A"][:2])
+        pickup = self.world.station_position("PICK_A")[:2]
         self.backend.pose = self.backend.target
         self.mission.tick()  # Being at the coordinates is not a pickup acknowledgement.
         self.assertEqual(self.cube("P1").position[:2], pickup)
@@ -28,13 +28,13 @@ class VisualTests(unittest.TestCase):
         self.assertEqual(self.cube("P1").color, COLORS["onboard"])
         self.backend.arrive()
         self.mission.tick()
-        self.assertEqual(self.cube("P1").position[:2], tuple(self.world.waypoints["DROP_A"][:2]))
+        self.assertEqual(self.cube("P1").position, self.world.station_position("DROP_A"))
         self.assertEqual(self.cube("P1").color, COLORS["delivered"])
 
     def test_cancelled_parcel_remains_at_pickup(self):
         self.start(["P1"])
         self.mission.apply({"operation": "cancel", "parcels": ["P1"]})
-        self.assertEqual(self.cube("P1").position[:2], tuple(self.world.waypoints["PICK_A"][:2]))
+        self.assertEqual(self.cube("P1").position, self.world.station_position("PICK_A"))
         self.assertEqual(self.cube("P1").color, COLORS["cancelled"])
         self.assertEqual(parcel_label(self.mission.parcels["P1"]), "Cancelled · waiting")
 

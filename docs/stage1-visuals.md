@@ -2,6 +2,8 @@
 
 The warehouse now displays logical cargo transfers in Gazebo and RViz, alongside a native **Warehouse mission** status window. Start it with the existing `bash scripts/wsl.sh demo` command and enter `Deliver all three parcels`.
 
+The current [maze layout](warehouse-layout.md) places parcels on shelves and delivery pedestals. Ground circles and arrows show separate robot approach poses and facing directions. The historical screenshots and timings below describe the original smaller layout.
+
 ## What to watch
 
 | Display | Meaning |
@@ -14,7 +16,7 @@ The warehouse now displays logical cargo transfers in Gazebo and RViz, alongside
 | Cyan ring and caption | Current navigation goal |
 | Mission window | Current goal, parcel states/locations, remaining stops, pause and connection status |
 
-Cargo moves only after Nav2 reports success and the supervisor verifies the station distance. Driving near a parcel does not transfer it. There is no arm, attachment joint, collision geometry or perception step: the parcels are visual representations of application cargo state.
+Cargo moves only after Nav2 reports success and the supervisor verifies the approach position, heading, facing direction, and clearance. Driving near a parcel does not transfer it. There is no arm, attachment joint, parcel collision geometry or perception step: the parcels are visual representations of application cargo state. Shelves and delivery pedestals have collision geometry.
 
 The remaining-stop list comes from the executor's selected plan and excludes the current goal. A priority or mission change hides the superseded queue until the next action boundary refreshes it. The viewer does not calculate a competing route or send commands to the robot.
 
@@ -59,7 +61,7 @@ The RViz config loads a generated copy of the installed TurtleBot URDF with corr
 
 ## Validation
 
-Four visual behavior tests cover acknowledgement-gated pickup, carried/delivered placement, cancelled parcel retention, deferred onboard retention, and remaining-stop consistency after priority changes. Together with the existing cargo and CLI tests, the suite contains 15 tests.
+Four visual behavior tests cover acknowledgement-gated pickup, carried/delivered placement, cancelled parcel retention, deferred onboard retention, and remaining-stop consistency after priority changes. The original stage 1 suite contained 15 tests; the current suite adds approach, orientation, clearance, and maze-geometry checks.
 
 The fully headless launch also reached Nav2/localization readiness. A late subscriber received the three parcel boxes and seven station captions from the transient-local ROS marker topic with no GUI required.
 

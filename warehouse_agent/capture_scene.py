@@ -1,18 +1,20 @@
 """Frame the actual Gazebo warehouse and ask its GUI to save a screenshot."""
 
 import math
+import json
 from pathlib import Path
 import subprocess
 import time
 from .world import ROOT
 
-CAMERA_POSITION = (6.0, -7.5, 9.0)
+CAMERA_POSITION = tuple(json.loads((ROOT/"config/warehouse.json").read_text())["overview_camera"])
 
 
 def frame_camera():
     """Frame once when the GUI is ready; later camera movement stays user-owned."""
-    yaw = math.atan2(10, -8)
-    pitch = math.atan2(12, math.hypot(8, 10))
+    x, y, z = CAMERA_POSITION
+    yaw = math.atan2(-y, -x)
+    pitch = math.atan2(z, math.hypot(x, y))
     qx = -math.sin(pitch/2)*math.sin(yaw/2)
     qy = math.sin(pitch/2)*math.cos(yaw/2)
     qz = math.cos(pitch/2)*math.sin(yaw/2)

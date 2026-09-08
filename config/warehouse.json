@@ -1,23 +1,42 @@
 {
-  "name": "warehouse_mvp",
-  "bounds": [-5.0, -4.0, 5.0, 4.0],
+  "name": "warehouse_maze",
+  "bounds": [-9.0, -7.0, 9.0, 7.0],
   "shelves": [
-    {"name": "shelf_south", "center": [0.0, -1.65], "size": [1.2, 1.5]},
-    {"name": "shelf_north", "center": [0.0, 1.65], "size": [1.2, 1.5]}
+    {"name": "shelf_west_spine", "center": [-5.0, 0.8], "size": [1.0, 8.0]},
+    {"name": "shelf_west_cap", "center": [-6.3, 4.8], "size": [3.6, 1.0]},
+    {"name": "shelf_centre_south", "center": [-1.0, -2.8], "size": [1.0, 6.4]},
+    {"name": "shelf_centre_arm", "center": [0.5, 0.4], "size": [4.0, 1.0]},
+    {"name": "shelf_north_bridge", "center": [1.25, 4.8], "size": [7.5, 1.0]},
+    {"name": "shelf_east_spine", "center": [4.5, 1.5], "size": [1.0, 6.4]},
+    {"name": "shelf_east_south", "center": [4.5, -4.6], "size": [1.0, 2.0]}
   ],
   "map_resolution": 0.05,
   "planning_resolution": 0.2,
   "planning_inflation": 0.35,
-  "arrival_tolerance": 0.35,
-  "navigation_timeout": 150.0,
+  "arrival_tolerance": 0.20,
+  "heading_tolerance": 0.22,
+  "facing_tolerance": 0.25,
+  "robot_radius": 0.22,
+  "parcel_size": [0.32, 0.32, 0.36],
+  "minimum_parcel_clearance": 0.20,
+  "navigation_timeout": 240.0,
+  "overview_camera": [11.0, -14.0, 18.0],
   "waypoints": {
-    "HOME": [-3.8, -2.8, 0.0],
-    "PICK_A": [-3.0, -1.8, 0.0],
-    "PICK_B": [-3.0, 0.0, 0.0],
-    "PICK_C": [-3.0, 1.8, 0.0],
-    "DROP_A": [3.0, -1.8, 0.0],
-    "DROP_B": [3.0, 0.0, 0.0],
-    "DROP_C": [3.0, 1.8, 0.0]
+    "HOME": [-7.2, -5.6, 0.0],
+    "PICK_A": [-6.3, -1.5, 0.0],
+    "PICK_B": [1.5, -0.9, 1.5707963267948966],
+    "PICK_C": [5.8, 2.0, 3.141592653589793],
+    "DROP_A": [7.1, -4.8, 0.0],
+    "DROP_B": [7.1, 0.0, 0.0],
+    "DROP_C": [7.1, 4.8, 0.0]
+  },
+  "stations": {
+    "PICK_A": {"parcel_position": [-5.3, -1.5, 0.78]},
+    "PICK_B": {"parcel_position": [1.5, 0.1, 0.78]},
+    "PICK_C": {"parcel_position": [4.8, 2.0, 0.78]},
+    "DROP_A": {"parcel_position": [8.1, -4.8, 0.78], "pedestal_size": [0.6, 0.6, 0.6]},
+    "DROP_B": {"parcel_position": [8.1, 0.0, 0.78], "pedestal_size": [0.6, 0.6, 0.6]},
+    "DROP_C": {"parcel_position": [8.1, 4.8, 0.78], "pedestal_size": [0.6, 0.6, 0.6]}
   },
   "parcels": {
     "P1": {"pickup": "PICK_A", "drop": "DROP_A"},

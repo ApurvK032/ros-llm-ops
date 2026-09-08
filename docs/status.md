@@ -1,6 +1,12 @@
 # MVP status — 8 September 2026
 
-The user chose to build the original complete simulation pipeline first and defer robustness/research extensions. Local inference on the RTX 4070 was explicitly selected.
+The project prioritizes a complete local-model simulation pipeline before broader robustness and research extensions.
+
+**The maze update is implemented:** an 18 × 14 m warehouse with seven shelf sections, separate parcel and approach positions, and position/heading/facing/clearance checks for pickup and drop. A full run completed all six goals in 123.044 seconds. All six transfers also passed checks against Gazebo's actual robot pose; the smallest conservative actual clearance was 0.422 m. The 22 tests pass on Python 3.12 and 3.14. See the [layout guide](warehouse-layout.md) and [new run evidence](evidence/maze/README.md).
+
+The first expanded-scene run exposed an AMCL pose jump after a turn. The current simulation configuration uses a narrower motion-noise model, more laser beams/particles, and more frequent localization updates. The successful rerun's maximum observed localization position error was 0.148 m. These are development observations rather than a reliability claim.
+
+Earlier MVP history follows; its timings refer to the original smaller warehouse.
 
 **Stage 1 is implemented:** station labels, live parcel boxes and current-goal highlights in Gazebo/RViz, plus a read-only mission panel with cargo state and remaining stops. The fresh-HOME acceptance run delivered all three parcels in 63.779 seconds, with six successful navigation goals and a maximum arrival error of 0.2379 m. All 15 core, CLI and visual-state tests passed on Python 3.14 and the ROS environment's Python 3.12. See [stage 1 guide](stage1-visuals.md), [results](evidence/stage1/results.json), [scene](evidence/stage1/gazebo-delivered.png) and [mission panel](evidence/stage1/panel-onboard.png).
 

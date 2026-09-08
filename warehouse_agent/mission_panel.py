@@ -71,7 +71,7 @@ class MissionPanel(QWidget):
         marker_status = "" if gazebo is None else ("  ·  Gazebo markers connected" if gazebo else "  ·  Waiting for Gazebo markers")
         self.connection.setText(connection + marker_status)
         self.badge.setText(mission_label(state))
-        self.goal.setText(stop_label(state["active"]) if state["active"] else "No active goal")
+        self.goal.setText(stop_label(state["active"])+"\nApproach and face the parcel" if state["active"] else "No active goal")
         for pid, (identity, label) in self.cards.items():
             p = state["parcels"][pid]
             color = parcel_color(p)

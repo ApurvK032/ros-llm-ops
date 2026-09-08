@@ -26,6 +26,5 @@ fi
 exec ros2 launch "$PWD/sim/warehouse.launch.py" \
   world:="$PWD/sim/generated/warehouse.sdf" map:="$PWD/sim/generated/warehouse.yaml" \
   params_file:="$PWD/sim/generated/nav2_params.yaml" \
-  x_pose:=-3.8 y_pose:=-2.8 yaw:=0.0 \
   headless:="${HEADLESS:-False}" use_rviz:="${USE_RVIZ:-True}" \
   show_panel:="${SHOW_MISSION_PANEL:-True}" "$@"

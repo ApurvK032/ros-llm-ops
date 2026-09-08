@@ -83,9 +83,17 @@ def project(world, state):
             station = parcel["drop"] if parcel["state"] == "delivered" else parcel["pickup"]
             captions[station].append(f"{pid} · {parcel_label(parcel)}")
     for i, (name, pose) in enumerate(world.waypoints.items()):
-        x, y, _ = pose
+        x, y, z = world.station_position(name) if name != "HOME" else (*pose[:2], 0.0)
         caption = "\n".join([name.replace("_", " "), *captions[name]])
-        visuals.append(Visual(10+i, "text", (x, y, 0.85), (0, 0, 0.24), COLORS["label"], caption))
+        visuals.append(Visual(10+i, "text", (x, y, z+1.05), (0, 0, 0.28), COLORS["label"], caption))
+        if name != "HOME":
+            ax, ay, yaw = pose
+            tip = (ax+0.58*math.cos(yaw), ay+0.58*math.sin(yaw), 0.04)
+            left = (tip[0]-0.18*math.cos(yaw)+0.13*math.sin(yaw), tip[1]-0.18*math.sin(yaw)-0.13*math.cos(yaw), 0.04)
+            right = (tip[0]-0.18*math.cos(yaw)-0.13*math.sin(yaw), tip[1]-0.18*math.sin(yaw)+0.13*math.cos(yaw), 0.04)
+            color = COLORS["delivered"] if name.startswith("DROP") else COLORS["awaiting_pickup"]
+            visuals.append(Visual(30+i, "line", (0, 0, 0), (0.045, 0, 0), color,
+                                  points=((ax, ay, 0.04), tip, left, tip, right)))
     carried = [pid for pid, p in state["parcels"].items() if p["state"] == "onboard"]
     for i, (pid, parcel) in enumerate(state["parcels"].items()):
         color = parcel_color(parcel)
@@ -96,8 +104,8 @@ def project(world, state):
             size = (0.19, 0.19, 0.19)
         else:
             waypoint = parcel["drop"] if parcel["state"] == "delivered" else parcel["pickup"]
-            x, y, yaw = world.waypoints[waypoint]
-            position, size = (x, y, 0.20), (0.32, 0.32, 0.36)
+            yaw = world.waypoints[waypoint][2]
+            position, size = world.station_position(waypoint), tuple(world.config["parcel_size"])
         visuals.append(Visual(100+i*2, "box", position, size, color, yaw=yaw))
     if carried:
         x, y, _ = state["pose"]
@@ -105,7 +113,7 @@ def project(world, state):
         visuals.append(Visual(200, "text", (x, y, 2.1), (0, 0, 0.24), COLORS["label"], "ONBOARD\n"+", ".join(carried)))
     if state["active"]:
         x, y, _ = world.waypoints[state["active"]["waypoint"]]
-        points = tuple((x+0.48*math.cos(t*math.tau/48), y+0.48*math.sin(t*math.tau/48), 0.05) for t in range(49))
+        points = tuple((x+0.34*math.cos(t*math.tau/48), y+0.34*math.sin(t*math.tau/48), 0.05) for t in range(49))
         visuals.append(Visual(300, "line", (0, 0, 0), (0.05, 0, 0), COLORS["goal"], points=points))
-        visuals.append(Visual(301, "text", (x, y, 1.55), (0, 0, 0.26), COLORS["goal"], "CURRENT GOAL"))
+        visuals.append(Visual(301, "text", (x, y, 0.9), (0, 0, 0.24), COLORS["goal"], "STOP AND FACE"))
     return visuals

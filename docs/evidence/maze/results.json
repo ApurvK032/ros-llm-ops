@@ -1,0 +1,118 @@
+{
+  "instruction": "Deliver all three parcels",
+  "result": "complete",
+  "warehouse_metres": [
+    18,
+    14
+  ],
+  "shelves": 7,
+  "navigation_successes": 6,
+  "pickups": 3,
+  "deliveries": 3,
+  "elapsed_seconds": 123.044,
+  "maximum_position_error_m": 0.0488910090237063,
+  "maximum_heading_error_rad": 0.11343654049657494,
+  "maximum_facing_error_rad": 0.10229241638804147,
+  "minimum_parcel_clearance_m": 0.513425220722389,
+  "all_transfers_verified": true,
+  "core_tests": 22,
+  "notes": [
+    "One development run, not a reliability benchmark.",
+    "Clearance uses conservative robot and parcel footprints at confirmed transfer poses.",
+    "Logical cargo transfer; no arm or physical grasping."
+  ],
+  "ground_truth_transfers": [
+    {
+      "parcel": "P1",
+      "state": "onboard",
+      "pose": [
+        -6.325655308657549,
+        -1.4761976732815434,
+        0.11877602448825172
+      ],
+      "position_error": 0.03499636580455539,
+      "heading_error": 0.11877602448825172,
+      "facing_error": 0.14197880507717706,
+      "parcel_distance": 1.0259314611291652,
+      "parcel_clearance": 0.5796572911494701,
+      "accepted": true
+    },
+    {
+      "parcel": "P2",
+      "state": "onboard",
+      "pose": [
+        1.5440434046332028,
+        -0.9071551755352146,
+        1.4849381224961957
+      ],
+      "position_error": 0.044620825055390466,
+      "heading_error": 0.08585820429870084,
+      "facing_error": 0.12956086531903055,
+      "parcel_distance": 1.0081177357328126,
+      "parcel_clearance": 0.5618435657531174,
+      "accepted": true
+    },
+    {
+      "parcel": "P2",
+      "state": "delivered",
+      "pose": [
+        7.231553298937632,
+        0.008256539201448362,
+        0.052175779301830164
+      ],
+      "position_error": 0.1318121424640351,
+      "heading_error": 0.052175779301830164,
+      "facing_error": 0.06168274206811429,
+      "parcel_distance": 0.8684859486633589,
+      "parcel_clearance": 0.4222117786836638,
+      "accepted": true
+    },
+    {
+      "parcel": "P3",
+      "state": "onboard",
+      "pose": [
+        5.8681949621460285,
+        2.019183105367991,
+        3.0647429229895655
+      ],
+      "position_error": 0.07084168542361016,
+      "heading_error": 0.0768497306002276,
+      "facing_error": 0.09480623126662581,
+      "parcel_distance": 1.0683671974961209,
+      "parcel_clearance": 0.6220930275164257,
+      "accepted": true
+    },
+    {
+      "parcel": "P3",
+      "state": "delivered",
+      "pose": [
+        7.158096788236205,
+        4.862924613171253,
+        0.10994974269648336
+      ],
+      "position_error": 0.08564311849830258,
+      "heading_error": 0.10994974269648336,
+      "facing_error": 0.17665643936607853,
+      "parcel_distance": 0.9440027368994774,
+      "parcel_clearance": 0.4977285669197823,
+      "accepted": true
+    },
+    {
+      "parcel": "P1",
+      "state": "delivered",
+      "pose": [
+        7.162746958138829,
+        -4.7467096538174305,
+        -0.0856526021574616
+      ],
+      "position_error": 0.08232278999119312,
+      "heading_error": 0.08565260215746158,
+      "facing_error": 0.02885574083789113,
+      "parcel_distance": 0.9387668110208601,
+      "parcel_clearance": 0.49249264104116497,
+      "accepted": true
+    }
+  ],
+  "maximum_localization_position_error_m": 0.14761053752564748,
+  "maximum_localization_heading_error_rad": 0.08803387846622679
+}

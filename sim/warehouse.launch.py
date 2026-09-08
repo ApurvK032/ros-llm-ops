@@ -1,5 +1,6 @@
 """Stock TurtleBot3/Nav2 simulation plus the read-only warehouse display."""
 import sys
+import json
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
@@ -13,12 +14,13 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     root = Path(__file__).resolve().parent.parent
     generated = root / "sim/generated"
+    home = json.loads((root/"config/warehouse.json").read_text())["waypoints"]["HOME"]
     defaults = {
         "headless": "False", "use_rviz": "True", "show_panel": "True",
         "world": str(generated/"warehouse.sdf"), "map": str(generated/"warehouse.yaml"),
         "params_file": str(generated/"nav2_params.yaml"),
         "rviz_config_file": str(generated/"warehouse.rviz"),
-        "x_pose": "-3.8", "y_pose": "-2.8", "yaw": "0.0",
+        "x_pose": str(home[0]), "y_pose": str(home[1]), "yaw": str(home[2]),
     }
     description = LaunchDescription([DeclareLaunchArgument(k, default_value=v) for k, v in defaults.items()])
     robot_share = Path(get_package_share_directory("nav2_minimal_tb3_sim"))
@@ -29,7 +31,7 @@ def generate_launch_description():
         launch_arguments={**{k: LaunchConfiguration(k) for k in defaults if k not in {"show_panel", "headless"}},
                           "headless": "True"}.items())], scoped=True))
     description.add_action(ExecuteProcess(
-        cmd=["gz", "sim", "-g", "--gui-config", str(root/"sim/warehouse.gui.config")],
+        cmd=["gz", "sim", "-g", "--gui-config", str(generated/"warehouse.gui.config")],
         condition=UnlessCondition(LaunchConfiguration("headless")), output="screen"))
 
     def visuals(context):

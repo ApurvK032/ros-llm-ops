@@ -3,7 +3,6 @@
 import copy
 from datetime import datetime, timezone
 import json
-import math
 from pathlib import Path
 import time
 
@@ -146,25 +145,29 @@ class Mission:
             parcel = self.parcels[stop.parcel]
             if cancelled or self.paused or parcel["disposition"] != "active":
                 return
-            error = math.dist(self.backend.pose[:2], self.world.waypoints[stop.waypoint][:2])
-            if outcome == "succeeded" and error <= self.world.config["arrival_tolerance"]:
+            arrival = self.world.arrival(self.backend.pose, stop.waypoint)
+            if outcome == "succeeded" and arrival["accepted"]:
                 expected = "awaiting_pickup" if stop.kind == "pickup" else "onboard"
                 if parcel["state"] != expected:
                     raise RuntimeError("Cargo state changed unexpectedly")
                 parcel["state"] = "onboard" if stop.kind == "pickup" else "delivered"
                 self.revision += 1
                 self.record("cargo_" + stop.kind, parcel=stop.parcel, waypoint=stop.waypoint,
-                            position_error=error, state=parcel["state"])
+                            **arrival, pose=list(self.backend.pose),
+                            parcel_position=self.world.station_position(stop.waypoint), state=parcel["state"])
             else:
                 key = (stop.parcel, stop.kind)
                 self.attempts[key] = self.attempts.get(key, 0)+1
                 if self.attempts[key] >= 2:
                     parcel["disposition"] = "deferred"
-                    parcel["reason"] = f"Navigation {outcome}; position error {error:.3f} m"
+                    parcel["reason"] = (f"Navigation {outcome}; approach error {arrival['position_error']:.3f} m, "
+                                        f"heading error {arrival['heading_error']:.3f} rad, "
+                                        f"facing error {arrival['facing_error']:.3f} rad, "
+                                        f"parcel clearance {arrival['parcel_clearance']:.3f} m")
                     self.revision += 1
                     self.record("parcel_deferred", parcel=stop.parcel, reason=parcel["reason"])
                 else:
-                    self.record("navigation_retry", stop=stop.as_dict())
+                    self.record("navigation_retry", stop=stop.as_dict(), arrival=arrival)
         if self.paused or self.language_pending:
             return
         route, distance = self.planner.plan(self.parcels, self.backend.pose, self.priority, self.onboard_first)

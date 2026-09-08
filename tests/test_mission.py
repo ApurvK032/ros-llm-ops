@@ -1,6 +1,7 @@
 """Cargo, precedence, cancellation and failure checks independent of ROS."""
 
 import tempfile
+import math
 import unittest
 from pathlib import Path
 
@@ -74,6 +75,45 @@ class MissionTests(unittest.TestCase):
         self.backend.result = "succeeded"
         self.mission.tick()
         self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+
+    def test_success_at_approach_facing_away_does_not_pick_up(self):
+        self.start(["P1"])
+        target = list(self.backend.target)
+        self.backend.pose = [*target[:2], target[2]+math.pi]
+        self.backend.result = "succeeded"
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertFalse(any(e["type"] == "cargo_pickup" for e in self.events))
+        self.backend.arrive()
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+
+    def test_overlapping_parcel_does_not_pick_up_even_with_loose_position_tolerance(self):
+        self.start(["P1"])
+        self.world.config["arrival_tolerance"] = 2.0
+        x, y, _ = self.world.station_position("PICK_A")
+        self.backend.pose = [x-0.01, y, 0.0]
+        self.backend.result = "succeeded"
+        # This synthetic pose is inside a rack; retry planning must also refuse it.
+        with self.assertRaisesRegex(ValueError, "No estimated route"):
+            self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        retry = next(e for e in self.events if e["type"] == "navigation_retry")
+        self.assertLess(retry["arrival"]["parcel_clearance"], 0)
+
+    def test_drop_requires_facing_the_delivery_station(self):
+        self.start(["P1"])
+        self.backend.arrive()
+        self.mission.tick()
+        self.backend.pose = [*self.backend.target[:2], math.pi]
+        self.backend.result = "succeeded"
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+        self.backend.arrive()
+        self.mission.tick()
+        drop = next(e for e in self.events if e["type"] == "cargo_drop")
+        self.assertTrue(drop["accepted"])
+        self.assertGreaterEqual(drop["parcel_clearance"], self.world.config["minimum_parcel_clearance"])
 
     def test_cancel_waits_for_terminal_and_suppresses_pickup(self):
         self.start(["P1", "P2"])

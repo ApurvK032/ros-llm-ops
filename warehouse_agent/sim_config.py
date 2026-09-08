@@ -13,7 +13,19 @@ def generate():
     parameters = yaml.safe_load(base.read_text())
     x, y, yaw = world.waypoints["HOME"]
     parameters["amcl"]["ros__parameters"].update({
-        "set_initial_pose": True, "initial_pose": {"x": x, "y": y, "z": 0.0, "yaw": yaw}})
+        "set_initial_pose": True, "initial_pose": {"x": x, "y": y, "z": 0.0, "yaw": yaw},
+        # The stock demo's broad motion noise allowed a pose jump after a turn
+        # between similar shelf faces. Keep simulated wheel odometry informative.
+        "alpha1": 0.05, "alpha2": 0.05, "alpha3": 0.02, "alpha4": 0.02,
+        "min_particles": 1000, "max_particles": 3000, "max_beams": 120,
+        "update_min_d": 0.10, "update_min_a": 0.10,
+        "z_hit": 0.8, "z_rand": 0.2, "sigma_hit": 0.15})
+    # Nav2 converges more tightly than the supervisor's measured arrival checks.
+    controller = parameters["controller_server"]["ros__parameters"]
+    controller["general_goal_checker"].update({
+        "xy_goal_tolerance": 0.12, "yaw_goal_tolerance": 0.10, "stateful": False})
+    for key in ("local_costmap", "global_costmap"):
+        parameters[key][key]["ros__parameters"]["robot_radius"] = world.config["robot_radius"]
     (directory / "nav2_params.yaml").write_text(yaml.safe_dump(parameters, sort_keys=False))
     # The packaged URDF uses an older mesh layout. Repair a display-only copy.
     robot_share = Path(get_package_share_directory("nav2_minimal_tb3_sim"))
@@ -41,7 +53,7 @@ def generate():
         if display.get("Name") in {"TF", "Amcl Particle Swarm", "Bumper Hit"}:
             display["Enabled"] = display["Value"] = False
     manager["Global Options"]["Background Color"] = "235; 240; 245"
-    manager["Views"]["Current"].update({"X": 0.0, "Y": 0.0, "Scale": 65})
+    manager["Views"]["Current"].update({"X": 0.0, "Y": 0.0, "Scale": 35})
     (directory/"warehouse.rviz").write_text(yaml.safe_dump(rviz, sort_keys=False))
     print(directory)
 

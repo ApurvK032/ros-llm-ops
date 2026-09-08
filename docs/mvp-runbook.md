@@ -53,9 +53,9 @@ The local model emits one typed intent: create, prioritize, onboard_first, cance
 
 The task planner reuses A* from the pinned WarehouseBot repository. It builds a fresh remaining-stop list from current cargo state and applies a greedy sequence with prerequisites. Its grid has 0.2 m cells and a 0.35 m obstacle margin. Nav2 does the actual motion planning using a 0.05 m occupancy map and its own costmaps. Both maps come from the same metric wall/shelf geometry.
 
-Logical pickup/drop occurs only after a successful NavigateToPose result and a measured map-frame position within 0.35 m of the station. Pause/cancel requests wait for the current action's terminal result before replacement. Cargo is held while language interpretation is pending. Navigation gets one application retry, then the parcel becomes deferred and its cargo state stays visible.
+The current maze uses separate parcel storage positions and robot approach poses. Logical pickup/drop requires a successful NavigateToPose result, position within 0.20 m of the approach, heading error at most 0.22 rad, facing error toward the parcel at most 0.25 rad, and conservative parcel clearance of at least 0.20 m. See the [layout guide](warehouse-layout.md). Pause/cancel requests wait for the current action's terminal result before replacement. Cargo is held while language interpretation is pending. Navigation gets one application retry, then the parcel becomes deferred and its cargo state stays visible.
 
-The fifteen core, CLI and visual-state tests use a backend double. The delivery and live-update journals in `docs/evidence/` came from actual Nav2/Gazebo execution. These are distinct verification levels. The [stage 1 guide](stage1-visuals.md) describes the live displays and their validation.
+The automated tests cover core behavior with a backend double as well as static warehouse geometry. The delivery and live-update journals in `docs/evidence/` came from actual Nav2/Gazebo execution. These are distinct verification levels. Earlier `stage1` runs used the original smaller layout and looser position tolerance. The [stage 1 guide](stage1-visuals.md) describes the live displays and their validation.
 
 ## Capturing and inspecting a run
 
