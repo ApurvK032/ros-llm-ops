@@ -16,6 +16,10 @@ class Stop:
         return asdict(self)
 
 
+class PlanningError(ValueError):
+    pass
+
+
 class Planner:
     def __init__(self, world):
         self.world = world
@@ -29,10 +33,13 @@ class Planner:
         self.cache = {}
 
     def distance(self, a, b):
-        key = (self.world.cell(a), self.world.cell(b))
+        start, offset = self.world.snap(a)
+        if start is None:
+            return math.inf
+        key = (start, self.world.cell(b))
         if key not in self.cache:
             self.cache[key] = self.astar(self.world.grid, *key)["cost"] * self.world.resolution
-        return self.cache[key]
+        return offset+self.cache[key]
 
     def plan(self, parcels, pose, priority=None, onboard_first=()):
         remaining = []
@@ -52,7 +59,7 @@ class Planner:
             ranked = [(self.distance(pose, self.world.waypoints[s.waypoint]), s.parcel, s.kind, s) for s in choices]
             cost, _, _, stop = min(ranked)
             if not math.isfinite(cost):
-                raise ValueError(f"No estimated route to {stop.waypoint}; mission held")
+                raise PlanningError(f"No estimated route to {stop.waypoint}; mission held")
             route.append(stop)
             total += cost
             remaining.remove(stop)

@@ -78,6 +78,26 @@ class World:
         return (int((pose[1]-self.bounds[1])/self.resolution),
                 int((pose[0]-self.bounds[0])/self.resolution))
 
+    def centre(self, cell):
+        return (self.bounds[0]+(cell[1]+0.5)*self.resolution, self.bounds[1]+(cell[0]+0.5)*self.resolution)
+
+    def free(self, cell):
+        return 0 <= cell[0] < len(self.grid) and 0 <= cell[1] < len(self.grid[0]) and not self.grid[cell[0]][cell[1]]
+
+    def snap(self, pose):
+        """Nearest free planning cell and its distance; the reach is too short to cross a rack."""
+        start = self.cell(pose)
+        if self.free(start):
+            return start, 0.0
+        radius = self.config["planning_inflation"]+self.resolution
+        reach = math.ceil(radius/self.resolution)+1
+        # Rounding makes geometric ties exact, so the lower cell wins them deterministically.
+        nearby = [(round(math.dist(pose[:2], self.centre(cell)), 9), cell)
+                  for cell in ((start[0]+dr, start[1]+dc) for dr in range(-reach, reach+1) for dc in range(-reach, reach+1))
+                  if self.free(cell)]
+        distance, cell = min(nearby, default=(math.inf, None))
+        return (cell, distance) if distance <= radius else (None, math.inf)
+
     def generate(self, directory=ROOT / "sim/generated"):
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)

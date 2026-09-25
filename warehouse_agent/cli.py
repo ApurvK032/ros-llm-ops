@@ -22,7 +22,8 @@ def print_event(event):
         print(f"→ {s['waypoint']} · {s['kind']} {s['parcel']}", flush=True)
     elif kind.startswith("cargo_"):
         print(f"✓ {event['parcel']} {event['state']} at {event['waypoint']}", flush=True)
-    elif kind in {"mission_finished", "parcel_deferred", "clarification_required", "navigation_retry"}:
+    elif kind in {"mission_finished", "parcel_deferred", "clarification_required", "navigation_retry",
+                  "planning_failed"}:
         print(json.dumps(event, indent=2), flush=True)
 
 
@@ -102,6 +103,10 @@ def run(args):
                     mission.language_pending = False
             mission.tick()
             backend.publish_status(mission.snapshot())
+            # In --command mode no operator can /resume a planning hold.
+            if args.command and mission.hold_reason:
+                print("Mission held: no route from the current pose; exiting.", flush=True)
+                return 1
             if args.command and demo_accepted and mission.completed_reported:
                 return 0 if all(p["disposition"] != "deferred" for p in mission.parcels.values()) else 1
             if args.command and time.monotonic()-started > args.timeout:
