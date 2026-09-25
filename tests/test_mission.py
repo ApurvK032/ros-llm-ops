@@ -1,11 +1,14 @@
 """Cargo, precedence, cancellation and failure checks independent of ROS."""
 
+import copy
+import json
 import tempfile
 import math
 import unittest
 from pathlib import Path
 
 from warehouse_agent.mission import Mission
+from warehouse_agent.visual_state import mission_label
 from warehouse_agent.world import World
 
 
@@ -94,12 +97,67 @@ class MissionTests(unittest.TestCase):
         x, y, _ = self.world.station_position("PICK_A")
         self.backend.pose = [x-0.01, y, 0.0]
         self.backend.result = "succeeded"
-        # This synthetic pose is inside a rack; retry planning must also refuse it.
-        with self.assertRaisesRegex(ValueError, "No estimated route"):
-            self.mission.tick()
+        # This synthetic pose is inside a rack; retry planning holds instead of dispatching.
+        self.mission.tick()
         self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertFalse(any(e["type"] == "cargo_pickup" for e in self.events))
         retry = next(e for e in self.events if e["type"] == "navigation_retry")
         self.assertLess(retry["arrival"]["parcel_clearance"], 0)
+        self.assertTrue(self.mission.paused)
+        self.assertEqual(self.backend.dispatched, 1)
+        self.assertEqual([e["type"] for e in self.events].count("planning_failed"), 1)
+
+    def test_resume_beside_rack_plans_from_nearest_free_cell(self):
+        self.start()
+        self.mission.apply({"operation": "pause", "parcels": []})
+        # 0.30 m west of shelf_west_spine: legal for Nav2, but inside the planning inflation.
+        self.backend.pose = [-5.8, 0.0, 0.0]
+        self.backend.result = "cancelled"
+        self.mission.tick()
+        self.assertFalse(self.world.free(self.world.cell(self.backend.pose)))
+        self.mission.apply({"operation": "resume", "parcels": []})
+        self.mission.tick()
+        self.assertFalse(self.mission.paused)
+        self.assertEqual(self.backend.dispatched, 2)
+        self.assertIsNotNone(self.mission.active)
+        self.assertFalse(any(e["type"] == "planning_failed" for e in self.events))
+
+    def test_unplannable_pose_holds_until_resume(self):
+        self.start(["P1", "P2"])
+        self.backend.arrive()
+        self.mission.tick()
+        self.mission.apply({"operation": "pause", "parcels": []})
+        self.backend.pose = [-5.0, 0.0, 0.0]  # Centre of shelf_west_spine: no free cell within reach.
+        self.backend.result = "cancelled"
+        self.mission.tick()
+        cargo, dispatched = copy.deepcopy(self.mission.parcels), self.backend.dispatched
+        self.mission.apply({"operation": "resume", "parcels": []})
+        for _ in range(3):
+            self.mission.tick()
+        self.assertTrue(self.mission.paused)
+        self.assertIsNone(self.mission.active)
+        self.assertEqual(self.backend.dispatched, dispatched)
+        self.assertEqual(self.mission.parcels, cargo)
+        self.assertEqual(cargo["P1"]["state"], "onboard")
+        journal = [json.loads(line) for line in (Path(self.tmp.name)/"episode.jsonl").read_text().splitlines()]
+        failed = [e for e in journal if e["type"] == "planning_failed"]
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(failed[0]["pose"], [-5.0, 0.0, 0.0])
+        self.assertIn("No estimated route", failed[0]["reason"])
+        self.assertEqual(mission_label(self.mission.snapshot()), "Held: no route from current pose")
+        # Resuming while still unplannable records one new failure and keeps holding.
+        self.mission.apply({"operation": "resume", "parcels": []})
+        self.mission.tick()
+        journal = [json.loads(line) for line in (Path(self.tmp.name)/"episode.jsonl").read_text().splitlines()]
+        self.assertEqual([e["type"] for e in journal].count("planning_failed"), 2)
+        self.assertEqual(self.backend.dispatched, dispatched)
+        self.backend.pose = list(self.world.waypoints["PICK_A"])
+        self.mission.apply({"operation": "resume", "parcels": []})
+        self.mission.tick()
+        self.assertFalse(self.mission.paused)
+        self.assertIsNone(self.mission.hold_reason)
+        self.assertEqual(self.backend.dispatched, dispatched+1)
+        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
 
     def test_drop_requires_facing_the_delivery_station(self):
         self.start(["P1"])

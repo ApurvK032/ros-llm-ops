@@ -28,7 +28,7 @@ class Visual:
 
 def initial_state(world):
     return {"revision": 0, "pose": list(world.waypoints["HOME"]), "active": None,
-            "paused": False, "language_pending": False, "finished": True,
+            "paused": False, "hold_reason": None, "language_pending": False, "finished": True,
             "closed": False, "remaining_stops": [], "plan_pending": False,
             "cancel_requested": False,
             "parcels": {pid: {**p, "state": "awaiting_pickup", "disposition": "inactive"}
@@ -53,6 +53,8 @@ def mission_label(state):
         return "Disconnected"
     if state.get("cancel_requested"):
         return "Stopping"
+    if state.get("hold_reason"):
+        return "Held: no route from current pose"
     if state["paused"]:
         return "Paused"
     if state["language_pending"]:

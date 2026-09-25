@@ -23,6 +23,44 @@ class WarehouseTests(unittest.TestCase):
         a, b = (self.world.waypoints[name] for name in ("PICK_A", "PICK_B"))
         self.assertGreater(planner.distance(a, b), math.dist(a[:2], b[:2])+3.0)
 
+    def test_snapping_never_crosses_a_rack(self):
+        planner, home = Planner(self.world), self.world.waypoints["HOME"]
+        grid = self.world.grid
+        free = [c for c in ((r, k) for r in range(len(grid)) for k in range(len(grid[0]))) if self.world.free(c)]
+        pose = [-5.8, 0.0, 0.0]
+        self.assertFalse(self.world.free(self.world.cell(pose)))
+        # West of the rack, 0.1 m off each axis; the equidistant (35, 15) loses the tie to the lower row.
+        cell, offset = self.world.snap(pose)
+        self.assertEqual(cell, (34, 15))
+        self.assertAlmostEqual(offset, math.hypot(0.1, 0.1))
+        self.assertAlmostEqual(planner.distance(pose, home), math.hypot(0.1, 0.1)+planner.distance([-5.9, -0.1, 0.0], home))
+        # Two poses in one blocked cell by the rack's south-west corner snap south and west respectively;
+        # the A* cache must be keyed on the snapped cell, not the shared blocked one.
+        south, west = [-5.76, -3.56, 0.0], [-5.76, -3.44, 0.0]
+        self.assertEqual(self.world.cell(south), self.world.cell(west))
+        self.assertNotEqual(self.world.snap(south)[0], self.world.snap(west)[0])
+        for pose in (south, west):
+            cell, offset = self.world.snap(pose)
+            fresh = Planner(self.world).distance([*self.world.centre(cell), 0.0], home)
+            self.assertAlmostEqual(planner.distance(pose, home), offset+fresh)
+        for shelf in self.world.config["shelves"]:
+            self.assertEqual(self.world.snap([*shelf["center"], 0.0]), (None, math.inf))
+            for axis, side in ((0, -1), (0, 1), (1, -1), (1, 1)):
+                face = shelf["center"][axis]+side*shelf["size"][axis]/2
+                for depth in (self.world.config["robot_radius"], self.world.config["planning_inflation"]-0.05):
+                    pose = [*shelf["center"], 0.0]
+                    pose[axis] = face+side*depth
+                    if self.world.blocked(*pose[:2]):
+                        continue  # This face meets another rack.
+                    with self.subTest(shelf=shelf["name"], axis=axis, side=side, depth=depth):
+                        cell, offset = self.world.snap(pose)
+                        self.assertGreater(side*(self.world.centre(cell)[axis]-face), 0)
+                        if self.world.free(self.world.cell(pose)):
+                            self.assertEqual((cell, offset), (self.world.cell(pose), 0.0))
+                        else:
+                            self.assertAlmostEqual(offset, math.dist(pose[:2], self.world.centre(cell)))
+                            self.assertAlmostEqual(offset, min(math.dist(pose[:2], self.world.centre(c)) for c in free))
+
     def test_station_approaches_face_parcels_without_overlap(self):
         for name in self.world.config["stations"]:
             with self.subTest(station=name):

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import time
 
-from .planner import Planner
+from .planner import Planner, PlanningError
 
 
 class Mission:
@@ -18,6 +18,7 @@ class Mission:
         self.priority = None
         self.onboard_first = set()
         self.paused = False
+        self.hold_reason = None
         self.language_pending = False
         self.active = None
         self.remaining_stops = []
@@ -43,7 +44,7 @@ class Mission:
         self.emit(event)
 
     def snapshot(self):
-        return {"revision": self.revision, "paused": self.paused,
+        return {"revision": self.revision, "paused": self.paused, "hold_reason": self.hold_reason,
                 "language_pending": self.language_pending,
                 "pose": list(self.backend.pose), "priority": self.priority,
                 "onboard_first": sorted(self.onboard_first),
@@ -88,6 +89,7 @@ class Mission:
             for pid in ids:
                 self.parcels[pid]["disposition"] = "active"
             self.paused = False
+            self.hold_reason = None
             self.completed_reported = False
         elif operation == "prioritize":
             if len(ids) != 1 or self.parcels[ids[0]]["disposition"] != "active" or self.parcels[ids[0]]["state"] == "delivered":
@@ -117,6 +119,7 @@ class Mission:
             self.cancel_motion()
         elif operation == "resume":
             self.paused = False
+            self.hold_reason = None
         else:
             raise ValueError("Unsupported operation")
         self.revision += 1
@@ -170,7 +173,15 @@ class Mission:
                     self.record("navigation_retry", stop=stop.as_dict(), arrival=arrival)
         if self.paused or self.language_pending:
             return
-        route, distance = self.planner.plan(self.parcels, self.backend.pose, self.priority, self.onboard_first)
+        try:
+            route, distance = self.planner.plan(self.parcels, self.backend.pose, self.priority, self.onboard_first)
+        except PlanningError as exc:
+            # Hold until the operator resumes; retrying every tick would flood the journal.
+            self.paused = True
+            self.hold_reason = str(exc)
+            self.revision += 1
+            self.record("planning_failed", reason=str(exc), pose=list(self.backend.pose))
+            return
         self.remaining_stops = route
         self.plan_pending = False
         if not route:
