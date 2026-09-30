@@ -1,11 +1,9 @@
 """Show the real ROS applications in a private noVNC desktop over an SSH tunnel."""
 
 import argparse
-from datetime import datetime, timezone
 import fcntl
 import json
 import os
-from pathlib import Path
 import secrets
 import shutil
 import signal
@@ -16,6 +14,8 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime
+from pathlib import Path
 
 from .world import ROOT
 
@@ -167,7 +167,7 @@ class Desktop:
                                 "-e", "python3", "-B", "-m", "warehouse_agent.remote_desktop", "agent"])
         session = {"pid": os.getpid(), "process_token": process_token(os.getpid()), "port": self.port,
                    "display": f":{display}", "authority": str(authority), "vnc_socket": str(vnc_socket),
-                   "password_file": str(password_file), "started": datetime.now(timezone.utc).isoformat(),
+                   "password_file": str(password_file), "started": datetime.now(UTC).isoformat(),
                    "url": f"http://localhost:{self.port}/vnc.html?autoconnect=1&resize=scale&reconnect=1"}
         private_write(SESSION, json.dumps(session, indent=2)+"\n")
         show_info(session, reveal_password=False)

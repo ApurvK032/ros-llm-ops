@@ -1,11 +1,18 @@
 """Stock TurtleBot3/Nav2 simulation plus the read-only warehouse display."""
-import sys
 import json
+import sys
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import AppendEnvironmentVariable, DeclareLaunchArgument, ExecuteProcess, GroupAction, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import (
+    AppendEnvironmentVariable,
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    GroupAction,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+)
 from launch.conditions import UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration

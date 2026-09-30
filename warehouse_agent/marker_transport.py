@@ -6,6 +6,7 @@ import queue
 import subprocess
 import threading
 import time
+from itertools import pairwise
 
 from .world import ROOT
 
@@ -15,7 +16,7 @@ NAMESPACE = "warehouse_agent"
 def line_triangles(points, width):
     """A floor ribbon keeps the goal ring visible at any camera distance."""
     result = []
-    for a, b in zip(points, points[1:]):
+    for a, b in pairwise(points):
         dx, dy = b[0]-a[0], b[1]-a[1]
         length = math.hypot(dx, dy)
         if length == 0:
@@ -55,8 +56,8 @@ def gazebo_message(visuals, removed=()):
 
 
 def ros_message(visuals, removed, stamp):
-    from visualization_msgs.msg import Marker, MarkerArray
     from geometry_msgs.msg import Point
+    from visualization_msgs.msg import Marker, MarkerArray
     array = MarkerArray()
     for key in removed:
         msg = Marker()

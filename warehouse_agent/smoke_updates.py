@@ -1,8 +1,8 @@
 """Explicit integration check against a running Gazebo/Nav2/Ollama instance."""
 
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
 import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
 
 from .cli import print_event
 from .language import LocalModel
@@ -14,7 +14,7 @@ from .world import ROOT, World
 def main():
     world = World()
     backend = RosBackend(world)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S.%fZ")
     mission = Mission(world, backend, ROOT / "artifacts/episodes" / f"updates-{stamp}.jsonl", print_event)
     model = LocalModel()
     executor = ThreadPoolExecutor(max_workers=1)

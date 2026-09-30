@@ -1,14 +1,13 @@
 """Interactive local-model supervisor and repeatable ROS delivery demo."""
 
-import argparse
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import queue
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+from pathlib import Path
 
 from .language import LocalModel
 from .mission import Mission
@@ -31,7 +30,7 @@ def run(args):
     from .ros_backend import RosBackend
     world = World(args.config)
     backend = RosBackend(world, initialize_pose=args.reset_localization)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S.%fZ")
     journal = args.journal or ROOT / "artifacts/episodes" / f"{stamp}.jsonl"
     mission = Mission(world, backend, journal, print_event)
     model = LocalModel(args.model, args.endpoint)

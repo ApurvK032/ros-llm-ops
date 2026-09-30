@@ -1,10 +1,10 @@
 """Frame the actual Gazebo warehouse and ask its GUI to save a screenshot."""
 
-import math
 import json
-from pathlib import Path
+import math
 import subprocess
 import time
+
 from .world import ROOT
 
 CAMERA_POSITION = tuple(json.loads((ROOT/"config/warehouse.json").read_text())["overview_camera"])

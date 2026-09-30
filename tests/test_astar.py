@@ -2,6 +2,7 @@
 
 import math
 import unittest
+from itertools import pairwise
 
 from warehouse_agent.astar import a_star
 
@@ -21,7 +22,7 @@ class AStarTests(unittest.TestCase):
                 self.assertTrue(result["found"])
                 self.assertEqual(result["cost"], 8)
                 self.assertEqual((path[0], path[-1], len(path)), ((0, 0), (4, 4), 9))
-                for (r0, c0), (r1, c1) in zip(path, path[1:]):
+                for (r0, c0), (r1, c1) in pairwise(path):
                     self.assertEqual(abs(r0-r1)+abs(c0-c1), 1)
                     self.assertEqual(GRID[r1][c1], 0)
 

@@ -1,7 +1,7 @@
 """WarehouseBot A* travel costs; greedy sequencing respects live cargo and priority."""
 
-from dataclasses import dataclass, asdict
 import math
+from dataclasses import asdict, dataclass
 
 from .astar import a_star
 

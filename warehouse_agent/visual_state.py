@@ -1,7 +1,7 @@
 """Read-only projection of mission snapshots into both simulation displays."""
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 COLORS = {
     "awaiting_pickup": (0.96, 0.60, 0.12, 1.0),

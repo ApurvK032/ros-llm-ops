@@ -1,10 +1,10 @@
 """Single-owner mission loop. Cargo changes only after verified navigation."""
 
 import copy
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import time
+from datetime import UTC, datetime
+from pathlib import Path
 
 from .planner import Planner, PlanningError
 
@@ -36,7 +36,7 @@ class Mission:
 
     def record(self, kind, **data):
         self.sequence += 1
-        event = {"sequence": self.sequence, "time": datetime.now(timezone.utc).isoformat(),
+        event = {"sequence": self.sequence, "time": datetime.now(UTC).isoformat(),
                  "monotonic": time.monotonic(), "revision": self.revision,
                  "type": kind, **data}
         self.journal.write(json.dumps(event, allow_nan=False)+"\n")

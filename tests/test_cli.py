@@ -3,16 +3,17 @@
 import contextlib
 import io
 import json
-from pathlib import Path
 import queue
 import tempfile
-from types import SimpleNamespace
 import unittest
+from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
+
+from test_mission import Backend
 
 from warehouse_agent.cli import run
 from warehouse_agent.world import ROOT, World
-from test_mission import Backend
 
 
 class Future:
