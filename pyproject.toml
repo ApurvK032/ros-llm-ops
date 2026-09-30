@@ -7,6 +7,8 @@ name = "warehouse-agent"
 version = "0.0.1"
 description = "Local-model warehouse task supervisor for ROS 2, Nav2 and Gazebo"
 readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Apurv Kushwaha"}]
 requires-python = ">=3.12"
 dependencies = []
 

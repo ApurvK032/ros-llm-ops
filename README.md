@@ -72,18 +72,23 @@ To change the layout, edit the configuration and restart the simulator. It regen
 
 ### 1. Clone and check the core
 
-Use **Python 3.12+**. These checks do not require ROS, a GPU, or a running model. Fetching the pinned planner requires Git and internet access.
+Use **Python 3.12+**. These checks need no ROS, GPU, running model, or extra packages.
 
 ```bash
 git clone https://github.com/ApurvK032/ros-llm-ops.git
 cd ros-llm-ops
-bash scripts/fetch_reference.sh
 python3 -B -m unittest discover -s tests -v
-python3 -B -m warehouse_agent baseline
 python3 -B -m warehouse_agent doctor
 ```
 
-The baseline reproduces the original planner's offline grid example. It is separate from the Gazebo delivery mission. `doctor` reports the environment it observes; it does not install dependencies.
+`doctor` reports the environment it observes; it does not install dependencies.
+
+Optionally, reproduce the original WarehouseBot planner's offline grid results (greedy, hill climbing, simulated annealing). This fetches that repository at its pinned commit and is separate from the Gazebo delivery mission:
+
+```bash
+bash scripts/fetch_reference.sh
+python3 -B -m warehouse_agent baseline
+```
 
 ### 2. Prepare the simulation environment
 
@@ -267,7 +272,7 @@ Current limits include one robot, a known static map, fixed parcel destinations,
 
 ## Background and documentation
 
-This project builds on [WarehouseBot Pick-and-Drop Optimization](https://github.com/ApurvK032/WarehouseBot-Pick-and-Drop-Optimization), reusing its A* implementation at commit `f54b393847f7c4929846c0824dc5b4986bd8194b`. The reference is fetched separately into ignored `references/warehousebot/` and retains its upstream terms. See the [reference audit](docs/reference-audit.md) for the reuse boundary.
+This project builds on my earlier [WarehouseBot Pick-and-Drop Optimization](https://github.com/ApurvK032/WarehouseBot-Pick-and-Drop-Optimization). Its A* implementation is included unchanged in [warehouse_agent/astar.py](warehouse_agent/astar.py), copied from commit `f54b393847f7c4929846c0824dc5b4986bd8194b`. See the [reference audit](docs/reference-audit.md) for what was reused and what was adapted.
 
 - [MVP runbook](docs/mvp-runbook.md): operation, setup details, and troubleshooting.
 - [Visual guide](docs/stage1-visuals.md): station labels, cargo colors, and goal displays.
@@ -275,3 +280,7 @@ This project builds on [WarehouseBot Pick-and-Drop Optimization](https://github.
 - [Research survey](docs/related-work-survey.md) and [extension options](docs/extension-options.md): related work and directions to explore after the simulation MVP.
 
 The earlier [architecture](docs/architecture.md), [behavior contract](docs/behavior.md), and [research protocol](docs/research-protocol.md) describe broader planned capabilities. The implemented scope is the MVP documented here.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
