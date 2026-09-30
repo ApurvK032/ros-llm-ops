@@ -29,28 +29,25 @@ def main():
             time.sleep(0.05)
 
     def say(text, expected):
-        mission.language_pending = True
-        mission.record("language_requested", text=text, model=model.model)
+        request_id = mission.submit(text, model.model)
         future = executor.submit(model.interpret, text, mission.snapshot())
         until(future.done, timeout=125)
         intent, metrics = future.result()
-        mission.record("language_interpreted", intent=intent, **metrics)
-        print(f"{text} => {intent}", flush=True)
+        print(f"{request_id} {text} => {intent}", flush=True)
         if intent["operation"] != expected:
             raise AssertionError(f"Expected {expected}, got {intent}")
-        mission.apply(intent)
-        mission.language_pending = False
+        mission.resolve(request_id, intent, **metrics)
 
     try:
         say("Deliver all three parcels", "create")
         mission.tick()
         first = mission.active.parcel
         # Pause during a real active action and wait for terminal cancellation.
-        mission.apply({"operation": "pause", "parcels": []})
+        mission.command("pause")
         until(lambda: mission.active is None, timeout=20)
         assert mission.parcels[first].state == "awaiting_pickup"
         mission.record("check_passed", check="pause_acknowledged_without_pickup")
-        mission.apply({"operation": "resume", "parcels": []})
+        mission.command("resume")
         mission.tick()
         say(f"Cancel order {first}", "cancel")
         until(lambda: mission.active is None, timeout=20)

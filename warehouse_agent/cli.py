@@ -37,8 +37,7 @@ def run(args):
     model = LocalModel(args.model, args.endpoint)
     inbox = queue.Queue()
     executor = ThreadPoolExecutor(max_workers=1)
-    pending = None
-    pending_superseded = False
+    pending = request_id = None
     started = time.monotonic()
     demo_accepted = False
     print(f"Journal: {journal}", flush=True)
@@ -64,41 +63,36 @@ def run(args):
                 break
             if text:
                 if text in {"/status", "/pause", "/resume"}:
-                    if text == "/pause" and pending:
-                        pending_superseded = True
-                    print(json.dumps(mission.apply({"operation": text[1:], "parcels": []}), indent=2), flush=True)
-                elif pending:
+                    mission.command(text[1:])
+                    print(json.dumps(mission.snapshot(), indent=2), flush=True)
+                elif mission.pending_request:
                     print("Still interpreting the previous request. /pause and /status remain available.", flush=True)
                 else:
-                    mission.language_pending = True
-                    mission.record("language_requested", text=text, model=args.model)
+                    request_id = mission.submit(text, args.model)
                     pending = executor.submit(model.interpret, text, mission.snapshot())
-                    pending_superseded = False
-                    print("Interpreting locally…", flush=True)
+                    print(f"Interpreting {request_id} locally…", flush=True)
             if pending and pending.done():
+                intent = None
                 try:
-                    if pending_superseded:
-                        mission.record("request_superseded", reason="Direct pause took precedence over the pending model request")
-                        print("Pending request discarded after /pause.", flush=True)
-                        continue
                     intent, metrics = pending.result()
-                    mission.record("language_interpreted", intent=intent, **metrics)
-                    print("Request: " + json.dumps({"operation": intent["operation"], "parcels": intent["parcels"]}), flush=True)
-                    state = mission.apply(intent)
-                    if intent["operation"] == "status":
-                        print(json.dumps(state, indent=2), flush=True)
-                    demo_accepted = intent["operation"] == "create"
-                    if args.command and not demo_accepted:
-                        print("The command did not start a delivery mission.", flush=True)
-                        return 2
-                except Exception as exc:
-                    mission.fail_request(str(exc))
-                    print(f"Request failed; mission paused: {exc}", flush=True)
-                    if args.command:
-                        return 2
-                finally:
-                    pending = None
-                    mission.language_pending = False
+                except Exception as exc:  # Model unreachable, timed out, or returned an unsupported intent.
+                    outcome = mission.resolve(request_id, error=str(exc))
+                else:
+                    outcome = mission.resolve(request_id, intent, **metrics)
+                pending = None
+                if outcome == "superseded":
+                    print("Pending request discarded after /pause.", flush=True)
+                elif outcome == "failed":
+                    print(f"Request failed; mission paused: {mission.hold.message}", flush=True)
+                else:
+                    print("Request: " + json.dumps({"operation": intent["operation"], "parcels": intent["parcels"]}),
+                          flush=True)
+                    if outcome == "status":
+                        print(json.dumps(mission.snapshot(), indent=2), flush=True)
+                demo_accepted = outcome == "applied" and intent["operation"] == "create"
+                if args.command and not demo_accepted:
+                    print("The command did not start a delivery mission.", flush=True)
+                    return 2
             mission.tick()
             backend.publish_status(mission.snapshot())
             # In --command mode no operator can /resume a planning hold.

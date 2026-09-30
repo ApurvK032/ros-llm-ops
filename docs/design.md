@@ -73,6 +73,8 @@ Direct commands (`/pause`, `/resume`, `/status`, `/quit`) bypass the model and t
 | `status` | Returns the supervisor's snapshot, not the model's text | — |
 | `clarify` | Pauses the mission and asks the operator the model's question | — |
 
+Every request has an ID and ends in exactly one recorded outcome. Model requests are `R1, R2, …`: `submit()` records `language_requested` and raises the cargo fence, and `resolve()` ends the request as `request_superseded` (a `/pause` arrived first), `request_failed` (model error or rejected request), `status_reported`, `clarification_required`, or `instruction_applied`. Only one model request is interpreted at a time. Direct commands are `D1, D2, …`. The journal records the normalized command that was actually applied (for example, repeated parcel IDs collapsed), not the raw model output.
+
 Unknown parcel IDs are rejected before anything changes. A rejected or failed request (including a model error or timeout) pauses the mission and cancels the current goal, so nothing proceeds on an interpretation the supervisor could not accept.
 
 ## Execution loop
@@ -126,7 +128,7 @@ Every state change is appended to a JSONL journal under `artifacts/episodes/`, f
 | --- | --- |
 | `episode_started`, `episode_closed` | Supervisor start (with the full config) and shutdown |
 | `language_requested`, `language_interpreted` | Text sent to the model; intent returned, with model latency and token count |
-| `instruction_applied`, `request_failed`, `request_superseded`, `clarification_required` | Request outcomes |
+| `instruction_applied`, `status_reported`, `request_failed`, `request_superseded`, `clarification_required` | Request outcomes, each tagged with its request ID |
 | `plan_selected`, `navigation_started`, `navigation_cancel_requested`, `navigation_finished` | Planning and Nav2 goal lifecycle |
 | `cargo_pickup`, `cargo_drop` | Verified transfers, with the full arrival report and pose |
 | `navigation_retry`, `parcel_deferred`, `planning_failed` | Failures and holds |
@@ -138,7 +140,7 @@ The current snapshot is also published on `/warehouse/status` (transient local).
 
 Three layers check that the rules above actually hold:
 
-- **Independent journal checker** ([verify.py](../warehouse_agent/verify.py), `python3 -B -m warehouse_agent verify JOURNAL...`). It rebuilds the mission from the journal alone and checks every rule: ordering, one request and one goal at a time, the fence, plans covering exactly the owed stops, transfers only after a matching verified arrival and within tolerance, one retry before deferring, legal state changes, and the supervisor's own snapshots matching the replay. It shares no code with the supervisor, and it takes limits from each journal's recorded config, so it also checks journals from older versions.
+- **Independent journal checker** ([verify.py](../warehouse_agent/verify.py), `python3 -B -m warehouse_agent verify JOURNAL...`). It rebuilds the mission from the journal alone and checks every rule: ordering, one request and one goal at a time, exactly one outcome per request ID, normalized commands, the fence, plans covering exactly the owed stops, transfers only after a matching verified arrival and within tolerance, one retry before deferring, legal state changes, and the supervisor's own snapshots matching the replay. It shares no code with the supervisor, and it takes limits from each journal's recorded config, so it also checks journals from older versions.
 - **Property-based tests** ([test_properties.py](../tests/test_properties.py), Hypothesis). Hundreds of random sessions drive the real supervisor with operator requests (including malformed model output), pauses, Nav2 results on and off target, cancels racing arrivals, and the robot drifting into racks. Every snapshot and every final journal must pass the checker, and every uninterrupted mission must terminate.
 - **Mutation check** ([mutation_check.py](../scripts/mutation_check.py)). It plants realistic bugs in a scratch copy of the supervisor, such as skipping the arrival check or moving cargo after a cancel, and requires the property tests to catch every one.
 

@@ -20,7 +20,7 @@ KNOWN_EVENTS = {"episode_started", "episode_closed", "language_requested", "lang
                 "instruction_applied", "clarification_required", "request_failed", "request_superseded",
                 "plan_selected", "navigation_started", "navigation_cancel_requested", "navigation_finished",
                 "cargo_pickup", "cargo_drop", "navigation_retry", "parcel_deferred", "planning_failed",
-                "mission_finished", "check_passed"}
+                "mission_finished", "check_passed", "status_reported"}
 
 
 @dataclass
@@ -111,6 +111,9 @@ class Replay:
         self.arrival = None           # last navigation_finished not yet consumed by a transfer or failure
         self.plan = None              # stops of the last plan_selected
         self.request = None           # None, "requested" or "interpreted"
+        self.request_id = None        # ID of the pending model request, when the journal records IDs
+        self.request_ids = set()      # every model request ID seen
+        self.settled = set()          # model request IDs that already reached their one outcome
         self.retries = set()          # (parcel, kind) stops that already had a recorded retry
         self.closed = False
         self.previous = None
@@ -181,36 +184,70 @@ class Replay:
     def on_language_requested(self, e):
         if self.request:
             self.violation(e, "OVERLAPPING_REQUESTS", "a new request started before the previous one resolved")
-        self.request = "requested"
+        rid = e.get("request_id")
+        if rid is not None:
+            if rid in self.request_ids:
+                self.violation(e, "DUPLICATE_REQUEST_ID", f"request ID {rid} reused")
+            self.request_ids.add(rid)
+        self.request, self.request_id = "requested", rid
 
     def on_language_interpreted(self, e):
         if self.request != "requested":
             self.violation(e, "ORPHAN_INTERPRETATION", "interpretation without a pending request")
-        # A status request is read-only: interpreting it is its final outcome.
-        self.request = None if e.get("intent", {}).get("operation") == "status" else "interpreted"
+        elif e.get("request_id", self.request_id) != self.request_id:
+            self.violation(e, "REQUEST_ID_MISMATCH", f"interpretation for {e.get('request_id')} while "
+                                                     f"{self.request_id} is pending")
+        self.request = "interpreted"
+        # Older journals record no outcome for a read-only status request, so its interpretation ends it.
+        # Journals with request IDs record status_reported (or request_failed) instead.
+        if e.get("request_id") is None and e.get("intent", {}).get("operation") == "status":
+            self.conclude(e, after_interpretation=True)
 
-    def resolve(self):
-        if self.request == "interpreted":
-            self.request = None
+    def on_status_reported(self, e):
+        self.conclude(e, after_interpretation=True)
+
+    def conclude(self, e, after_interpretation):
+        """Record the one outcome of the pending model request, if this event is that outcome."""
+        rid = e.get("request_id")
+        if isinstance(rid, str) and rid.startswith("D"):
+            return  # A direct operator command, not the outcome of a model request.
+        if rid is None:  # Older journals carry no IDs: infer the outcome from the event order.
+            if not after_interpretation or self.request == "interpreted":
+                self.request = self.request_id = None
+            return
+        if rid in self.settled:
+            self.violation(e, "DUPLICATE_OUTCOME", f"{rid} already had its outcome")
+            return
+        if rid != self.request_id:
+            self.violation(e, "REQUEST_ID_MISMATCH", f"{e.get('type')} for {rid} while {self.request_id} is pending")
+            return
+        if after_interpretation and self.request != "interpreted":
+            self.violation(e, "REQUEST_NOT_INTERPRETED", f"{rid} was acted on before the model interpreted it")
+        self.settled.add(rid)
+        self.request = self.request_id = None
 
     def on_request_superseded(self, e):
         if not self.request:
             self.violation(e, "ORPHAN_OUTCOME", "request_superseded without a pending request")
-        self.request = None
+        self.conclude(e, after_interpretation=False)
 
     def on_request_failed(self, e):
-        self.request = None
+        self.conclude(e, after_interpretation=False)
         self.paused = True
 
     def on_clarification_required(self, e):
-        self.resolve()
+        self.conclude(e, after_interpretation=True)
         self.paused = True
 
     def on_instruction_applied(self, e):
-        self.resolve()
+        self.conclude(e, after_interpretation=True)
         intent = e.get("intent", {})
-        # A repeated ID in one instruction still refers to one parcel.
-        op, ids = intent.get("operation"), list(dict.fromkeys(intent.get("parcels", [])))
+        # A repeated ID in one instruction still refers to one parcel. Journals with request IDs record the
+        # normalized command that was applied, so repeats there mean the supervisor journaled the raw request.
+        raw = intent.get("parcels", [])
+        op, ids = intent.get("operation"), list(dict.fromkeys(raw))
+        if e.get("request_id") is not None and len(ids) != len(raw):
+            self.violation(e, "NON_NORMALIZED_INTENT", f"applied intent lists repeated parcels {raw}")
         for pid in ids:
             if pid not in self.parcels:
                 self.violation(e, "UNKNOWN_PARCEL", f"{op} applied to unknown parcel {pid}")
