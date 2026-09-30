@@ -1,11 +1,11 @@
 """Run the unchanged reference in a subprocess and verify its static routes."""
 
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import platform
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 REFERENCE_COMMIT = "f54b393847f7c4929846c0824dc5b4986bd8194b"
 
@@ -81,7 +81,7 @@ def reproduce(reference: Path) -> dict:
     smoke = _run([interpreter, "-B", "-m", "warehousebot.smoke_tests"], reference)
     experiment = json.loads(_run([interpreter, "-B", "-c", EXPERIMENT], reference))
     return {
-        "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+        "observed_at_utc": datetime.now(UTC).isoformat(),
         "reference_commit": commit,
         "python": platform.python_version(),
         "scenario": "original_static_8x8_three_parcels",

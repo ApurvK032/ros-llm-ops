@@ -3,8 +3,9 @@
 Each lit cell becomes two triangles. Labels face the demo camera and remain
 purely visual: there is no sensor or collision geometry.
 """
-from functools import lru_cache
 import math
+from functools import lru_cache
+
 from .capture_scene import CAMERA_POSITION
 
 _ROWS = {
@@ -65,7 +66,7 @@ def cells(text):
 
 def triangles(text, position, height):
     # Same initial viewpoint as capture_scene.py; keep labels legible in the demo.
-    dx, dy, dz = (a-b for a, b in zip(CAMERA_POSITION, position))
+    dx, dy, dz = (a-b for a, b in zip(CAMERA_POSITION, position, strict=True))
     horizontal, length = math.hypot(dx, dy), math.sqrt(dx*dx+dy*dy+dz*dz)
     right = (-dy/horizontal, dx/horizontal, 0)
     up = (-dz*dx/(length*horizontal), -dz*dy/(length*horizontal), horizontal/length)

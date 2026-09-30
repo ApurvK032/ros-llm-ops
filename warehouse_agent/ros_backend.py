@@ -9,15 +9,15 @@ class RosBackend:
 
     def __init__(self, world, initialize_pose=False):
         import rclpy
+        from geometry_msgs.msg import PoseWithCovarianceStamped
+        from lifecycle_msgs.srv import GetState
+        from nav2_msgs.action import NavigateToPose
         from rclpy.action import ActionClient
         from rclpy.node import Node
-        from rclpy.qos import QoSProfile, DurabilityPolicy, ReliabilityPolicy
         from rclpy.parameter import Parameter
-        from geometry_msgs.msg import PoseWithCovarianceStamped
-        from nav2_msgs.action import NavigateToPose
-        from tf2_ros import Buffer, TransformListener
+        from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
         from std_msgs.msg import String
-        from lifecycle_msgs.srv import GetState
+        from tf2_ros import Buffer, TransformListener
         self.rclpy, self.action_type = rclpy, NavigateToPose
         rclpy.init()
         self.node = Node("warehouse_agent", parameter_overrides=[Parameter("use_sim_time", value=True)])
@@ -131,6 +131,7 @@ class RosBackend:
 
     def publish_status(self, state):
         import json
+
         from std_msgs.msg import String
         self.status_pub.publish(String(data=json.dumps(state)))
 

@@ -1,13 +1,13 @@
 """Read-only observations, deliberately separate from simulation smoke tests."""
 
-from datetime import datetime, timezone
 import importlib.util
 import os
-from pathlib import Path
 import platform
 import shutil
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 
 def inspect_environment() -> dict:
@@ -32,7 +32,7 @@ def inspect_environment() -> dict:
     jazzy = Path("/opt/ros/jazzy/setup.bash").exists()
     tools = {name: shutil.which(name) for name in ("git", "ros2", "gz", "colcon", "docker")}
     return {
-        "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+        "observed_at_utc": datetime.now(UTC).isoformat(),
         "os": release.get("PRETTY_NAME"),
         "kernel": platform.release(),
         "python": platform.python_version(),

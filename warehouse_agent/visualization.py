@@ -1,12 +1,12 @@
 """Independent ROS visualization node; it has no robot command publisher."""
 
 import argparse
-from dataclasses import asdict
 import json
 import os
-from pathlib import Path
 import signal
 import time
+from dataclasses import asdict
+from pathlib import Path
 
 from .marker_transport import GazeboMarkers, ros_message
 from .visual_state import initial_state, project
@@ -17,7 +17,7 @@ def main():
     import rclpy
     from rclpy.node import Node
     from rclpy.parameter import Parameter
-    from rclpy.qos import QoSProfile, DurabilityPolicy, ReliabilityPolicy
+    from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
     from std_msgs.msg import String
     from visualization_msgs.msg import MarkerArray
     parser = argparse.ArgumentParser(description=__doc__)
@@ -43,11 +43,12 @@ def main():
             return
         state, received_at = candidate, time.monotonic()
 
-    subscription = node.create_subscription(String, "warehouse/status", receive, qos)
+    node.create_subscription(String, "warehouse/status", receive, qos)  # The node keeps it alive.
     gazebo = None if args.no_gazebo else GazeboMarkers()
     app = panel = None
     if args.panel:
         from PyQt5.QtWidgets import QApplication
+
         from .mission_panel import MissionPanel
         app = QApplication([])
         panel = MissionPanel(world)

@@ -1,9 +1,9 @@
 """Every approach must be reachable, face its parcel, and keep clear of it."""
 import math
-from pathlib import Path
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from warehouse_agent.planner import Planner
 from warehouse_agent.world import World
