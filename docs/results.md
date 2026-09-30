@@ -58,7 +58,7 @@ The original WarehouseBot planner on its static 8 × 8 three-parcel grid still r
 
 ## Automated tests
 
-76 unit tests plus property-based tests run without ROS, a GPU, or a model: mission behavior against a backend double, the state machines (every transition from every state), CLI control flow, visual state, warehouse geometry, start-cell snapping, A*, the request lifecycle, and the journal checker (8 scripted scenarios, 21 tampered journals). The Hypothesis property tests run 400 random sessions of up to 80 steps and 150 liveness runs. CI runs everything on Python 3.12 (ROS 2 Jazzy's interpreter) and 3.14 for every pull request, along with lint. Gazebo runs are not part of CI yet.
+76 unit tests plus property-based tests run without ROS, a GPU, or a model: mission behavior against a backend double, the state machines (every transition from every state), CLI control flow, visual state, warehouse geometry, start-cell snapping, A*, the request lifecycle, and the journal checker (8 scripted scenarios, 21 tampered journals). The Hypothesis property tests run 400 random sessions of up to 80 steps and 150 liveness runs. CI runs everything on Python 3.12 (ROS 2 Jazzy's interpreter) and 3.14 for every pull request, along with lint, and builds the ROS 2 workspace with colcon in a Jazzy container, where the typed-message tests run against real supervisor snapshots. Gazebo runs are not part of CI yet.
 
 **Journal checker on real runs:** all 21 recorded Gazebo journals pass (the 7 committed here plus 14 local development runs, including 3 runs with retries and 8 deferrals).
 

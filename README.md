@@ -191,8 +191,9 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 | [warehouse_agent/ros_backend.py](warehouse_agent/ros_backend.py) | Nav2 goals, cancellation, measured pose, and status topic |
 | [warehouse_agent/visualization.py](warehouse_agent/visualization.py) | RViz and Gazebo markers and the mission panel |
 | [warehouse_agent/cli.py](warehouse_agent/cli.py) | Operator loop and direct controls |
+| [ros_ws/src/warehouse_interfaces](ros_ws/src/warehouse_interfaces) | Typed ROS 2 messages, services, and the ApproachAndVerify action |
 | [sim/](sim/), [scripts/](scripts/) | Launch configuration, Gazebo marker helper, installers, and launchers |
-| [tests/](tests/) | Unit and property-based tests (no ROS required) |
+| [tests/](tests/), [tests_ros/](tests_ros/) | Unit and property-based tests (no ROS required); tests against the built ROS messages |
 | [docs/](docs/) | Design, results, guides, and recorded evidence |
 
 ## Roadmap

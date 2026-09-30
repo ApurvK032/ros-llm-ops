@@ -2,6 +2,8 @@
 set -eo pipefail
 cd "$(dirname "$0")/.."
 source /opt/ros/jazzy/setup.bash
+bash scripts/build_ros_ws.sh
+source ros_ws/install/setup.bash
 export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-42}"
 exec 9>"/tmp/warehouse-sim-${UID}-${ROS_DOMAIN_ID}.lock"
 if ! flock -n 9; then

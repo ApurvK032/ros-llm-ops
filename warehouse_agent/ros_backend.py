@@ -32,6 +32,13 @@ class RosBackend:
         self.subscription = self.node.create_subscription(PoseWithCovarianceStamped, "amcl_pose", self.on_pose, qos)
         self.initial = self.node.create_publisher(PoseWithCovarianceStamped, "initialpose", 10)
         self.status_pub = self.node.create_publisher(String, "warehouse/status", qos)
+        try:  # Typed status needs the colcon workspace (ros_ws); JSON status keeps older viewers working.
+            from warehouse_interfaces.msg import MissionStatus
+            self.typed_status_pub = self.node.create_publisher(MissionStatus, "warehouse/mission_status", qos)
+        except ImportError:
+            self.typed_status_pub = None
+            print("warehouse_interfaces is not built; publishing JSON status only (run scripts/build_ros_ws.sh).",
+                  flush=True)
         self.timeout = world.config["navigation_timeout"]
         self.goal_future = self.result_future = self.goal_handle = None
         self.cancel_pending = self.cancel_sent = False
@@ -134,6 +141,9 @@ class RosBackend:
 
         from std_msgs.msg import String
         self.status_pub.publish(String(data=json.dumps(state)))
+        if self.typed_status_pub is not None:
+            from .ros_messages import status_message
+            self.typed_status_pub.publish(status_message(state, self.node.get_clock().now().to_msg()))
 
     def close(self):
         self.node.destroy_node()

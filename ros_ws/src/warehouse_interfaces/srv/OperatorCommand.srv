@@ -1,0 +1,11 @@
+# Direct operator control that bypasses the language model. A pause supersedes a pending request.
+
+string COMMAND_PAUSE=pause
+string COMMAND_RESUME=resume
+string COMMAND_STATUS=status
+
+string command
+---
+bool accepted
+string request_id              # e.g. D2
+string message
