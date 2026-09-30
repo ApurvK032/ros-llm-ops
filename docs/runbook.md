@@ -85,6 +85,14 @@ If ROS discovery commands show only `/rosout`, check `ROS_DOMAIN_ID=42` and use 
 
 The launcher now resets inherited background interrupt handling, signals the ROS launch parent, and removes any remaining GUI subprocess. Startup followed by `/quit` exits with code 0 and leaves no simulator processes. Gazebo, RViz and the Nav2 container still report native shutdown errors on this WSL setup. This is a known unresolved integration issue; it occurs after the successful mission results. The [recorded launcher checks](evidence/mvp-results.json) summarize the outcome. Raw logs with local environment details are kept out of the public repository.
 
+## Nav2 bringup can abort on a cold start
+
+On this WSL setup the Ubuntu-24.04 distribution stops when idle, so a launch after a pause starts cold. In one such launch, Nav2's `lifecycle_manager_navigation` gave up while `bt_navigator` was still loading its behavior-tree plugins ("Failed to change state for node: bt_navigator … Aborting bringup"). The supervisor then waits 120 s and exits with `Nav2/localization not ready`. The next launch came up normally. If this happens, check `artifacts/simulation.log` for "Aborting bringup" and relaunch. Making the supervisor detect and recover from this automatically is planned with the ROS 2 packaging work.
+
+## WSL interop can disappear
+
+When a WSL distribution stops, Windows executables such as `wsl.exe` can fail from the other distribution with "Exec format error". `scripts/wsl.sh` detects this and falls back to WSL's `/init` launcher; to call `wsl.exe` by hand in that state, use `/init /mnt/c/Windows/System32/wsl.exe /mnt/c/Windows/System32/wsl.exe …`.
+
 ## Scope
 
 Current limitations are listed in the [design doc](design.md#known-limitations), and planned work in the [README roadmap](../README.md#roadmap). The [archived planning documents](archive/README.md) are proposals from before the build, not descriptions of the current system.

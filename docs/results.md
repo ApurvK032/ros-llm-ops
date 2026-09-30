@@ -21,6 +21,22 @@ The ground-truth figures come from a read-only observer that compared each state
 
 Evidence: [results](evidence/maze/results.json) · [journal](evidence/maze/delivery.jsonl) · [notes](evidence/maze/README.md) · [before](evidence/maze/maze-ready.png) / [after](evidence/maze/maze-delivered.png)
 
+### Re-run after the correctness-core refactor (30 September 2026)
+
+The same mission ran headless (no GUI) on the refactored supervisor (explicit state machines, request IDs) to confirm the changes on the real stack, not only against the test double:
+
+| Measure | Result |
+| --- | --- |
+| Outcome | Complete: 3 pickups, 3 drops, 6/6 Nav2 goals, no retries; launcher exit 0 |
+| Time after the intent was accepted | 124.1 s |
+| Model interpretation time | 5.6 s |
+| Largest approach-position error at transfer, supervisor's TF pose | 0.088 m (limit 0.20 m) |
+| Largest facing error | 0.057 rad (limit 0.25 rad) |
+| Smallest conservative parcel clearance | 0.486 m (minimum 0.20 m) |
+| Journal checker | 0 violations, 0 warnings; request R1 requested → interpreted → applied |
+
+The first launch attempt that day failed before any mission started: Nav2 aborted its own bringup on a cold start (see the [runbook](runbook.md#nav2-bringup-can-abort-on-a-cold-start)). It is reported here rather than omitted. Evidence: [journal](evidence/maze/post-m1-delivery.jsonl).
+
 ## Original 10 × 8 m warehouse
 
 These runs used the earlier, smaller layout and a position-only arrival check (0.35 m tolerance), so they are not directly comparable with the current layout.
@@ -44,7 +60,7 @@ The original WarehouseBot planner on its static 8 × 8 three-parcel grid still r
 
 76 unit tests plus property-based tests run without ROS, a GPU, or a model: mission behavior against a backend double, the state machines (every transition from every state), CLI control flow, visual state, warehouse geometry, start-cell snapping, A*, the request lifecycle, and the journal checker (8 scripted scenarios, 21 tampered journals). The Hypothesis property tests run 400 random sessions of up to 80 steps and 150 liveness runs. CI runs everything on Python 3.12 (ROS 2 Jazzy's interpreter) and 3.14 for every pull request, along with lint. Gazebo runs are not part of CI yet.
 
-**Journal checker on real runs:** all 20 recorded Gazebo journals pass (the 6 committed here plus 14 local development runs, including 3 runs with retries and 8 deferrals).
+**Journal checker on real runs:** all 21 recorded Gazebo journals pass (the 7 committed here plus 14 local development runs, including 3 runs with retries and 8 deferrals).
 
 **Mutation check:** 8 of 8 planted supervisor bugs are caught by the property tests, each by the rule it breaks (`scripts/mutation_check.py`).
 
