@@ -1,15 +1,17 @@
 # Implementation backlog
 
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
 ## Current incremental demo stages — 8 September 2026
 
-- [x] Stage 1: labeled stations, cargo visuals, current-goal highlight and read-only mission panel. [Implementation and evidence](stage1-visuals.md).
+- [x] Stage 1: labeled stations, cargo visuals, current-goal highlight and read-only mission panel. [Implementation and evidence](../visuals.md).
 - [ ] Stage 2: operator interface for submitting instructions, pausing/resuming and viewing command feedback.
 - [ ] Stage 3: startup/shutdown cleanup and dependable everyday launch behavior.
 - [ ] Stage 4: repeatable delivery/update/failure scenarios and measured evaluation.
 
 The stages below preserve the earlier research-oriented plan; they do not replace this agreed incremental order.
 
-> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](mvp-runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
+> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](../runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
 
 Confirmed priority: working robotics portfolio demo, then research. There is no deadline. Use milestone finish checks; estimates describe focused engineering effort and should be revised after the first two gates.
 

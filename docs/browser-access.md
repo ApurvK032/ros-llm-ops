@@ -82,6 +82,6 @@ Validation on 8 September 2026:
 - All three parcels were delivered across six successful navigation goals in **63.171 seconds after intent acceptance**; the browser reported no JavaScript errors.
 - The stop command removed the owned simulator, terminal, virtual desktop, gateway and model processes.
 
-See the [results](evidence/browser/browser-test.json) and [mission journal](evidence/browser/delivery.jsonl). Browser desktop captures containing local paths are excluded from the public repository; the [visual guide](stage1-visuals.md) links clean application captures. These are development checks, not a reliability or streaming-performance benchmark. The existing native ROS/Gazebo shutdown diagnostics remain documented in the [runbook](mvp-runbook.md#remaining-shutdown-issue).
+See the [results](evidence/browser/browser-test.json) and [mission journal](evidence/browser/delivery.jsonl). Browser desktop captures containing local paths are excluded from the public repository; the [visual guide](visuals.md) links clean application captures. These are development checks, not a reliability or streaming-performance benchmark. The existing native ROS/Gazebo shutdown diagnostics remain documented in the [runbook](runbook.md#remaining-shutdown-issue).
 
 Primary references: [noVNC deployment and URL options](https://novnc.com/noVNC/docs/EMBEDDING.html), [TigerVNC virtual server and access options](https://tigervnc.org/doc/Xvnc.html), [websockify](https://github.com/novnc/websockify), [OpenSSH port forwarding](https://man.openbsd.org/ssh).

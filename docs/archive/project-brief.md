@@ -1,6 +1,8 @@
 # Project brief
 
-> The simulation-first MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and the [runbook](mvp-runbook.md); this brief preserves the earlier planning assumptions.
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
+> The simulation-first MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and the [runbook](../runbook.md); this brief preserves the earlier planning assumptions.
 
 ## Assessment
 

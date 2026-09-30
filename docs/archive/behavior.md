@@ -1,6 +1,8 @@
 # Behavior contract — draft v0.1
 
-> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](mvp-runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
+> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](../runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
 
 These are proposed implementation rules. No mission behavior is implemented yet. The examples in `scenarios/development.json` are acceptance specifications, not executed scenarios.
 
