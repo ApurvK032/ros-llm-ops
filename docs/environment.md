@@ -6,14 +6,14 @@ This guide describes reproducible software setup. Personal account names, workst
 
 ## Core development
 
-From a checkout with Python 3.12+ and Git:
+From a checkout with Python 3.12+:
 
 ```bash
-bash scripts/fetch_reference.sh
 python3 -B -m unittest discover -s tests -v
-python3 -B -m warehouse_agent baseline
 python3 -B -m warehouse_agent doctor
 ```
+
+To reproduce the original WarehouseBot offline planner results, also run `bash scripts/fetch_reference.sh` and `python3 -B -m warehouse_agent baseline` (needs Git and internet access).
 
 The optional `bash scripts/bootstrap_core.sh` creates a dependency-free core virtual environment. ROS launch scripts should use Ubuntu 24.04's system Python so that apt-installed ROS packages remain importable.
 

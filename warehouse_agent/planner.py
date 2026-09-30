@@ -1,9 +1,9 @@
-"""Reuse WarehouseBot A*; greedy sequencing respects live cargo and priority."""
+"""WarehouseBot A* travel costs; greedy sequencing respects live cargo and priority."""
 
 from dataclasses import dataclass, asdict
-import importlib.util
 import math
-from .world import ROOT
+
+from .astar import a_star
 
 
 @dataclass(frozen=True)
@@ -23,13 +23,6 @@ class PlanningError(ValueError):
 class Planner:
     def __init__(self, world):
         self.world = world
-        path = ROOT / "references/warehousebot/warehousebot/astar.py"
-        if not path.exists():
-            raise RuntimeError("Run scripts/fetch_reference.sh to fetch the pinned WarehouseBot planner")
-        spec = importlib.util.spec_from_file_location("warehousebot_astar", path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        self.astar = module.a_star
         self.cache = {}
 
     def distance(self, a, b):
@@ -38,7 +31,7 @@ class Planner:
             return math.inf
         key = (start, self.world.cell(b))
         if key not in self.cache:
-            self.cache[key] = self.astar(self.world.grid, *key)["cost"] * self.world.resolution
+            self.cache[key] = a_star(self.world.grid, *key)["cost"] * self.world.resolution
         return offset+self.cache[key]
 
     def plan(self, parcels, pose, priority=None, onboard_first=()):

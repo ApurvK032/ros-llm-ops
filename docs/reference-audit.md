@@ -1,17 +1,17 @@
 # WarehouseBot reference audit
 
-Source: [WarehouseBot-Pick-and-Drop-Optimization](https://github.com/ApurvK032/WarehouseBot-Pick-and-Drop-Optimization). Downloaded 7 September 2026 at commit `f54b393847f7c4929846c0824dc5b4986bd8194b`. The checkout is kept separately under `references/warehousebot/`, ignored by the new repository, and has no source modifications.
+Source: [WarehouseBot-Pick-and-Drop-Optimization](https://github.com/ApurvK032/WarehouseBot-Pick-and-Drop-Optimization), my earlier coursework project, at commit `f54b393847f7c4929846c0824dc5b4986bd8194b`. Its A* module is included unchanged as [warehouse_agent/astar.py](../warehouse_agent/astar.py). The full repository is only needed for the optional baseline reproduction below; `scripts/fetch_reference.sh` clones it into the ignored `references/warehousebot/`.
 
-## What is reusable
+## What was reused
 
-| Module | Reuse plan |
+| Module | Use in this project |
 | --- | --- |
-| `astar.py` | Grid path/cost calculation; retain coordinate and obstacle semantics |
-| `cost_matrix.py` | Distance estimates between current remaining stops |
-| `warehouse.py` | Baseline fixtures; use explicit stable parcel IDs in the new application |
-| `sequencing.py` | Greedy/local-search ideas and baseline comparison; adapt dependency handling |
-| `evaluation.py` | Selected experiment utilities after checking failure accounting |
-| `smoke_tests.py` | Original regression smoke checks, preserved unchanged |
+| `astar.py` | Included unchanged as `warehouse_agent/astar.py` for task-level travel-cost estimates |
+| `cost_matrix.py` | Not included; the planner computes and caches A* costs between the stops it needs |
+| `warehouse.py` | Used only by the baseline reproduction |
+| `sequencing.py` | Not included at runtime; `warehouse_agent/planner.py` implements greedy sequencing over live remaining stops with prerequisite sets. Hill climbing and simulated annealing run only in the baseline reproduction |
+| `evaluation.py` | Not used |
+| `smoke_tests.py` | Run unchanged by the baseline reproduction |
 
 Inspection found that the core, smoke tests, and evaluation module use the standard library. Visualization dependencies can be deferred.
 
@@ -25,8 +25,8 @@ Inspection found that the core, smoke tests, and evaluation module use the stand
 
 ## Reproduction scope
 
-Run `.venv/bin/python -m warehouse_agent baseline`. The wrapper refuses a different or dirty reference commit, runs all three original smoke tests, and runs the original static three-parcel instance with recorded settings. It independently checks the expected complete stop set, pickup/drop order, and finite route distance.
+Run `bash scripts/fetch_reference.sh`, then `python3 -B -m warehouse_agent baseline`. The wrapper refuses a different or dirty reference commit, runs all three original smoke tests, and runs the original static three-parcel instance with recorded settings. It independently checks the expected complete stop set, pickup/drop order, and finite route distance.
 
 The saved evidence is in `docs/evidence/baseline.json`; runtime output goes to `artifacts/baseline/static.json`. Timings describe a single local run, not a benchmark. No prior percentage-improvement claims, full plot collection, or full report results have been independently reproduced in this task.
 
-The reference README states academic coursework use. Preserve its attribution and existing terms; this starter does not assign a new license to the reference code. Select release licensing and record robot/model asset terms when packaging a public release.
+Both projects have the same author. The included A* code is distributed under this repository's MIT [license](../LICENSE). Robot models and other simulation assets come from their installed ROS packages under their own terms.
