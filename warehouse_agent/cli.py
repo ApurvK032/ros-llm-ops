@@ -11,6 +11,7 @@ from pathlib import Path
 
 from .language import LocalModel
 from .mission import Mission
+from .state import Disposition, HoldKind
 from .world import ROOT, World
 
 
@@ -91,9 +92,7 @@ def run(args):
                         print("The command did not start a delivery mission.", flush=True)
                         return 2
                 except Exception as exc:
-                    mission.paused = True
-                    mission.cancel_motion()
-                    mission.record("request_failed", error=str(exc))
+                    mission.fail_request(str(exc))
                     print(f"Request failed; mission paused: {exc}", flush=True)
                     if args.command:
                         return 2
@@ -103,11 +102,11 @@ def run(args):
             mission.tick()
             backend.publish_status(mission.snapshot())
             # In --command mode no operator can /resume a planning hold.
-            if args.command and mission.hold_reason:
+            if args.command and mission.hold and mission.hold.kind is HoldKind.NO_ROUTE:
                 print("Mission held: no route from the current pose; exiting.", flush=True)
                 return 1
             if args.command and demo_accepted and mission.completed_reported:
-                return 0 if all(p["disposition"] != "deferred" for p in mission.parcels.values()) else 1
+                return 0 if all(p.disposition is not Disposition.DEFERRED for p in mission.parcels.values()) else 1
             if args.command and time.monotonic()-started > args.timeout:
                 print("Demo timed out; cancelling navigation.", flush=True)
                 return 1

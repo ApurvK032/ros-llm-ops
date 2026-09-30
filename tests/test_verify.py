@@ -171,7 +171,7 @@ class ScriptedRunTests(unittest.TestCase):
         self.tick("cancelled")
         self.apply("resume")
         self.tick()
-        self.assertTrue(self.mission.hold_reason)
+        self.assertEqual(self.mission.hold.kind, "no_route")
         self.backend.pose = list(self.world.waypoints["HOME"])
         self.apply("resume")
         self.tick()
@@ -327,7 +327,8 @@ class SnapshotRuleTests(unittest.TestCase):
         self.assertFlags("ACTIVE_STOP_INCONSISTENT", lambda s: s["parcels"][active].update(state="delivered"))
         self.assertFlags("ACTIVE_STOP_INCONSISTENT", lambda s: s["parcels"][active].update(disposition="cancelled"))
         self.assertFlags("FINISHED_FLAG_WRONG", lambda s: s.update(finished=True))
-        self.assertFlags("HOLD_NOT_PAUSED", lambda s: s.update(hold_reason="No route"))
+        self.assertFlags("HOLD_MISMATCH", lambda s: s.update(hold={"kind": "no_route", "message": "No route"}))
+        self.assertFlags("HOLD_MISMATCH", lambda s: s.update(paused=True))
 
 
 if __name__ == "__main__":

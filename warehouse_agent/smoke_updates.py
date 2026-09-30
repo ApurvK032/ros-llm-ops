@@ -48,22 +48,22 @@ def main():
         # Pause during a real active action and wait for terminal cancellation.
         mission.apply({"operation": "pause", "parcels": []})
         until(lambda: mission.active is None, timeout=20)
-        assert mission.parcels[first]["state"] == "awaiting_pickup"
+        assert mission.parcels[first].state == "awaiting_pickup"
         mission.record("check_passed", check="pause_acknowledged_without_pickup")
         mission.apply({"operation": "resume", "parcels": []})
         mission.tick()
         say(f"Cancel order {first}", "cancel")
         until(lambda: mission.active is None, timeout=20)
-        assert mission.parcels[first]["state"] == "awaiting_pickup"
-        assert mission.parcels[first]["disposition"] == "cancelled"
+        assert mission.parcels[first].state == "awaiting_pickup"
+        assert mission.parcels[first].disposition == "cancelled"
         mission.record("check_passed", check="model_cancel_during_navigation", parcel=first)
         preferred = next(pid for pid in mission.parcels if pid != first)
         say(f"Make {preferred} the highest priority", "prioritize")
         say("What are you carrying?", "status")
-        until(lambda: any(p["state"] == "onboard" for p in mission.parcels.values()))
+        until(lambda: any(p.state == "onboard" for p in mission.parcels.values()))
         say("Deliver the parcels already onboard first", "onboard_first")
         until(lambda: mission.completed_reported)
-        assert all(p["state"] == "delivered" for pid, p in mission.parcels.items() if pid != first)
+        assert all(p.state == "delivered" for pid, p in mission.parcels.items() if pid != first)
         mission.record("check_passed", check="live_updates_complete", state=mission.snapshot())
         print("LIVE UPDATE CHECK PASSED", flush=True)
     finally:

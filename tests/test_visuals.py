@@ -4,7 +4,8 @@ import unittest
 
 import test_mission as fixtures
 
-from warehouse_agent.visual_state import COLORS, parcel_label, project
+from warehouse_agent.state import HoldKind
+from warehouse_agent.visual_state import COLORS, HOLD_LABELS, mission_label, parcel_label, project
 
 
 class VisualTests(unittest.TestCase):
@@ -32,12 +33,20 @@ class VisualTests(unittest.TestCase):
         self.assertEqual(self.cube("P1").position, self.world.station_position("DROP_A"))
         self.assertEqual(self.cube("P1").color, COLORS["delivered"])
 
+    def test_mission_label_explains_each_hold(self):
+        base = self.mission.snapshot()
+        for kind, label in HOLD_LABELS.items():
+            with self.subTest(kind=kind):
+                state = {**base, "paused": True, "hold": {"kind": kind, "message": "x"}}
+                self.assertEqual(mission_label(state), label)
+        self.assertEqual(HOLD_LABELS.keys(), {str(k) for k in HoldKind})
+
     def test_cancelled_parcel_remains_at_pickup(self):
         self.start(["P1"])
         self.mission.apply({"operation": "cancel", "parcels": ["P1"]})
         self.assertEqual(self.cube("P1").position, self.world.station_position("PICK_A"))
         self.assertEqual(self.cube("P1").color, COLORS["cancelled"])
-        self.assertEqual(parcel_label(self.mission.parcels["P1"]), "Cancelled · waiting")
+        self.assertEqual(parcel_label(self.mission.snapshot()["parcels"]["P1"]), "Cancelled · waiting")
 
     def test_deferred_onboard_cargo_stays_on_robot(self):
         self.start(["P1"])
@@ -46,7 +55,7 @@ class VisualTests(unittest.TestCase):
         for _ in range(2):
             self.backend.result = "failed"
             self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+        self.assertEqual(self.mission.parcels["P1"].state, "onboard")
         self.assertEqual(self.cube("P1").position[:2], tuple(self.backend.pose[:2]))
         self.assertEqual(self.cube("P1").color, COLORS["deferred"])
 

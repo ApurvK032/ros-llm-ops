@@ -68,7 +68,7 @@ class MissionTests(unittest.TestCase):
             self.backend.arrive()
             self.mission.tick()
         self.assertTrue(self.mission.finished)
-        self.assertTrue(all(p["state"] == "delivered" for p in self.mission.parcels.values()))
+        self.assertTrue(all(p.state == "delivered" for p in self.mission.parcels.values()))
         cargo = [e for e in self.events if e["type"].startswith("cargo_")]
         for pid in self.mission.parcels:
             self.assertEqual([e["type"] for e in cargo if e["parcel"] == pid], ["cargo_pickup", "cargo_drop"])
@@ -77,7 +77,7 @@ class MissionTests(unittest.TestCase):
         self.start(["P1"])
         self.backend.result = "succeeded"
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertEqual(self.mission.parcels["P1"].state, "awaiting_pickup")
 
     def test_success_at_approach_facing_away_does_not_pick_up(self):
         self.start(["P1"])
@@ -85,11 +85,11 @@ class MissionTests(unittest.TestCase):
         self.backend.pose = [*target[:2], target[2]+math.pi]
         self.backend.result = "succeeded"
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertEqual(self.mission.parcels["P1"].state, "awaiting_pickup")
         self.assertFalse(any(e["type"] == "cargo_pickup" for e in self.events))
         self.backend.arrive()
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+        self.assertEqual(self.mission.parcels["P1"].state, "onboard")
 
     def test_overlapping_parcel_does_not_pick_up_even_with_loose_position_tolerance(self):
         self.start(["P1"])
@@ -99,7 +99,7 @@ class MissionTests(unittest.TestCase):
         self.backend.result = "succeeded"
         # This synthetic pose is inside a rack; retry planning holds instead of dispatching.
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertEqual(self.mission.parcels["P1"].state, "awaiting_pickup")
         self.assertFalse(any(e["type"] == "cargo_pickup" for e in self.events))
         retry = next(e for e in self.events if e["type"] == "navigation_retry")
         self.assertLess(retry["arrival"]["parcel_clearance"], 0)
@@ -138,7 +138,7 @@ class MissionTests(unittest.TestCase):
         self.assertIsNone(self.mission.active)
         self.assertEqual(self.backend.dispatched, dispatched)
         self.assertEqual(self.mission.parcels, cargo)
-        self.assertEqual(cargo["P1"]["state"], "onboard")
+        self.assertEqual(cargo["P1"].state, "onboard")
         journal = [json.loads(line) for line in (Path(self.tmp.name)/"episode.jsonl").read_text().splitlines()]
         failed = [e for e in journal if e["type"] == "planning_failed"]
         self.assertEqual(len(failed), 1)
@@ -155,9 +155,9 @@ class MissionTests(unittest.TestCase):
         self.mission.apply({"operation": "resume", "parcels": []})
         self.mission.tick()
         self.assertFalse(self.mission.paused)
-        self.assertIsNone(self.mission.hold_reason)
+        self.assertIsNone(self.mission.hold)
         self.assertEqual(self.backend.dispatched, dispatched+1)
-        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+        self.assertEqual(self.mission.parcels["P1"].state, "onboard")
 
     def test_drop_requires_facing_the_delivery_station(self):
         self.start(["P1"])
@@ -166,7 +166,7 @@ class MissionTests(unittest.TestCase):
         self.backend.pose = [*self.backend.target[:2], math.pi]
         self.backend.result = "succeeded"
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
+        self.assertEqual(self.mission.parcels["P1"].state, "onboard")
         self.backend.arrive()
         self.mission.tick()
         drop = next(e for e in self.events if e["type"] == "cargo_drop")
@@ -182,7 +182,7 @@ class MissionTests(unittest.TestCase):
         # A success racing with cancel is still only arrival, never pickup.
         self.backend.arrive()
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertEqual(self.mission.parcels["P1"].state, "awaiting_pickup")
         self.mission.tick()
         self.assertEqual(self.mission.active.parcel, "P2")
 
@@ -191,11 +191,11 @@ class MissionTests(unittest.TestCase):
         self.mission.language_pending = True
         self.backend.arrive()
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["state"], "awaiting_pickup")
+        self.assertEqual(self.mission.parcels["P1"].state, "awaiting_pickup")
         self.mission.apply({"operation": "cancel", "parcels": ["P1"]})
         self.mission.language_pending = False
         self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["disposition"], "cancelled")
+        self.assertEqual(self.mission.parcels["P1"].disposition, "cancelled")
         self.assertFalse(any(e["type"] == "cargo_pickup" for e in self.events))
 
     def test_onboard_cancel_holds_and_preserves_cargo(self):
@@ -204,15 +204,38 @@ class MissionTests(unittest.TestCase):
         self.mission.tick()
         self.mission.apply({"operation": "cancel", "parcels": ["P1"]})
         self.assertTrue(self.mission.paused)
-        self.assertEqual(self.mission.parcels["P1"]["state"], "onboard")
-        self.assertEqual(self.mission.parcels["P1"]["disposition"], "active")
+        self.assertEqual(self.mission.parcels["P1"].state, "onboard")
+        self.assertEqual(self.mission.parcels["P1"].disposition, "active")
+
+    def test_mixed_cancel_with_onboard_cargo_cancels_nothing_and_says_so(self):
+        self.start(["P1", "P2"])
+        self.backend.arrive()
+        self.mission.tick()
+        onboard = next(pid for pid, p in self.mission.parcels.items() if p.state == "onboard")
+        waiting = next(pid for pid in ("P1", "P2") if pid != onboard)
+        self.mission.apply({"operation": "cancel", "parcels": [waiting, onboard]})
+        self.assertEqual(self.mission.hold.kind, "clarification")
+        self.assertEqual({p.disposition for p in self.mission.parcels.values() if p.id in ("P1", "P2")}, {"active"})
+        question = next(e for e in self.events if e["type"] == "clarification_required")["question"]
+        self.assertIn(f"{onboard} is onboard, so nothing was cancelled", question)
+        self.assertIn(f"resend the cancel for {waiting}", question)
+
+    def test_every_pause_has_a_reason(self):
+        self.start(["P1"])
+        self.mission.apply({"operation": "pause", "parcels": []})
+        self.assertEqual(self.mission.hold.kind, "operator")
+        self.mission.apply({"operation": "resume", "parcels": []})
+        self.assertIsNone(self.mission.hold)
+        self.mission.fail_request("model timed out")
+        self.assertEqual((self.mission.hold.kind, self.mission.hold.message), ("request_failed", "model timed out"))
+        self.assertEqual(self.events[-1]["type"], "request_failed")
 
     def test_two_failures_defer_and_continue(self):
         self.start(["P1", "P2"])
         for _ in range(2):
             self.backend.result = "failed"
             self.mission.tick()
-        self.assertEqual(self.mission.parcels["P1"]["disposition"], "deferred")
+        self.assertEqual(self.mission.parcels["P1"].disposition, "deferred")
         self.assertEqual(self.mission.active.parcel, "P2")
 
     def test_priority_preserves_all_obligations(self):
@@ -224,7 +247,7 @@ class MissionTests(unittest.TestCase):
 
     def test_onboard_first_overrides_priority(self):
         self.mission.apply({"operation": "create", "parcels": ["P1", "P2", "P3"]})
-        self.mission.parcels["P1"]["state"] = "onboard"
+        self.mission.parcels["P1"].apply("pick_up")
         route, _ = self.mission.planner.plan(self.mission.parcels, self.backend.pose, "P3", {"P1"})
         self.assertEqual((route[0].parcel, route[0].kind), ("P1", "drop"))
         self.assertEqual(len(route), 5)
@@ -232,7 +255,7 @@ class MissionTests(unittest.TestCase):
     def test_unknown_ids_do_not_start_mission(self):
         with self.assertRaises(ValueError):
             self.mission.apply({"operation": "create", "parcels": ["P1", "P99"]})
-        self.assertEqual(self.mission.parcels["P1"]["disposition"], "inactive")
+        self.assertEqual(self.mission.parcels["P1"].disposition, "inactive")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import math
 from dataclasses import asdict, dataclass
 
 from .astar import a_star
+from .state import Physical
 
 
 @dataclass(frozen=True)
@@ -37,12 +38,12 @@ class Planner:
     def plan(self, parcels, pose, priority=None, onboard_first=()):
         remaining = []
         for pid, parcel in parcels.items():
-            if parcel["disposition"] != "active" or parcel["state"] == "delivered":
+            if not parcel.open:
                 continue
-            if parcel["state"] == "awaiting_pickup":
-                remaining.append(Stop(pid, "pickup", parcel["pickup"]))
-            remaining.append(Stop(pid, "drop", parcel["drop"]))
-        onboard = {pid for pid, p in parcels.items() if p["state"] == "onboard"}
+            if parcel.state is Physical.AWAITING_PICKUP:
+                remaining.append(Stop(pid, "pickup", parcel.pickup))
+            remaining.append(Stop(pid, "drop", parcel.drop))
+        onboard = {pid for pid, p in parcels.items() if p.state is Physical.ONBOARD}
         route, total = [], 0.0
         while remaining:
             eligible = [s for s in remaining if s.kind == "pickup" or s.parcel in onboard]
