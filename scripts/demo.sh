@@ -46,8 +46,8 @@ if ! curl --max-time 2 --silent --fail http://127.0.0.1:11434/api/tags >/dev/nul
   done
 fi
 if ! ollama show qwen3.5:4b >/dev/null 2>&1; then ollama pull qwen3.5:4b; fi
-# Nav2 can abort its own bringup when a lifecycle service call times out; on WSL2 this coincides with the
-# VM clock being stepped by ~30 s. Nothing has happened yet at that point, so restart the simulation.
+# Nav2 can abort its own bringup when a lifecycle service call times out; on WSL2 kernels before 6.18.35.2 this
+# follows ~30 s wall-clock jumps (see docs/runbook.md). Nothing has happened yet, so restart the simulation.
 for attempt in 1 2 3; do
   start_sim
   status=0
