@@ -17,6 +17,8 @@ dist/
 ros_ws/build/
 ros_ws/install/
 ros_ws/log/
+ros_ws/.build.lock
+ros_ws/build.log
 *.db3
 *.mcap
 sim/generated/

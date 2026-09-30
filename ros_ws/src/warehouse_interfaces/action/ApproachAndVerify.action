@@ -1,0 +1,27 @@
+# Drive to a station's approach pose with Nav2, then measure the robot's pose before any cargo transfer.
+# The robot must stop in front of the parcel, facing it, with clearance. Limits are server parameters.
+
+string station
+float64 x                      # Approach pose in the map frame
+float64 y
+float64 yaw
+float64 parcel_x               # Parcel position in the map frame
+float64 parcel_y
+---
+string OUTCOME_SUCCEEDED=succeeded
+string OUTCOME_FAILED=failed
+string OUTCOME_CANCELLED=cancelled
+string OUTCOME_REJECTED=rejected
+
+string nav2_outcome            # Terminal result of the underlying NavigateToPose goal
+bool accepted                  # Nav2 succeeded and every check passed: a transfer is allowed
+float64 position_error         # m, measured pose to approach pose
+float64 heading_error          # rad, measured heading to approach heading
+float64 facing_error           # rad, measured heading to the bearing of the parcel
+float64 parcel_clearance       # m, between conservative robot and parcel footprints
+float64 parcel_distance        # m, robot centre to parcel centre
+float64 x                      # Measured pose used for the checks
+float64 y
+float64 yaw
+---
+float64 distance_remaining     # m, as reported by Nav2

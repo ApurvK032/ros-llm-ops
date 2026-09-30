@@ -31,6 +31,25 @@ jobs:
       - name: Unit and property-based tests (no ROS, GPU or model required)
         run: python -B -m unittest discover -s tests -v
 
+  ros:
+    name: ROS 2 Jazzy workspace
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build ros_ws with colcon
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          cd ros_ws
+          colcon build --event-handlers console_direct+
+      - name: ROS tests (typed messages against the real supervisor)
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source ros_ws/install/setup.bash
+          python3 -B -m unittest discover -s tests_ros -v
+
   lint:
     name: Lint
     runs-on: ubuntu-24.04

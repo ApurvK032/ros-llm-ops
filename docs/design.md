@@ -120,6 +120,19 @@ Approach poses are 1.0 m in front of each parcel. Pickup and drop are logical st
 
 [world.py](../warehouse_agent/world.py) generates everything from [config/warehouse.json](../config/warehouse.json): the Gazebo SDF world with collision boxes for shelves, pedestals and walls, the 0.05 m Nav2 occupancy map, the planning grid, the spawn pose, and the overview camera. [sim_config.py](../warehouse_agent/sim_config.py) derives Nav2 parameters from the stock defaults, setting the initial AMCL pose at HOME and a tighter localization model tuned after a pose jump between similar shelf faces. The [layout guide](warehouse-layout.md) shows the floor plan.
 
+## ROS interfaces
+
+The [warehouse_interfaces](../ros_ws/src/warehouse_interfaces) package defines the project's typed ROS 2 API. It is built with colcon into `ros_ws/`; the launch scripts build it automatically when its sources change.
+
+| Interface | Purpose |
+| --- | --- |
+| `msg/MissionStatus` | The authoritative snapshot, published on `/warehouse/mission_status` (transient local) |
+| `msg/Parcel`, `msg/Stop`, `msg/Hold` | Parts of the status; state, disposition, stop, and hold kinds are message constants |
+| `srv/SubmitRequest`, `srv/OperatorCommand` | Natural-language requests and direct `/pause`, `/resume`, `/status` |
+| `action/ApproachAndVerify` | Drive to an approach pose with Nav2, then report the measured pose checks |
+
+[ros_messages.py](../warehouse_agent/ros_messages.py) converts snapshots to and from `MissionStatus`; a test round-trips real supervisor snapshots through it and checks that the message constants match the state machines. The JSON `/warehouse/status` topic is still published for the current viewer. The services and the action are defined but not yet served.
+
 ## Journal and status
 
 Every state change is appended to a JSONL journal under `artifacts/episodes/`, flushed per event. Each event carries a sequence number, UTC and monotonic timestamps, and the state revision.

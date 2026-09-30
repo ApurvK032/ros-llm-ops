@@ -1,0 +1,8 @@
+# Send an operator request in natural language. It is interpreted asynchronously; its single outcome is
+# journaled and reflected in MissionStatus.
+
+string text
+---
+bool accepted                  # False if another request is still being interpreted
+string request_id              # e.g. R4 when accepted
+string message

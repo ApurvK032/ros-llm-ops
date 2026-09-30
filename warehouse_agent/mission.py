@@ -63,6 +63,7 @@ class Mission:
         return {"revision": self.revision, "paused": self.paused,
                 "hold": self.hold.as_dict() if self.hold else None,
                 "language_pending": self.language_pending,
+                "pending_request_id": self.pending_request["id"] if self.pending_request else None,
                 "pose": list(self.backend.pose), "priority": self.priority,
                 "onboard_first": sorted(self.onboard_first),
                 "active": self.active.as_dict() if self.active else None,
