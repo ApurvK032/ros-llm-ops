@@ -53,7 +53,7 @@ arrival_errors = st.one_of(st.just((0.0, 0.0, 0.0)),
 
 
 class Harness:
-    """The CLI's request handling, reproduced around a Mission and a backend double."""
+    """A Mission with a backend double, driven through the same request API the CLI uses."""
 
     def __init__(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -62,31 +62,24 @@ class Harness:
         self.backend.publish_status = lambda state: None
         self.mission = Mission(WORLD, self.backend, self.journal)
         self.mission.planner.cache = A_STAR_CACHE
-        self.pending = None
-        self.superseded = False
+        self.intent = None
+
+    @property
+    def pending(self):
+        return self.mission.pending_request
 
     def start_request(self, intent):
-        self.mission.language_pending = True
-        self.mission.record("language_requested", text=json.dumps(intent), model="property-test")
-        self.pending, self.superseded = intent, False
+        self.intent = intent
+        return self.mission.submit(json.dumps(intent), "property-test")
 
-    def finish_request(self):
-        intent, self.pending = self.pending, None
-        try:
-            if self.superseded:
-                self.mission.record("request_superseded", reason="Direct pause took precedence")
-                return
-            self.mission.record("language_interpreted", intent=intent, model="property-test")
-            self.mission.apply(intent)
-        except ValueError as exc:
-            self.mission.fail_request(str(exc))
-        finally:
-            self.mission.language_pending = False
+    def finish_request(self, error=None):
+        request_id = self.pending["id"]
+        if error:
+            return self.mission.resolve(request_id, error=error)
+        return self.mission.resolve(request_id, self.intent, model="property-test")
 
     def direct(self, operation):
-        if operation == "pause" and self.pending:
-            self.superseded = True
-        self.mission.apply({"operation": operation, "parcels": []})
+        self.mission.command(operation)
 
     def close(self):
         if self.mission.active:
@@ -126,6 +119,11 @@ class SupervisorMachine(RuleBasedStateMachine):
     @rule()
     def model_replies(self):
         self.h.finish_request()
+
+    @precondition(lambda self: self.h.pending is not None)
+    @rule(error=st.sampled_from(["model timed out", "model unreachable", "unsupported intent"]))
+    def model_fails(self, error):
+        self.h.finish_request(error)
 
     @rule(operation=st.sampled_from(["pause", "resume", "status"]))
     def operator_direct_command(self, operation):

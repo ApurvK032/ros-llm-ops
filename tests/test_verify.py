@@ -82,16 +82,13 @@ class ScriptedRunTests(unittest.TestCase):
         self.check()
 
     def interpret(self, operation, *parcels):
-        """Bracket an intent the way the CLI does, so the journal shows the pending request."""
+        """Submit a request through the supervisor's request API, as the CLI does."""
         intent = {"operation": operation, "parcels": list(parcels), "message": ""}
-        self.mission.record("language_requested", text=f"{operation} {parcels}", model="test")
-        self.mission.language_pending = True
-        return intent
+        return self.mission.submit(f"{operation} {parcels}", "test"), intent
 
-    def resolve(self, intent):
-        self.mission.record("language_interpreted", intent=intent, model="test")
-        self.mission.apply(intent)
-        self.mission.language_pending = False
+    def resolve(self, request):
+        request_id, intent = request
+        self.mission.resolve(request_id, intent, model="test")
         self.check()
 
     def finish(self):
@@ -182,10 +179,11 @@ class ScriptedRunTests(unittest.TestCase):
     def test_request_pending_during_arrival_fences_cargo(self):
         self.apply("create", "P1", "P2")
         self.tick()
-        intent = self.interpret("cancel", self.mission.active.parcel)
+        request = self.interpret("cancel", self.mission.active.parcel)
         self.tick("arrive")  # The arrival is held while the request is being interpreted.
         self.assertIsNotNone(self.mission.active)
-        self.resolve(intent)
+        self.resolve(request)
+        intent = request[1]
         self.tick()
         for _ in range(2):
             self.tick("arrive")
@@ -295,6 +293,99 @@ class TamperedJournalTests(unittest.TestCase):
                 del events[index][key]
                 with self.subTest(event=index, field=key):
                     verify_events(events)
+
+
+class RequestLifecycleTests(unittest.TestCase):
+    """Every request gets an ID and exactly one recorded outcome; the checker proves it from the journal."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        world = World()
+        self.backend = Backend(world)
+        self.events = []
+        self.mission = Mission(world, self.backend, Path(self.tmp.name)/"episode.jsonl", self.events.append)
+
+    def tearDown(self):
+        if self.mission.active:
+            self.backend.result = "cancelled"
+        if not self.mission.closed:
+            self.mission.close()
+        self.tmp.cleanup()
+
+    def ask(self, operation, *parcels, error=None):
+        request_id = self.mission.submit(f"{operation} {parcels}", "test")
+        intent = {"operation": operation, "parcels": list(parcels), "message": ""}
+        return request_id, self.mission.resolve(request_id, None if error else intent, error=error, model="test")
+
+    def journal(self):
+        if self.mission.active:
+            self.backend.result = "cancelled"  # The double confirms the cancel close() requests.
+        self.mission.close()
+        return copy.deepcopy(self.events)
+
+    def test_each_request_has_one_outcome(self):
+        self.assertEqual(self.ask("create", "P1", "P1", "P2"), ("R1", "applied"))
+        self.mission.tick()
+        self.assertEqual(self.ask("status"), ("R2", "status"))
+        self.assertEqual(self.ask("prioritize", "P9"), ("R3", "failed"))
+        self.mission.command("resume")
+        self.assertEqual(self.ask("cancel", "P2", error="model timed out"), ("R4", "failed"))
+        rid = self.mission.submit("cancel P2", "test")
+        self.mission.command("pause")
+        self.assertEqual(self.mission.resolve(rid, {"operation": "cancel", "parcels": ["P2"]}), "superseded")
+        with self.assertRaises(RuntimeError):
+            self.mission.resolve(rid, {"operation": "status", "parcels": []})  # Already resolved.
+        events = self.journal()
+        report = verify_events(events)
+        self.assertTrue(report.ok, report.violations)
+        outcomes = {}
+        for e in events:
+            if e["type"] in {"instruction_applied", "status_reported", "clarification_required", "request_failed",
+                             "request_superseded"} and str(e.get("request_id")).startswith("R"):
+                outcomes.setdefault(e["request_id"], []).append(e["type"])
+        self.assertEqual(outcomes, {"R1": ["instruction_applied"], "R2": ["status_reported"],
+                                    "R3": ["request_failed"], "R4": ["request_failed"], "R5": ["request_superseded"]})
+        applied = next(e for e in events if e["type"] == "instruction_applied" and e["request_id"] == "R1")
+        self.assertEqual(applied["intent"]["parcels"], ["P1", "P2"])  # The normalized command, not raw output.
+
+    def test_one_request_at_a_time(self):
+        self.mission.submit("deliver P1", "test")
+        with self.assertRaises(RuntimeError):
+            self.mission.submit("deliver P2", "test")
+
+    def tampered(self, change):
+        self.ask("create", "P1")
+        self.mission.tick()
+        self.ask("status")
+        events = self.journal()
+        change(events)
+        return codes(verify_events(renumber(events)))
+
+    def test_checker_catches_a_second_outcome(self):
+        def duplicate(events):
+            i = next(i for i, e in enumerate(events) if e["type"] == "status_reported")
+            events.insert(i+1, copy.deepcopy(events[i]))
+        self.assertIn("DUPLICATE_OUTCOME", self.tampered(duplicate))
+
+    def test_checker_catches_an_outcome_for_the_wrong_request(self):
+        def mislabel(events):
+            next(e for e in events if e["type"] == "status_reported")["request_id"] = "R1"
+        self.assertIn("DUPLICATE_OUTCOME", self.tampered(mislabel))
+
+    def test_checker_catches_acting_before_interpretation(self):
+        def skip(events):
+            del events[next(i for i, e in enumerate(events) if e["type"] == "language_interpreted")]
+        self.assertIn("REQUEST_NOT_INTERPRETED", self.tampered(skip))
+
+    def test_checker_catches_a_reused_request_id(self):
+        def reuse(events):
+            next(e for e in reversed(events) if e["type"] == "language_requested")["request_id"] = "R1"
+        self.assertIn("DUPLICATE_REQUEST_ID", self.tampered(reuse))
+
+    def test_checker_catches_a_raw_intent_in_the_journal(self):
+        def raw(events):
+            next(e for e in events if e["type"] == "instruction_applied")["intent"]["parcels"] = ["P1", "P1"]
+        self.assertIn("NON_NORMALIZED_INTENT", self.tampered(raw))
 
 
 class SnapshotRuleTests(unittest.TestCase):

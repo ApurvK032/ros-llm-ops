@@ -202,7 +202,7 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 - [x] Shelf maze with separate approach poses and ground-truth-checked transfers
 - [x] Live visualization, mission panel, and browser access
 - [x] **Correctness core, part 1:** independent journal checker, property-based tests with a mutation check, and explicit state machines
-- [ ] **Correctness core, part 2:** request IDs so every request provably reaches one outcome, and journaling the normalized command that was applied
+- [x] **Correctness core, part 2:** request IDs with exactly one recorded outcome each, and journaling the normalized command that was applied
 - [ ] **ROS 2-native packaging:** colcon packages, typed messages and actions, a lifecycle supervisor node, a C++ approach-and-verify action server, and Docker
 - [ ] **Richer operations:** orders added mid-mission, robot capacity, multi-part requests, a plan preview before changes commit, and better sequencing
 - [ ] **Reliability campaign:** fault injection (blocked aisles, Nav2 aborts, cancel races) with repeated trials and published results

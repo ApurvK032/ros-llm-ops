@@ -40,6 +40,9 @@ MUTANTS = [
     ("deferral without a retry", [(MISSION,
      "if self.attempts[key] >= 2:",
      "if self.attempts[key] >= 1:")]),
+    ("a status request never records its outcome", [(MISSION,
+     '            self.record("status_reported", request_id=request_id)\n',
+     "            pass\n")]),
     ("planner forgets drops for onboard parcels", [(PLANNER,
      '                remaining.append(Stop(pid, "pickup", parcel.pickup))\n'
      '            remaining.append(Stop(pid, "drop", parcel.drop))\n',

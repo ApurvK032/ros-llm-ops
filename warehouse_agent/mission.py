@@ -19,6 +19,9 @@ class Mission:
         self.priority = None
         self.onboard_first = set()
         self.language_pending = False
+        self.pending_request = None   # {"id": "R<n>", "superseded": bool} while the model interprets
+        self.requests = 0
+        self.commands = 0
         self.remaining_stops = []
         self.plan_pending = False
         self.closed = False
@@ -79,24 +82,76 @@ class Mission:
         self.hold = Hold(kind, message)
         self.cancel_motion()
 
-    def fail_request(self, error):
+    def fail_request(self, error, request_id=None):
         """A request could not be interpreted or accepted: hold rather than act on it."""
         self.hold_for(HoldKind.REQUEST_FAILED, error)
-        self.record("request_failed", error=error)
+        self.record("request_failed", request_id=request_id, error=error)
 
-    def apply(self, intent):
-        """Apply validated intent to current cargo, never to a model's copy."""
+    # Request lifecycle: every request gets an ID and exactly one recorded outcome.
+    def submit(self, text, model):
+        """Start interpreting an operator request. Cargo and dispatch are fenced until resolve()."""
+        if self.pending_request:
+            raise RuntimeError(f"{self.pending_request['id']} is still being interpreted")
+        self.requests += 1
+        self.pending_request = {"id": f"R{self.requests}", "superseded": False}
+        self.language_pending = True
+        self.record("language_requested", request_id=self.pending_request["id"], text=text, model=model)
+        return self.pending_request["id"]
+
+    def resolve(self, request_id, intent=None, error=None, **metrics):
+        """Finish the pending request: superseded, failed, or interpreted and applied.
+
+        Returns "superseded", "failed", "status", "clarification" or "applied".
+        """
+        if not self.pending_request or self.pending_request["id"] != request_id:
+            raise RuntimeError(f"{request_id} is not the pending request")
+        superseded, self.pending_request = self.pending_request["superseded"], None
+        try:
+            if superseded:
+                self.record("request_superseded", request_id=request_id,
+                            reason="Direct pause took precedence over the pending model request")
+                return "superseded"
+            if error is not None:
+                self.fail_request(error, request_id)
+                return "failed"
+            self.record("language_interpreted", request_id=request_id, intent=intent, **metrics)
+            try:
+                return self.apply(intent, request_id)
+            except ValueError as exc:
+                self.fail_request(str(exc), request_id)
+                return "failed"
+        finally:
+            self.language_pending = False
+
+    def command(self, operation):
+        """Direct operator control (/pause, /resume, /status); bypasses the model entirely."""
+        self.commands += 1
+        if operation == "pause" and self.pending_request:
+            self.pending_request["superseded"] = True
+        return self.apply({"operation": operation, "parcels": [], "message": ""}, f"D{self.commands}")
+
+    def apply(self, intent, request_id=None):
+        """Apply validated intent to current cargo, never to a model's copy.
+
+        Returns "status", "clarification" or "applied"; raises ValueError when the request is not allowed now.
+        """
+        if not isinstance(intent, dict):
+            raise ValueError("The model did not return a request")
         operation = intent.get("operation")
         ids = intent.get("parcels", [])
         if not isinstance(ids, list) or any(not isinstance(p, str) or p not in self.parcels for p in ids):
             raise ValueError(f"Unknown parcel ID; available IDs are {', '.join(self.parcels)}")
         ids = list(dict.fromkeys(ids))
+        # Journal what was actually applied (repeated IDs collapsed), not the raw model output.
+        normalized = {"operation": operation, "parcels": ids, "message": intent.get("message", "")}
         if operation == "status":
-            return self.snapshot()
+            # Read-only, but still journaled so every request ends in exactly one recorded outcome.
+            self.record("status_reported", request_id=request_id)
+            return "status"
         if operation == "clarify":
             self.hold_for(HoldKind.CLARIFICATION, intent.get("message") or "Please clarify the request")
-            self.record("clarification_required", question=self.hold.message)
-            return self.snapshot()
+            self.record("clarification_required", request_id=request_id, question=self.hold.message)
+            return "clarification"
         if operation == "create":
             if not ids:
                 raise ValueError("Specify which parcels to deliver")
@@ -124,8 +179,8 @@ class Mission:
                             + (f" (resend the cancel for {', '.join(others)} if still wanted)" if others else "")
                             + ". Resume the original delivery, or keep the mission paused?")
                 self.hold_for(HoldKind.CLARIFICATION, question)
-                self.record("clarification_required", question=question)
-                return self.snapshot()
+                self.record("clarification_required", request_id=request_id, question=question)
+                return "clarification"
             refused = [pid for pid in ids if not self.parcels[pid].can("cancel")]
             if refused:
                 raise ValueError(f"{', '.join(refused)} {'is' if len(refused) == 1 else 'are'} not an active, "
@@ -143,8 +198,8 @@ class Mission:
         self.revision += 1
         if operation in {"create", "prioritize", "onboard_first", "cancel", "resume"}:
             self.plan_pending = True
-        self.record("instruction_applied", intent=intent, state=self.snapshot())
-        return self.snapshot()
+        self.record("instruction_applied", request_id=request_id, intent=normalized, state=self.snapshot())
+        return "applied"
 
     def tick(self):
         self.backend.spin()
