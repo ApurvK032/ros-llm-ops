@@ -22,6 +22,7 @@ ROS LLM Ops is a mission supervisor for a ROS 2 warehouse robot. A local languag
 - **Verified transfers.** Pickup and drop require Nav2 success plus measured position, heading, facing, and clearance checks. A failed stop gets one retry, then is deferred with the measured reason.
 - **Planning over live state.** Remaining stops are rebuilt at every action boundary and ordered greedily with A* travel-cost estimates, honoring pickup-before-drop, priority, and onboard-first.
 - **One geometry source.** A single config generates the Gazebo world, the Nav2 map, the planning grid, and the spawn pose.
+- **Checked, not just tested.** An independent checker rebuilds any run from its journal and verifies every safety rule; all recorded Gazebo runs pass. Property-based tests drive the supervisor through hundreds of random sessions, and planted bugs are caught.
 - **Observable.** Live RViz and Gazebo markers, a mission panel, a browser desktop over SSH, and a JSONL journal of every request, plan, navigation result, and cargo change.
 
 Pickup and drop are logical state changes; there is no arm or grasping.
@@ -70,7 +71,11 @@ python3 -B -m unittest discover -s tests -v
 python3 -B -m warehouse_agent doctor
 ```
 
-`doctor` reports what it observes about your environment; it installs nothing.
+`doctor` reports what it observes about your environment; it installs nothing. With `pip install hypothesis`, the same test command also runs the property-based tests. To check any mission journal against the supervisor's rules:
+
+```bash
+python3 -B -m warehouse_agent verify docs/evidence/maze/delivery.jsonl
+```
 
 ### 2. Prepare the simulation environment
 
@@ -178,14 +183,16 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 | --- | --- |
 | [config/warehouse.json](config/warehouse.json) | Geometry, stations, parcels, and tolerances |
 | [warehouse_agent/language.py](warehouse_agent/language.py) | Model prompt and intent schema |
-| [warehouse_agent/mission.py](warehouse_agent/mission.py) | Authoritative parcel state, request rules, execution, and journal |
+| [warehouse_agent/mission.py](warehouse_agent/mission.py) | Authoritative mission state, request rules, execution, and journal |
+| [warehouse_agent/state.py](warehouse_agent/state.py) | Parcel, navigation-goal, and hold state machines |
+| [warehouse_agent/verify.py](warehouse_agent/verify.py) | Independent journal checker (`warehouse_agent verify`) |
 | [warehouse_agent/planner.py](warehouse_agent/planner.py), [astar.py](warehouse_agent/astar.py) | Remaining-stop ordering and travel-cost estimates |
 | [warehouse_agent/world.py](warehouse_agent/world.py) | Arrival checks and generated world and maps |
 | [warehouse_agent/ros_backend.py](warehouse_agent/ros_backend.py) | Nav2 goals, cancellation, measured pose, and status topic |
 | [warehouse_agent/visualization.py](warehouse_agent/visualization.py) | RViz and Gazebo markers and the mission panel |
 | [warehouse_agent/cli.py](warehouse_agent/cli.py) | Operator loop and direct controls |
 | [sim/](sim/), [scripts/](scripts/) | Launch configuration, Gazebo marker helper, installers, and launchers |
-| [tests/](tests/) | Unit tests (no ROS required) |
+| [tests/](tests/) | Unit and property-based tests (no ROS required) |
 | [docs/](docs/) | Design, results, guides, and recorded evidence |
 
 ## Roadmap
@@ -194,7 +201,8 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 - [x] Mid-mission pause, resume, cancel, priority, and onboard-first
 - [x] Shelf maze with separate approach poses and ground-truth-checked transfers
 - [x] Live visualization, mission panel, and browser access
-- [ ] **Correctness core:** explicit state machines, written invariants, journal replay, property-based tests, and changes that commit only at action boundaries
+- [x] **Correctness core, part 1:** independent journal checker, property-based tests with a mutation check, and explicit state machines
+- [ ] **Correctness core, part 2:** request IDs so every request provably reaches one outcome, and journaling the normalized command that was applied
 - [ ] **ROS 2-native packaging:** colcon packages, typed messages and actions, a lifecycle supervisor node, a C++ approach-and-verify action server, and Docker
 - [ ] **Richer operations:** orders added mid-mission, robot capacity, multi-part requests, a plan preview before changes commit, and better sequencing
 - [ ] **Reliability campaign:** fault injection (blocked aisles, Nav2 aborts, cancel races) with repeated trials and published results

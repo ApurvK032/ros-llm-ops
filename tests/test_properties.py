@@ -79,9 +79,7 @@ class Harness:
             self.mission.record("language_interpreted", intent=intent, model="property-test")
             self.mission.apply(intent)
         except ValueError as exc:
-            self.mission.paused = True
-            self.mission.cancel_motion()
-            self.mission.record("request_failed", error=str(exc))
+            self.mission.fail_request(str(exc))
         finally:
             self.mission.language_pending = False
 
@@ -213,7 +211,7 @@ class LivenessTests(unittest.TestCase):
         self.assertTrue(h.mission.completed_reported)
         for pid in parcels:
             p = h.mission.parcels[pid]
-            self.assertTrue(p["state"] == "delivered" or p["disposition"] == "deferred", (pid, p))
+            self.assertTrue(p.state == "delivered" or p.disposition == "deferred", (pid, p))
         report = h.close()
         self.assertTrue(report.ok, report.violations)
 

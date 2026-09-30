@@ -26,9 +26,13 @@ class Visual:
     points: tuple = ()
 
 
+HOLD_LABELS = {"no_route": "Held: no route from current pose", "clarification": "Waiting for clarification",
+               "request_failed": "Paused: request not accepted", "operator": "Paused"}
+
+
 def initial_state(world):
     return {"revision": 0, "pose": list(world.waypoints["HOME"]), "active": None,
-            "paused": False, "hold_reason": None, "language_pending": False, "finished": True,
+            "paused": False, "hold": None, "language_pending": False, "finished": True,
             "closed": False, "remaining_stops": [], "plan_pending": False,
             "cancel_requested": False,
             "parcels": {pid: {**p, "state": "awaiting_pickup", "disposition": "inactive"}
@@ -53,8 +57,9 @@ def mission_label(state):
         return "Disconnected"
     if state.get("cancel_requested"):
         return "Stopping"
-    if state.get("hold_reason"):
-        return "Held: no route from current pose"
+    hold = state.get("hold") or {}
+    if hold.get("kind") in HOLD_LABELS:
+        return HOLD_LABELS[hold["kind"]]
     if state["paused"]:
         return "Paused"
     if state["language_pending"]:

@@ -93,8 +93,8 @@ def check_snapshot(snapshot):
                                           for p in parcels.values())
         if snapshot["finished"] != finished:
             bad("FINISHED_FLAG_WRONG", f"finished={snapshot['finished']} but work remaining={not finished}")
-    if snapshot.get("hold_reason") and not snapshot.get("paused"):
-        bad("HOLD_NOT_PAUSED", "a planning hold must keep the mission paused")
+    if "hold" in snapshot and bool(snapshot["hold"]) != bool(snapshot.get("paused")):
+        bad("HOLD_MISMATCH", "the mission must be paused exactly when it records a hold reason")
     return found
 
 

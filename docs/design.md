@@ -47,6 +47,18 @@ Each parcel has a **physical state** and a separate **mission disposition**, so 
 | `cancelled` | Order cancelled while the parcel was still on its shelf |
 | `deferred` | Two failed attempts at the same stop; physical state and cargo are kept |
 
+These are explicit state machines in [state.py](../warehouse_agent/state.py). Every change goes through one named transition, checked against a single table, and anything else raises `IllegalTransition` instead of silently corrupting state:
+
+| Transition | Allowed from (physical / disposition) | Result |
+| --- | --- | --- |
+| `activate` | shelf / inactive | shelf / active |
+| `cancel` | shelf / active | shelf / cancelled |
+| `pick_up` | shelf / active | onboard / active |
+| `drop_off` | onboard / active | delivered / active |
+| `defer` | shelf or onboard / active | unchanged / deferred |
+
+The Nav2 goal is a second small state machine (`Goal`): idle → active → (cancelling →) idle, and dispatching while a goal is active raises. Every pause is a `Hold` with a kind and a message: `operator` (`/pause`), `clarification`, `request_failed`, or `no_route`. The mission is paused exactly when a hold exists, and the panel shows which one.
+
 ## Operator requests
 
 Direct commands (`/pause`, `/resume`, `/status`, `/quit`) bypass the model and take effect immediately. Everything else goes to the model, which returns exactly one of these operations; [mission.py](../warehouse_agent/mission.py) `apply()` then validates it against the live state.
@@ -56,7 +68,7 @@ Direct commands (`/pause`, `/resume`, `/status`, `/quit`) bypass the model and t
 | `create` | Activates the listed parcels | A mission is still running, or a listed parcel was already used |
 | `prioritize` | Serves one parcel's remaining stops before others | Not exactly one active, undelivered parcel |
 | `onboard_first` | Delivers the parcels onboard *at that moment* before any new pickup | — |
-| `cancel` | Cancels uncollected parcels and cancels the robot's goal if it was heading to one of them | A parcel is delivered or not active. An **onboard** parcel instead pauses the mission and asks whether to continue its delivery |
+| `cancel` | Cancels uncollected parcels and cancels the robot's goal if it was heading to one of them | A parcel is delivered or not active. If any listed parcel is **onboard**, nothing in the request is cancelled; the mission pauses and asks whether to continue that delivery |
 | `pause` / `resume` | Stops motion (via Nav2 cancel) / continues remaining work | — |
 | `status` | Returns the supervisor's snapshot, not the model's text | — |
 | `clarify` | Pauses the mission and asks the operator the model's question | — |
@@ -77,7 +89,7 @@ The CLI runs a single-threaded loop about 20 times per second. Keyboard input ar
 - **Cancel waits for Nav2.** Pause and cancel request cancellation, then wait for Nav2's terminal result before anything new is dispatched. The backend stops the supervisor if a cancel does not complete within 20 s or a goal is not acknowledged within 20 s.
 - **Cargo is frozen while the model is thinking.** If a goal finishes while a request is being interpreted, its result is held and applied only after the request resolves, so the request is judged against the state the operator saw. No new stop is dispatched meanwhile.
 - **`/pause` wins over a pending model request.** The model's answer is discarded when it arrives, and a new request is refused until the pending one resolves.
-- **Planning failures hold instead of crashing.** If no route can be estimated from the current pose, the mission pauses with a `hold_reason`, records `planning_failed` once, and waits for `/resume`.
+- **Planning failures hold instead of crashing.** If no route can be estimated from the current pose, the mission pauses with a `no_route` hold, records `planning_failed` once, and waits for `/resume`.
 
 ## Planning
 
@@ -121,6 +133,14 @@ Every state change is appended to a JSONL journal under `artifacts/episodes/`, f
 | `mission_finished` | All active work is done (`complete`) or some was deferred (`partial`) |
 
 The current snapshot is also published on `/warehouse/status` (transient local). The visualization process renders it as RViz and Gazebo markers and in the Qt mission panel; if no snapshot arrives for 3 s it shows the last known state as disconnected.
+
+## Verification
+
+Three layers check that the rules above actually hold:
+
+- **Independent journal checker** ([verify.py](../warehouse_agent/verify.py), `python3 -B -m warehouse_agent verify JOURNAL...`). It rebuilds the mission from the journal alone and checks every rule: ordering, one request and one goal at a time, the fence, plans covering exactly the owed stops, transfers only after a matching verified arrival and within tolerance, one retry before deferring, legal state changes, and the supervisor's own snapshots matching the replay. It shares no code with the supervisor, and it takes limits from each journal's recorded config, so it also checks journals from older versions.
+- **Property-based tests** ([test_properties.py](../tests/test_properties.py), Hypothesis). Hundreds of random sessions drive the real supervisor with operator requests (including malformed model output), pauses, Nav2 results on and off target, cancels racing arrivals, and the robot drifting into racks. Every snapshot and every final journal must pass the checker, and every uninterrupted mission must terminate.
+- **Mutation check** ([mutation_check.py](../scripts/mutation_check.py)). It plants realistic bugs in a scratch copy of the supervisor, such as skipping the arrival check or moving cargo after a cancel, and requires the property tests to catch every one.
 
 ## Known limitations
 
