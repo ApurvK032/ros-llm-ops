@@ -1,5 +1,7 @@
 # ROS LLM Ops
 
+[![CI](https://github.com/ApurvK032/ros-llm-ops/actions/workflows/ci.yml/badge.svg)](https://github.com/ApurvK032/ros-llm-ops/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **Tell a warehouse robot what to deliver. Watch it plan, navigate, and track its cargo.**
 
 ROS LLM Ops connects a local language model to a working ROS 2 warehouse simulation. Type a delivery request, and a mission supervisor turns it into ordered pickup and drop stops for a TurtleBot3 in Gazebo. You can change priorities, pause the robot, and inspect the mission while it runs.
