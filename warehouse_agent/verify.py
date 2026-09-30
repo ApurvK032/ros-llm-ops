@@ -111,6 +111,7 @@ class Replay:
         self.arrival = None           # last navigation_finished not yet consumed by a transfer or failure
         self.plan = None              # stops of the last plan_selected
         self.request = None           # None, "requested" or "interpreted"
+        self.retries = set()          # (parcel, kind) stops that already had a recorded retry
         self.closed = False
         self.previous = None
 
@@ -208,7 +209,8 @@ class Replay:
     def on_instruction_applied(self, e):
         self.resolve()
         intent = e.get("intent", {})
-        op, ids = intent.get("operation"), intent.get("parcels", [])
+        # A repeated ID in one instruction still refers to one parcel.
+        op, ids = intent.get("operation"), list(dict.fromkeys(intent.get("parcels", [])))
         for pid in ids:
             if pid not in self.parcels:
                 self.violation(e, "UNKNOWN_PARCEL", f"{op} applied to unknown parcel {pid}")
@@ -332,6 +334,7 @@ class Replay:
         stop = e.get("stop", {})
         if self.take_arrival(e, (stop.get("parcel"), stop.get("kind"))) is None:
             self.violation(e, "RETRY_WITHOUT_ARRIVAL", f"retry of {stop} without a matching Nav2 result")
+        self.retries.add((stop.get("parcel"), stop.get("kind")))
 
     def on_parcel_deferred(self, e):
         pid = e.get("parcel")
@@ -342,6 +345,9 @@ class Replay:
         arrival = self.arrival
         if arrival is None or arrival["stop"]["parcel"] != pid:
             self.violation(e, "DEFER_WITHOUT_ARRIVAL", f"deferred {pid} without a matching Nav2 result")
+        elif (pid, arrival["stop"]["kind"]) not in self.retries:
+            self.violation(e, "RETRY_POLICY", f"{pid} deferred on its first failed {arrival['stop']['kind']}; "
+                                              "one retry is required")
         self.arrival = None
         p["disposition"] = "deferred"
 

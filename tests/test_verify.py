@@ -270,6 +270,15 @@ class TamperedJournalTests(unittest.TestCase):
         del self.events[self.find("plan_selected", 2)]
         self.assertCaught("SEQUENCE_GAP", renumbered=False)
 
+    def test_deferral_without_a_retry(self):
+        events = load(ROOT/"docs/evidence/maze/delivery.jsonl")
+        # Turn the first failed-free arrival into a failure deferred immediately, skipping the retry policy.
+        i = next(i for i, e in enumerate(events) if e["type"] == "cargo_pickup")
+        events[i-1]["outcome"] = "failed"
+        events[i] = {**events[i], "type": "parcel_deferred", "reason": "tampered"}
+        self.events = events[:i+1] + [{**events[-1], "type": "episode_closed", "state": events[-1]["state"]}]
+        self.assertCaught("RETRY_POLICY")
+
     def test_journal_without_a_start(self):
         del self.events[0]
         self.assertCaught("MISSING_START")
