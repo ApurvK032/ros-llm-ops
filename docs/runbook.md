@@ -1,4 +1,4 @@
-# MVP runbook
+# Runbook
 
 ## Prepared environment
 
@@ -55,7 +55,7 @@ The task planner uses the A* from my WarehouseBot project, included as `warehous
 
 The current maze uses separate parcel storage positions and robot approach poses. Logical pickup/drop requires a successful NavigateToPose result, position within 0.20 m of the approach, heading error at most 0.22 rad, facing error toward the parcel at most 0.25 rad, and conservative parcel clearance of at least 0.20 m. See the [layout guide](warehouse-layout.md). Pause/cancel requests wait for the current action's terminal result before replacement. Cargo is held while language interpretation is pending. Navigation gets one application retry, then the parcel becomes deferred and its cargo state stays visible.
 
-The automated tests cover core behavior with a backend double as well as static warehouse geometry. The delivery and live-update journals in `docs/evidence/` came from actual Nav2/Gazebo execution. These are distinct verification levels. Earlier `stage1` runs used the original smaller layout and looser position tolerance. The [stage 1 guide](stage1-visuals.md) describes the live displays and their validation.
+The automated tests cover core behavior with a backend double as well as static warehouse geometry. The delivery and live-update journals in `docs/evidence/` came from actual Nav2/Gazebo execution. These are distinct verification levels. Earlier `stage1` runs used the original smaller layout and looser position tolerance. The [stage 1 guide](visuals.md) describes the live displays and their validation.
 
 ## Capturing and inspecting a run
 
@@ -85,8 +85,8 @@ If ROS discovery commands show only `/rosout`, check `ROS_DOMAIN_ID=42` and use 
 
 The launcher now resets inherited background interrupt handling, signals the ROS launch parent, and removes any remaining GUI subprocess. Startup followed by `/quit` exits with code 0 and leaves no simulator processes. Gazebo, RViz and the Nav2 container still report native shutdown errors on this WSL setup. This is a known unresolved integration issue; it occurs after the successful mission results. The [recorded launcher checks](evidence/mvp-results.json) summarize the outcome. Raw logs with local environment details are kept out of the public repository.
 
-## Scope after this MVP
+## Scope
 
-The user chose simulation first and research later. Stage 1 adds station labels, live cargo visualization and a read-only mission panel. The next stage is an operator interface for submitting instructions and controlling the mission, followed by startup/shutdown cleanup and repeatable scenarios. Full proposal transactions, event replay, crash resume, dynamic order insertion, configurable destinations, returns, manipulation, perception and multi-robot control remain unimplemented. The earlier research documents are proposals, not claims of features already built.
+Current limitations are listed in the [design doc](design.md#known-limitations), and planned work in the [README roadmap](../README.md#roadmap). The [archived planning documents](archive/README.md) are proposals from before the build, not descriptions of the current system.
 
 Installation references: [ROS Jazzy on Ubuntu 24.04](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html), [Nav2 simulation](https://docs.nav2.org/jazzy/getting_started/quickstart/quickstart/), [Ollama Linux installation](https://docs.ollama.com/linux), [Qwen3.5 4B package](https://ollama.com/library/qwen3.5:4b), [WSL systemd integration](https://wsl.dev/technical-documentation/systemd/).

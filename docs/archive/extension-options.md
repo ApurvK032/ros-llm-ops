@@ -1,5 +1,7 @@
 # Possible extensions after the related-work review
 
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
 7 September 2026. These are proposed directions for discussion, not implemented behavior or a replacement for the current MVP contract. User priority remains a working robotics portfolio demo, then research, with no deadline.
 
 ## Recommendation

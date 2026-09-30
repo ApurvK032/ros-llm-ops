@@ -1,5 +1,7 @@
 # Research protocol — proposal, not a frozen benchmark
 
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
 ## Question and primary comparison
 
 Does an execution-state freshness check at plan activation improve valid mid-mission update handling? Measure both correctness and the cost of holding, rejection, replanning, and clarification.
