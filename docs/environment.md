@@ -83,4 +83,4 @@ ros2 action info /navigate_to_pose
 ros2 param get /amcl use_sim_time
 ```
 
-Use the [MVP runbook](mvp-runbook.md) for localization, separate-terminal operation, and known shutdown diagnostics. Store personal diagnostic output under ignored `artifacts/`; publish only reviewed results and application captures.
+Use the [runbook](runbook.md) for localization, separate-terminal operation, and known shutdown diagnostics. Store personal diagnostic output under ignored `artifacts/`; publish only reviewed results and application captures.

@@ -1,5 +1,7 @@
 # Warehouse Agent: End-to-End Workflow
 
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
 Planning outline — 7 September 2026. No implementation or machine setup has been performed as part of this document.
 
 ## 1. Project definition

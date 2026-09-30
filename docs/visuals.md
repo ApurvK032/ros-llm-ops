@@ -1,6 +1,6 @@
-# Stage 1 — visual mission feedback
+# Visual mission feedback
 
-The warehouse now displays logical cargo transfers in Gazebo and RViz, alongside a native **Warehouse mission** status window. Start it with the existing `bash scripts/wsl.sh demo` command and enter `Deliver all three parcels`.
+The simulation shows logical cargo transfers in Gazebo and RViz, alongside a native **Warehouse mission** status window. Start it with `bash scripts/demo.sh` (or `bash scripts/wsl.sh demo` in the two-distribution WSL setup) and enter `Deliver all three parcels`.
 
 The current [maze layout](warehouse-layout.md) places parcels on shelves and delivery pedestals. Ground circles and arrows show separate robot approach poses and facing directions. The historical screenshots and timings below describe the original smaller layout.
 
@@ -65,4 +65,4 @@ Four visual behavior tests cover acknowledgement-gated pickup, carried/delivered
 
 The fully headless launch also reached Nav2/localization readiness. A late subscriber received the three parcel boxes and seven station captions from the transient-local ROS marker topic with no GUI required.
 
-The fresh-HOME acceptance run delivered all three parcels across six successful navigation goals in 63.779 seconds. Snapshot checks confirmed each parcel's waiting → onboard → delivered sequence and an empty final goal/queue. Results and screenshots are recorded in [stage 1 evidence](evidence/stage1/README.md). Native Gazebo/RViz/Nav2 shutdown errors on this WSL setup remain a separate known issue; see the [runbook](mvp-runbook.md#remaining-shutdown-issue).
+The fresh-HOME acceptance run delivered all three parcels across six successful navigation goals in 63.779 seconds. Snapshot checks confirmed each parcel's waiting → onboard → delivered sequence and an empty final goal/queue. Results and screenshots are recorded in [stage 1 evidence](evidence/stage1/README.md). Native Gazebo/RViz/Nav2 shutdown errors on this WSL setup remain a separate known issue; see the [runbook](runbook.md#remaining-shutdown-issue).

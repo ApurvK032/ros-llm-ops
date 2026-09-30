@@ -1,5 +1,7 @@
 # Related projects, papers, and models
 
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
 Source review: 7 September 2026. Scope: a single robot receiving natural-language warehouse delivery requests, revising unfinished work, preserving cargo obligations, and executing through ROS 2/Nav2.
 
 This review checks primary papers, author project pages, and repository documentation. It is not a reproduction study or a complete novelty search. Repository claims and reported paper results have not been independently measured here. “Not established” means the inspected evidence does not demonstrate a capability; it does not prove the capability is absent.

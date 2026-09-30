@@ -1,6 +1,8 @@
 # Architecture and implementation contracts
 
-> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](mvp-runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
+> **Archived planning document.** Kept for history; it describes plans from before the system was built, not the current behavior. See the [design](../design.md) and [results](../results.md) for the current system.
+
+> Update, 7 September 2026: the original simulation MVP is now implemented with local Qwen/Ollama. See [current status](status.md) and [MVP runbook](../runbook.md). This document preserves the earlier, broader design/setup plan; unimplemented contracts remain future work.
 
 The application owns mission truth. The model produces typed requests, the planner sequences valid remaining stops, and the backend reports action outcomes.
 
