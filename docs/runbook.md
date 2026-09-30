@@ -85,9 +85,11 @@ If ROS discovery commands show only `/rosout`, check `ROS_DOMAIN_ID=42` and use 
 
 The launcher now resets inherited background interrupt handling, signals the ROS launch parent, and removes any remaining GUI subprocess. Startup followed by `/quit` exits with code 0 and leaves no simulator processes. Gazebo, RViz and the Nav2 container still report native shutdown errors on this WSL setup. This is a known unresolved integration issue; it occurs after the successful mission results. The [recorded launcher checks](evidence/mvp-results.json) summarize the outcome. Raw logs with local environment details are kept out of the public repository.
 
-## Nav2 bringup can abort on a cold start
+## Nav2 bringup can abort, and the launcher retries
 
-On this WSL setup the Ubuntu-24.04 distribution stops when idle, so a launch after a pause starts cold. In one such launch, Nav2's `lifecycle_manager_navigation` gave up while `bt_navigator` was still loading its behavior-tree plugins ("Failed to change state for node: bt_navigator … Aborting bringup"). The supervisor then waits 120 s and exits with `Nav2/localization not ready`. The next launch came up normally. If this happens, check `artifacts/simulation.log` for "Aborting bringup" and relaunch. Making the supervisor detect and recover from this automatically is planned with the ROS 2 packaging work.
+Nav2's `lifecycle_manager_navigation` sometimes gives up during startup: "Failed to change state for node: bt_navigator … Aborting bringup". It happened in 2 of 4 launches on 30 September 2026. In both failed logs, the timestamps around that moment jump by about 32 s, and comparing clocks directly showed the WSL2 VM clock 32.1 s behind Windows before being stepped back into sync. So the likely cause is the WSL2 clock being stepped while Nav2's lifecycle service calls are in flight; it is an environment issue, not a mission issue.
+
+`scripts/demo.sh` therefore waits for the navigation lifecycle manager to report its nodes active before starting the supervisor. If Nav2 aborts its bringup instead, the launcher stops the simulation, keeps the log as `artifacts/simulation.attemptN.log`, and relaunches, up to 3 attempts. Nothing has happened in the warehouse by then, so a restart is safe. The browser desktop launches the simulation separately and does not retry yet.
 
 ## WSL interop can disappear
 
