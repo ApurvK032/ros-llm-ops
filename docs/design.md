@@ -128,7 +128,7 @@ The [warehouse_interfaces](../ros_ws/src/warehouse_interfaces) package defines t
 | --- | --- |
 | `msg/MissionStatus` | The authoritative snapshot, published on `/warehouse/mission_status` (transient local) |
 | `msg/Parcel`, `msg/Stop`, `msg/Hold` | Parts of the status; state, disposition, stop, and hold kinds are message constants |
-| `srv/SubmitRequest`, `srv/OperatorCommand` | Natural-language requests and direct `/pause`, `/resume`, `/status` |
+| `srv/SubmitRequest`, `srv/OperatorCommand` | Natural-language requests, and direct commands: pause, resume, status, defer, retry. `OperatorCommand` is served on `warehouse/command` when the supervisor runs with `--recovery`; `SubmitRequest` is not served yet |
 | `action/ApproachAndVerify` | Drive to an approach pose with Nav2, then report the measured pose checks |
 
 [ros_messages.py](../warehouse_agent/ros_messages.py) converts snapshots to and from `MissionStatus`; a test round-trips real supervisor snapshots through it and checks that the message constants match the state machines. The JSON `/warehouse/status` topic is still published for the current viewer. The services and the action are defined but not yet served.
@@ -157,13 +157,21 @@ Three layers check that the rules above actually hold:
 - **Property-based tests** ([test_properties.py](../tests/test_properties.py), Hypothesis). Hundreds of random sessions drive the real supervisor with operator requests (including malformed model output), pauses, Nav2 results on and off target, cancels racing arrivals, and the robot drifting into racks. Every snapshot and every final journal must pass the checker, and every uninterrupted mission must terminate.
 - **Mutation check** ([mutation_check.py](../scripts/mutation_check.py)). It plants realistic bugs in a scratch copy of the supervisor, such as skipping the arrival check or moving cargo after a cancel, and requires the property tests to catch every one.
 
+## Recovery
+
+Three optional additions let a recovery layer respond to faults; they are described with their checker rules in
+[recovery](recovery.md). `--on-fault hold` makes the supervisor hold after a failed goal instead of retrying at
+once, until it is resumed or the hold expires. The direct commands `defer` and `retry` give up on parcels and take
+deferred parcels up again; the language model can issue neither. `--recovery` offers the direct commands on the
+`warehouse/command` service. Without these options the supervisor behaves exactly as described above.
+
 ## Known limitations
 
 These are the current boundaries, each addressed by the [roadmap](../README.md#roadmap):
 
 - One robot, three parcels with fixed stations; the prompt lists the parcels directly rather than generating them from the config.
 - One operation per request. Orders cannot be added mid-mission, and destination changes and returns are not supported.
-- A clarification or failed request pauses the whole mission. A deferred parcel cannot be retried in the same session.
+- A clarification or failed request pauses the whole mission. A deferred parcel is only taken up again by the direct `retry` command, which the recovery layer uses; the supervisor never retries one by itself.
 - Each supervisor start is a fresh logical mission. The journal is written, but there is no replay tool or crash recovery.
 - Greedy sequencing is not optimal, and grid costs are estimates.
 - The supervisor is a plain Python process polling `rclpy`, not a colcon package or lifecycle node. Status is JSON in `std_msgs/String`, and timeouts use wall-clock time although the nodes run on simulation time. A goal that is never acknowledged, or a cancel that never completes, stops the supervisor process.

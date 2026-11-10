@@ -57,8 +57,17 @@ class StatusMessageTests(unittest.TestCase):
                          {str(s) for s in Physical})
         self.assertEqual({Parcel.DISPOSITION_INACTIVE, Parcel.DISPOSITION_ACTIVE, Parcel.DISPOSITION_CANCELLED,
                           Parcel.DISPOSITION_DEFERRED}, {str(d) for d in Disposition})
-        self.assertEqual({Hold.KIND_OPERATOR, Hold.KIND_CLARIFICATION, Hold.KIND_REQUEST_FAILED, Hold.KIND_NO_ROUTE},
-                         {str(k) for k in HoldKind})
+        self.assertEqual({Hold.KIND_OPERATOR, Hold.KIND_CLARIFICATION, Hold.KIND_REQUEST_FAILED, Hold.KIND_NO_ROUTE,
+                          Hold.KIND_FAULT}, {str(k) for k in HoldKind})
+
+    def test_the_command_service_offers_exactly_the_direct_commands(self):
+        from warehouse_interfaces.srv import OperatorCommand
+
+        from warehouse_agent.mission import DIRECT
+        request = OperatorCommand.Request
+        self.assertEqual({request.COMMAND_PAUSE, request.COMMAND_RESUME, request.COMMAND_STATUS,
+                          request.COMMAND_DEFER, request.COMMAND_RETRY}, DIRECT)
+        self.assertEqual(request(command="defer", parcels=["P2"], reason="blocked").parcels, ["P2"])
 
 
 if __name__ == "__main__":

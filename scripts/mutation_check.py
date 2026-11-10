@@ -18,6 +18,16 @@ MISSION, PLANNER, STATE = "warehouse_agent/mission.py", "warehouse_agent/planner
 
 # (description, [(file, original code, buggy replacement), ...])
 MUTANTS = [
+    ("a fault hold's timer clears whatever hold replaced it", [(MISSION,
+     "        if self.hold and self.hold.kind is HoldKind.FAULT and self.clock() >= self.fault_deadline:\n",
+     "        if self.fault_deadline is not None and self.clock() >= self.fault_deadline:\n")]),
+    ("navigation is dispatched during a fault hold", [(MISSION,
+     "                        self.hold = Hold(HoldKind.FAULT, f\"Navigation {outcome} on the way to {stop.waypoint}; \"\n"
+     "                                                         \"holding for recovery before the retry\")\n",
+     "")]),
+    ("the language model may defer parcels", [(MISSION,
+     "        if operation in DIRECT_ONLY and not str(request_id).startswith(\"D\"):\n",
+     "        if False:\n")]),
     ("cargo moves while the model is still interpreting", [(MISSION,
      "            if self.language_pending and not self.cancel_requested:\n                return\n",
      "            pass\n")]),

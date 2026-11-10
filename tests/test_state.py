@@ -22,6 +22,8 @@ EXPECTED = {  # (transition, from physical, from disposition) -> (to physical, t
     ("drop_off", "onboard", "active"): ("delivered", "active"),
     ("defer", "awaiting_pickup", "active"): ("awaiting_pickup", "deferred"),
     ("defer", "onboard", "active"): ("onboard", "deferred"),
+    ("reactivate", "awaiting_pickup", "deferred"): ("awaiting_pickup", "active"),
+    ("reactivate", "onboard", "deferred"): ("onboard", "active"),
 }
 
 

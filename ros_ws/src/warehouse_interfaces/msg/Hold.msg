@@ -4,6 +4,7 @@ string KIND_OPERATOR=operator
 string KIND_CLARIFICATION=clarification
 string KIND_REQUEST_FAILED=request_failed
 string KIND_NO_ROUTE=no_route
+string KIND_FAULT=fault        # A navigation goal failed; held for recovery before the retry
 
 string kind
 string message

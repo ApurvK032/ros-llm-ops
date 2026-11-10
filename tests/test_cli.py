@@ -31,7 +31,8 @@ class Future:
 
 
 class CliTests(unittest.TestCase):
-    def execute(self, commands, intent, delay=0, pose=None, command=None, code=0):
+    def execute(self, commands, intent, delay=0, pose=None, command=None, code=0, recovery=False,
+                on_spin=None, **options):
         inbox = queue.Queue()
         for text in commands:
             inbox.put(text)
@@ -39,12 +40,26 @@ class CliTests(unittest.TestCase):
         if pose:
             backend.pose = list(pose)
         backend.publish_status = lambda state: None
+        backend.handler = None
+
+        def serve_commands(handler):
+            backend.handler = handler
+            return True
+
+        def spin():
+            # A ROS service request arrives inside spin(); on_spin plays the caller.
+            if on_spin and backend.handler:
+                on_spin(backend)
+
+        backend.serve_commands, backend.spin = serve_commands, spin
         future = Future(intent, delay)
         with tempfile.TemporaryDirectory() as directory:
             journal = Path(directory)/"episode.jsonl"
             args = SimpleNamespace(config=ROOT/"config/warehouse.json", reset_localization=False,
                                    journal=journal, model="test_model", endpoint="http://unused",
-                                   command=command, timeout=20)
+                                   command=command, timeout=20, recovery=recovery,
+                                   on_fault=options.get("on_fault", "retry"),
+                                   fault_hold_seconds=options.get("fault_hold_seconds", 90.0))
             output = io.StringIO()
             with patch("warehouse_agent.ros_backend.RosBackend", return_value=backend), \
                  patch("warehouse_agent.cli.queue.Queue", return_value=inbox), \
@@ -77,6 +92,47 @@ class CliTests(unittest.TestCase):
         self.assertTrue(any(e["type"] == "planning_failed" for e in events))
         self.assertTrue(events[-1]["state"]["paused"])
         self.assertIn('"type": "planning_failed"', output)
+
+    def test_direct_commands_from_the_service_are_applied_between_ticks_and_never_raise(self):
+        replies = []
+
+        def caller(backend):
+            if backend.dispatched == 1 and not replies:
+                replies.append(backend.handler("defer", ["P9"], ""))            # refused: unknown parcel
+                replies.append(backend.handler("explode", [], ""))              # refused: not a command
+                replies.append(backend.handler("defer", ["P1"], "PICK_A is blocked"))
+            if backend.target is not None and backend.result is None:
+                backend.result = "cancelled" if backend.cancelled else None
+                if backend.result is None:
+                    backend.arrive()
+
+        backend, events, output = self.execute([], {"operation": "create", "parcels": ["P1", "P2"]},
+                                               command="Deliver P1 and P2", code=1, recovery=True, on_spin=caller)
+        self.assertEqual([accepted for accepted, _, _ in replies], [False, False, True])
+        self.assertIn("Unknown parcel ID", replies[0][2])
+        self.assertEqual(replies[2][1:], ("D3", "applied"))
+        self.assertEqual([e["type"] for e in events].count("command_rejected"), 2)
+        final = events[-1]["state"]["parcels"]
+        self.assertEqual((final["P1"]["disposition"], final["P1"]["reason"]), ("deferred", "PICK_A is blocked"))
+        self.assertEqual(final["P2"]["state"], "delivered")
+        self.assertIn("Direct command D3: defer ['P1'] PICK_A is blocked", output)
+
+    def test_without_recovery_no_command_service_is_offered(self):
+        backend, _, _ = self.execute(["/quit"], {"operation": "status", "parcels": []})
+        self.assertIsNone(backend.handler)
+
+    def test_with_recovery_attached_an_unplannable_pose_waits_for_a_resume(self):
+        def caller(backend):
+            backend.pose = list(World().waypoints["HOME"])                      # recovery fixed the pose
+            backend.handler("resume", [], "")
+            if backend.target is not None and backend.result is None:
+                backend.arrive()
+
+        backend, events, output = self.execute([], {"operation": "create", "parcels": ["P1"]},
+                                               pose=[-5.0, 0.0, 0.0], command="Deliver P1", recovery=True,
+                                               on_spin=caller)
+        self.assertNotIn("Mission held", output)
+        self.assertEqual(events[-1]["state"]["parcels"]["P1"]["state"], "delivered")
 
     def test_unplannable_pose_exits_promptly_in_command_mode(self):
         backend, events, output = self.execute([], {"operation": "create", "parcels": ["P1", "P2", "P3"]},

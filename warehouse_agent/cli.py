@@ -23,7 +23,7 @@ def print_event(event):
     elif kind.startswith("cargo_"):
         print(f"✓ {event['parcel']} {event['state']} at {event['waypoint']}", flush=True)
     elif kind in {"mission_finished", "parcel_deferred", "clarification_required", "navigation_retry",
-                  "planning_failed"}:
+                  "planning_failed", "fault_hold", "fault_hold_expired", "command_rejected"}:
         print(json.dumps(event, indent=2), flush=True)
 
 
@@ -33,7 +33,22 @@ def run(args):
     backend = RosBackend(world, initialize_pose=args.reset_localization)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S.%fZ")
     journal = args.journal or ROOT / "artifacts/episodes" / f"{stamp}.jsonl"
-    mission = Mission(world, backend, journal, print_event)
+    mission = Mission(world, backend, journal, print_event, on_fault=args.on_fault,
+                      fault_hold_s=args.fault_hold_seconds)
+
+    def direct_command(command, parcels, reason):
+        """A command from the ROS service: applied like a console command, and never raises into spin()."""
+        if mission.closed:
+            return False, "", "The mission is closed"
+        try:
+            outcome = mission.command(command, parcels, reason)
+        except ValueError as exc:
+            return False, f"D{mission.commands}", str(exc)
+        print(f"Direct command D{mission.commands}: {command} {parcels or ''} {reason}".rstrip(), flush=True)
+        return True, f"D{mission.commands}", outcome
+
+    if args.recovery and not backend.serve_commands(direct_command):
+        print("warehouse_interfaces is not built; the command service is unavailable.", flush=True)
     model = LocalModel(args.model, args.endpoint)
     inbox = queue.Queue()
     executor = ThreadPoolExecutor(max_workers=1)
@@ -95,8 +110,8 @@ def run(args):
                     return 2
             mission.tick()
             backend.publish_status(mission.snapshot())
-            # In --command mode no operator can /resume a planning hold.
-            if args.command and mission.hold and mission.hold.kind is HoldKind.NO_ROUTE:
+            # In --command mode no operator can /resume a planning hold, unless a recovery layer is attached.
+            if args.command and not args.recovery and mission.hold and mission.hold.kind is HoldKind.NO_ROUTE:
                 print("Mission held: no route from the current pose; exiting.", flush=True)
                 return 1
             if args.command and demo_accepted and mission.completed_reported:
@@ -120,4 +135,10 @@ def add_arguments(parser):
     parser.add_argument("--journal", type=Path)
     parser.add_argument("--command", help="Interpret this text and exit when its delivery mission finishes")
     parser.add_argument("--timeout", type=float, default=600)
+    parser.add_argument("--on-fault", choices=["retry", "hold"], default="retry",
+                        help="After a failed goal: retry at once (default), or hold for recovery before the retry")
+    parser.add_argument("--fault-hold-seconds", type=float, default=90.0,
+                        help="How long a fault hold waits for a decision before the normal retry continues")
+    parser.add_argument("--recovery", action="store_true",
+                        help="Accept direct commands (pause, resume, defer, retry) on the warehouse/command service")
     parser.add_argument("--reset-localization", action="store_true", help="Explicitly reset localization to HOME; use only with the robot at HOME")

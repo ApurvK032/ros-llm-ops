@@ -33,6 +33,9 @@ PARCEL_TRANSITIONS = {
     "drop_off": ({(Physical.ONBOARD, Disposition.ACTIVE)}, (Physical.DELIVERED, None)),
     "defer": ({(Physical.AWAITING_PICKUP, Disposition.ACTIVE), (Physical.ONBOARD, Disposition.ACTIVE)},
               (None, Disposition.DEFERRED)),
+    # A deferred parcel can be taken up again once whatever stopped it has been dealt with.
+    "reactivate": ({(Physical.AWAITING_PICKUP, Disposition.DEFERRED), (Physical.ONBOARD, Disposition.DEFERRED)},
+                   (None, Disposition.ACTIVE)),
 }
 
 
@@ -57,6 +60,8 @@ class Parcel:
         self.disposition = disposition or self.disposition
         if reason:
             self.reason = reason
+        elif transition == "reactivate":
+            self.reason = None
 
     @property
     def open(self):
@@ -104,6 +109,7 @@ class HoldKind(StrEnum):
     CLARIFICATION = "clarification"
     REQUEST_FAILED = "request_failed"
     NO_ROUTE = "no_route"
+    FAULT = "fault"
 
 
 @dataclass(frozen=True)

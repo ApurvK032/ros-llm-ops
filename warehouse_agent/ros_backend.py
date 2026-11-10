@@ -136,6 +136,25 @@ class RosBackend:
     def cancel(self):
         self.cancel_pending = True
 
+    def serve_commands(self, handler):
+        """Offer direct control as a ROS service. handler(command, parcels, reason) -> (accepted, id, message).
+
+        The callback runs inside spin(), which the mission calls first in every tick, so a command is applied
+        between ticks exactly like one typed at the console. Returns False without the built interfaces.
+        """
+        try:
+            from warehouse_interfaces.srv import OperatorCommand
+        except ImportError:
+            return False
+
+        def respond(request, response):
+            response.accepted, response.request_id, response.message = handler(
+                request.command, list(request.parcels), request.reason)
+            return response
+
+        self.command_service = self.node.create_service(OperatorCommand, "warehouse/command", respond)
+        return True
+
     def publish_status(self, state):
         import json
 

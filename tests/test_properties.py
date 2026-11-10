@@ -42,7 +42,8 @@ intents = st.one_of(
     st.sampled_from(PARCELS).map(lambda pid: intent("prioritize", [pid])),
     valid_ids.map(lambda ids: intent("cancel", ids)),
     st.sampled_from(["onboard_first", "status", "pause", "resume", "clarify"]).map(intent),
-    st.fixed_dictionaries({"operation": st.sampled_from(OPERATIONS),
+    # defer and retry are direct-only: when the "model" asks for them the supervisor must refuse.
+    st.fixed_dictionaries({"operation": st.sampled_from([*OPERATIONS, "defer", "retry"]),
                            "parcels": st.lists(st.sampled_from([*PARCELS, "P9"]), max_size=3),
                            "message": st.just("")}),
 )
@@ -55,12 +56,14 @@ arrival_errors = st.one_of(st.just((0.0, 0.0, 0.0)),
 class Harness:
     """A Mission with a backend double, driven through the same request API the CLI uses."""
 
-    def __init__(self):
+    def __init__(self, on_fault="retry"):
         self.tmp = tempfile.TemporaryDirectory()
         self.journal = Path(self.tmp.name)/"episode.jsonl"
         self.backend = Backend(WORLD)
         self.backend.publish_status = lambda state: None
-        self.mission = Mission(WORLD, self.backend, self.journal)
+        self.now = 0.0   # the test owns the clock, so fault holds can be made to expire
+        self.mission = Mission(WORLD, self.backend, self.journal, on_fault=on_fault, fault_hold_s=30.0,
+                               clock=lambda: self.now)
         self.mission.planner.cache = A_STAR_CACHE
         self.intent = None
 
@@ -78,8 +81,11 @@ class Harness:
             return self.mission.resolve(request_id, error=error)
         return self.mission.resolve(request_id, self.intent, model="property-test")
 
-    def direct(self, operation):
-        self.mission.command(operation)
+    def direct(self, operation, parcels=()):
+        try:
+            self.mission.command(operation, parcels)
+        except ValueError:
+            pass  # A refused command is recorded and must leave the mission consistent; the invariants check that.
 
     def close(self):
         if self.mission.active:
@@ -93,16 +99,23 @@ class Harness:
 class SupervisorMachine(RuleBasedStateMachine):
     def __init__(self):
         super().__init__()
-        self.h = Harness()
+        self.h = None
 
-    @initialize(parcels=valid_ids)
-    def mission_created(self, parcels):
+    @initialize(parcels=valid_ids, on_fault=st.sampled_from(["retry", "hold"]))
+    def mission_created(self, parcels, on_fault):
+        self.h = Harness(on_fault)
         self.h.mission.apply(intent("create", parcels))
 
     @precondition(lambda self: self.h.pending is None)
     @rule(intent=intents)
     def operator_sends_request(self, intent):
         self.h.start_request(intent)
+
+    @precondition(lambda self: self.h.pending is None)
+    @rule(operation=st.sampled_from(["defer", "retry"]), parcels=valid_ids)
+    def model_asks_for_a_recovery_decision(self, operation, parcels):
+        """Well-formed and often legal in the current state, but never the model's to make."""
+        self.h.start_request(intent(operation, parcels))
 
     @precondition(lambda self: self.h.pending is None and self.h.mission.active is not None)
     @rule()
@@ -128,6 +141,21 @@ class SupervisorMachine(RuleBasedStateMachine):
     @rule(operation=st.sampled_from(["pause", "resume", "status"]))
     def operator_direct_command(self, operation):
         self.h.direct(operation)
+
+    @rule(operation=st.sampled_from(["defer", "retry"]), parcels=valid_ids)
+    def recovery_decides(self, operation, parcels):
+        """The recovery layer gives up on parcels or takes deferred ones up again, legal or not."""
+        self.h.direct(operation, parcels)
+
+    @precondition(lambda self: self.h.mission.active is not None)
+    @rule()
+    def recovery_defers_the_parcel_in_transit(self):
+        self.h.direct("defer", [self.h.mission.active.parcel])
+
+    @rule(seconds=st.floats(0.0, 45.0))
+    def time_passes(self, seconds):
+        """Long enough, sometimes, for a fault hold to expire on the next tick."""
+        self.h.now += seconds
 
     @precondition(lambda self: self.h.backend.target is not None)
     @rule()
@@ -192,13 +220,26 @@ class LivenessTests(unittest.TestCase):
            failures=st.lists(st.booleans(), min_size=40, max_size=40))
     def test_every_parcel_ends_delivered_or_deferred(self, parcels, priority, failures):
         """With no operator interference, the mission always terminates; each parcel is delivered or deferred."""
-        h = Harness()
+        self.run_to_the_end(Harness(), parcels, priority, failures)
+
+    @settings(max_examples=150, deadline=None, suppress_health_check=[HealthCheck.too_slow])
+    @given(parcels=st.lists(st.sampled_from(PARCELS), min_size=1, unique=True),
+           priority=st.one_of(st.none(), st.sampled_from(PARCELS)),
+           failures=st.lists(st.booleans(), min_size=40, max_size=40))
+    def test_fault_holds_that_nobody_answers_never_stall_the_mission(self, parcels, priority, failures):
+        """Holding on faults with no recovery layer attached: every hold expires and the mission still ends."""
+        self.run_to_the_end(Harness(on_fault="hold"), parcels, priority, failures)
+
+    def run_to_the_end(self, h, parcels, priority, failures):
         h.mission.apply({"operation": "create", "parcels": parcels})
         if priority in parcels:
             h.mission.apply({"operation": "prioritize", "parcels": [priority]})
         attempts = iter(failures)
         for _ in range(2*len(parcels)*2+2):
             h.mission.tick()
+            if h.mission.hold:
+                h.now += 31.0      # nobody answers the fault hold; it runs out
+                h.mission.tick()
             if not h.mission.active:
                 break
             if next(attempts):

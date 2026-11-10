@@ -8,6 +8,8 @@ import unittest
 from pathlib import Path
 
 from warehouse_agent.mission import Mission
+from warehouse_agent.state import Disposition, HoldKind, Physical
+from warehouse_agent.verify import verify_file
 from warehouse_agent.visual_state import mission_label
 from warehouse_agent.world import World
 
@@ -237,6 +239,166 @@ class MissionTests(unittest.TestCase):
             self.mission.tick()
         self.assertEqual(self.mission.parcels["P1"].disposition, "deferred")
         self.assertEqual(self.mission.active.parcel, "P2")
+
+    # --- recovery: fault holds and the direct defer / retry commands ---------------------------------------
+    def held_mission(self, **options):
+        """A mission that holds on faults, with a clock the test controls."""
+        self.backend.result = "cancelled"
+        self.mission.close()
+        self.now = 1000.0
+        self.mission = Mission(self.world, self.backend, Path(self.tmp.name)/"held.jsonl", self.events.append,
+                               on_fault="hold", clock=lambda: self.now, **options)
+        self.events.clear()
+        self.start()
+
+    def kinds(self):
+        return [e["type"] for e in self.events]
+
+    def test_a_failed_goal_holds_for_recovery_before_the_retry(self):
+        self.held_mission()
+        first = self.mission.active
+        self.backend.result = "failed"
+        self.mission.tick()
+        self.assertEqual(self.mission.hold.kind, HoldKind.FAULT)
+        self.assertIsNone(self.mission.active)
+        self.assertEqual(self.kinds()[-2:], ["navigation_retry", "fault_hold"])
+        dispatched = self.backend.dispatched
+        self.mission.tick()
+        self.assertEqual(self.backend.dispatched, dispatched)      # nothing moves while held
+        self.mission.command("resume")
+        self.mission.tick()
+        self.assertEqual(self.mission.active, first)                # the same stop is retried
+        self.assertIsNone(self.mission.hold)
+
+    def test_a_fault_hold_ends_by_itself_and_the_normal_retry_policy_continues(self):
+        self.held_mission(fault_hold_s=30.0)
+        first = self.mission.active
+        self.backend.result = "failed"
+        self.mission.tick()
+        self.now += 29.0
+        self.mission.tick()
+        self.assertEqual(self.mission.hold.kind, HoldKind.FAULT)
+        self.now += 2.0
+        self.mission.tick()
+        self.assertIn("fault_hold_expired", self.kinds())
+        self.assertEqual(self.mission.active, first)
+        self.backend.result = "failed"                              # the retry fails too: deferred as before
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels[first.parcel].disposition, Disposition.DEFERRED)
+        self.assertIsNone(self.mission.hold)
+
+    def test_an_operator_pause_replaces_a_fault_hold_and_does_not_expire(self):
+        self.held_mission(fault_hold_s=30.0)
+        self.backend.result = "failed"
+        self.mission.tick()
+        self.mission.command("pause")
+        self.now += 300.0
+        self.mission.tick()
+        self.assertEqual(self.mission.hold.kind, HoldKind.OPERATOR)
+        self.assertNotIn("fault_hold_expired", self.kinds())
+
+    def test_a_clarification_that_replaces_a_fault_hold_does_not_expire_either(self):
+        self.held_mission(fault_hold_s=30.0)
+        self.backend.result = "failed"
+        self.mission.tick()
+        request = self.mission.submit("what?", "test-model")
+        self.mission.resolve(request, {"operation": "clarify", "parcels": [], "message": "Which parcel?"})
+        self.now += 300.0
+        self.mission.tick()
+        self.assertEqual(self.mission.hold.kind, HoldKind.CLARIFICATION)
+        self.assertNotIn("fault_hold_expired", self.kinds())
+
+    def test_without_the_option_a_failure_retries_at_once_as_before(self):
+        self.start()
+        first = self.mission.active
+        self.backend.result = "failed"
+        self.mission.tick()
+        self.assertIsNone(self.mission.hold)
+        self.assertEqual(self.mission.active, first)
+
+    def test_defer_skips_a_parcel_and_the_rest_are_delivered(self):
+        self.start()
+        target = self.mission.active.parcel
+        self.assertEqual(self.mission.command("defer", [target], "PICK is blocked"), "applied")
+        self.assertTrue(self.backend.cancelled)                     # the goal toward it is cancelled first
+        self.backend.result = "cancelled"
+        for _ in range(8):
+            self.mission.tick()
+            if self.mission.active:
+                self.backend.arrive()
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels[target].as_dict()["reason"], "PICK is blocked")
+        self.assertEqual({p.disposition for pid, p in self.mission.parcels.items() if pid != target},
+                         {Disposition.ACTIVE})
+        self.assertTrue(all(p.state is Physical.DELIVERED for pid, p in self.mission.parcels.items()
+                            if pid != target))
+        finished = [e for e in self.events if e["type"] == "mission_finished"]
+        self.assertEqual(finished[-1]["result"], "partial")
+
+    def test_retry_takes_a_deferred_parcel_up_again_with_fresh_attempts(self):
+        self.start(["P1"])
+        for _ in range(2):
+            self.backend.result = "failed"
+            self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"].disposition, Disposition.DEFERRED)
+        self.assertTrue(self.mission.finished)
+        self.mission.command("retry", ["P1"])
+        self.mission.tick()
+        self.assertEqual(self.mission.active.parcel, "P1")
+        self.assertIsNone(self.mission.parcels["P1"].reason)
+        self.backend.result = "failed"                              # one failure is a retry again, not a deferral
+        self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"].disposition, Disposition.ACTIVE)
+        for _ in range(2):
+            self.backend.arrive()
+            self.mission.tick()
+        self.assertEqual(self.mission.parcels["P1"].state, Physical.DELIVERED)
+        results = [e["result"] for e in self.events if e["type"] == "mission_finished"]
+        self.assertEqual(results, ["partial", "complete"])
+
+    def test_refused_recovery_commands_change_nothing_and_are_recorded(self):
+        self.start(["P1"])
+        before = self.mission.snapshot()["parcels"]
+        for operation, parcels in (("defer", []), ("defer", ["P2"]), ("retry", ["P1"]), ("defer", ["P9"]),
+                                   ("create", ["P2"])):
+            with self.subTest(operation=operation, parcels=parcels), self.assertRaises(ValueError):
+                self.mission.command(operation, parcels)
+        self.assertEqual(self.mission.snapshot()["parcels"], before)
+        self.assertEqual(self.kinds().count("command_rejected"), 5)
+
+    def test_the_language_model_can_never_defer_or_retry(self):
+        self.start(["P1"])
+        for operation in ("defer", "retry"):
+            request = self.mission.submit(f"{operation} P1", "test-model")
+            outcome = self.mission.resolve(request, {"operation": operation, "parcels": ["P1"], "message": ""})
+            self.assertEqual(outcome, "failed")
+            self.assertEqual(self.mission.parcels["P1"].disposition, Disposition.ACTIVE)
+            self.mission.command("resume")
+
+    def test_journals_with_recovery_pass_the_independent_checker(self):
+        self.held_mission(fault_hold_s=30.0)
+        first = self.mission.active.parcel
+        self.backend.result = "failed"
+        self.mission.tick()                                         # fault hold
+        self.mission.command("defer", [first], "blocked")
+        self.mission.command("resume")
+        self.mission.tick()
+        self.backend.result = "failed"
+        self.mission.tick()                                         # a second parcel: fault hold, then expiry
+        self.now += 31.0
+        self.mission.tick()
+        self.mission.command("retry", [first])
+        for _ in range(12):
+            self.mission.tick()
+            if self.mission.active:
+                self.backend.arrive()
+        self.mission.tick()
+        self.assertTrue(all(p.state is Physical.DELIVERED for p in self.mission.parcels.values()))
+        self.mission.close()
+        report = verify_file(Path(self.tmp.name)/"held.jsonl")
+        self.assertEqual([(v.code, v.message) for v in report.violations], [])
+        self.assertEqual(report.warnings, [])
+        self.mission = Mission(self.world, self.backend, Path(self.tmp.name)/"after.jsonl")
 
     def test_priority_preserves_all_obligations(self):
         self.mission.apply({"operation": "create", "parcels": ["P1", "P2", "P3"]})

@@ -27,7 +27,8 @@ class Visual:
 
 
 HOLD_LABELS = {"no_route": "Held: no route from current pose", "clarification": "Waiting for clarification",
-               "request_failed": "Paused: request not accepted", "operator": "Paused"}
+               "request_failed": "Paused: request not accepted", "operator": "Paused",
+               "fault": "Held: navigation fault, awaiting recovery"}
 
 
 def initial_state(world):

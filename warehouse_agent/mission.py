@@ -9,8 +9,22 @@ from .planner import Planner, PlanningError
 from .state import Disposition, Goal, Hold, HoldKind, Parcel, Physical
 
 
+# Operations only a person or the recovery layer may issue directly; the language model can never apply them.
+DIRECT_ONLY = {"defer", "retry"}
+DIRECT = {"pause", "resume", "status"} | DIRECT_ONLY
+
+
 class Mission:
-    def __init__(self, world, backend, journal, emit=None):
+    def __init__(self, world, backend, journal, emit=None, on_fault="retry", fault_hold_s=90.0,
+                 clock=time.monotonic):
+        """on_fault="hold" pauses after a failed goal so a fault can be dealt with before the retry.
+
+        The hold ends on resume, or by itself after fault_hold_s, so a mission never waits forever.
+        """
+        if on_fault not in {"retry", "hold"}:
+            raise ValueError("on_fault must be 'retry' or 'hold'")
+        self.on_fault, self.fault_hold_s, self.clock = on_fault, fault_hold_s, clock
+        self.fault_deadline = None
         self.world, self.backend = world, backend
         self.planner = Planner(world)
         self.parcels = {pid: Parcel(pid, p["pickup"], p["drop"]) for pid, p in world.config["parcels"].items()}
@@ -53,7 +67,7 @@ class Mission:
     def record(self, kind, **data):
         self.sequence += 1
         event = {"sequence": self.sequence, "time": datetime.now(UTC).isoformat(),
-                 "monotonic": time.monotonic(), "revision": self.revision,
+                 "monotonic": self.clock(), "revision": self.revision,
                  "type": kind, **data}
         self.journal.write(json.dumps(event, allow_nan=False)+"\n")
         self.journal.flush()
@@ -124,12 +138,24 @@ class Mission:
         finally:
             self.language_pending = False
 
-    def command(self, operation):
-        """Direct operator control (/pause, /resume, /status); bypasses the model entirely."""
+    def command(self, operation, parcels=(), message=""):
+        """Direct control that bypasses the model: pause, resume, status, and the recovery decisions
+        defer (give up on parcels for now) and retry (take deferred parcels up again).
+
+        Raises ValueError, recorded as command_rejected, when the command is not allowed in the current state.
+        """
         self.commands += 1
-        if operation == "pause" and self.pending_request:
-            self.pending_request["superseded"] = True
-        return self.apply({"operation": operation, "parcels": [], "message": ""}, f"D{self.commands}")
+        request_id = f"D{self.commands}"
+        try:
+            if operation not in DIRECT:
+                raise ValueError(f"{operation!r} is not a direct command")
+            if operation == "pause" and self.pending_request:
+                self.pending_request["superseded"] = True
+            return self.apply({"operation": operation, "parcels": list(parcels), "message": message}, request_id)
+        except ValueError as exc:
+            self.record("command_rejected", request_id=request_id, operation=operation, parcels=list(parcels),
+                        error=str(exc))
+            raise
 
     def apply(self, intent, request_id=None):
         """Apply validated intent to current cargo, never to a model's copy.
@@ -143,6 +169,8 @@ class Mission:
         if not isinstance(ids, list) or any(not isinstance(p, str) or p not in self.parcels for p in ids):
             raise ValueError(f"Unknown parcel ID; available IDs are {', '.join(self.parcels)}")
         ids = list(dict.fromkeys(ids))
+        if operation in DIRECT_ONLY and not str(request_id).startswith("D"):
+            raise ValueError(f"{operation} is a direct recovery command; the language model cannot issue it")
         # Journal what was actually applied (repeated IDs collapsed), not the raw model output.
         normalized = {"operation": operation, "parcels": ids, "message": intent.get("message", "")}
         if operation == "status":
@@ -190,6 +218,21 @@ class Mission:
                 self.parcels[pid].apply("cancel")
             if self.active and self.active.parcel in ids:
                 self.cancel_motion()
+        elif operation == "defer":
+            if not ids or not all(self.parcels[p].can("defer") for p in ids):
+                raise ValueError("Defer names active parcels that are not yet delivered")
+            for pid in ids:
+                self.parcels[pid].apply("defer", reason=intent.get("message") or "Deferred by a recovery decision")
+            if self.active and self.active.parcel in ids:
+                self.cancel_motion()
+        elif operation == "retry":
+            if not ids or not all(self.parcels[p].can("reactivate") for p in ids):
+                raise ValueError("Retry names deferred parcels")
+            for pid in ids:
+                self.parcels[pid].apply("reactivate")
+                for kind in ("pickup", "drop"):
+                    self.attempts.pop((pid, kind), None)
+            self.completed_reported = False
         elif operation == "pause":
             self.hold_for(HoldKind.OPERATOR, "Paused by the operator")
         elif operation == "resume":
@@ -197,13 +240,20 @@ class Mission:
         else:
             raise ValueError("Unsupported operation")
         self.revision += 1
-        if operation in {"create", "prioritize", "onboard_first", "cancel", "resume"}:
+        if operation in {"create", "prioritize", "onboard_first", "cancel", "resume", "defer", "retry"}:
             self.plan_pending = True
         self.record("instruction_applied", request_id=request_id, intent=normalized, state=self.snapshot())
         return "applied"
 
     def tick(self):
         self.backend.spin()
+        if self.hold and self.hold.kind is HoldKind.FAULT and self.clock() >= self.fault_deadline:
+            # Nobody decided in time: carry on with the supervisor's own retry policy. Only a fault hold
+            # expires; a pause, clarification or failed request that replaced it waits for its own answer.
+            self.hold = None
+            self.revision += 1
+            self.plan_pending = True
+            self.record("fault_hold_expired", after_s=self.fault_hold_s)
         if self.active:
             outcome = self.backend.poll()
             if outcome is None:
@@ -239,6 +289,13 @@ class Mission:
                     self.record("parcel_deferred", parcel=stop.parcel, reason=parcel.reason)
                 else:
                     self.record("navigation_retry", stop=stop.as_dict(), arrival=arrival)
+                    if self.on_fault == "hold":
+                        self.hold = Hold(HoldKind.FAULT, f"Navigation {outcome} on the way to {stop.waypoint}; "
+                                                         "holding for recovery before the retry")
+                        self.fault_deadline = self.clock() + self.fault_hold_s
+                        self.revision += 1
+                        self.record("fault_hold", stop=stop.as_dict(), outcome=outcome,
+                                    expires_in_s=self.fault_hold_s)
         if self.paused or self.language_pending:
             return
         try:

@@ -20,7 +20,8 @@ KNOWN_EVENTS = {"episode_started", "episode_closed", "language_requested", "lang
                 "instruction_applied", "clarification_required", "request_failed", "request_superseded",
                 "plan_selected", "navigation_started", "navigation_cancel_requested", "navigation_finished",
                 "cargo_pickup", "cargo_drop", "navigation_retry", "parcel_deferred", "planning_failed",
-                "mission_finished", "check_passed", "status_reported"}
+                "mission_finished", "check_passed", "status_reported", "fault_hold", "fault_hold_expired",
+                "command_rejected"}
 
 
 @dataclass
@@ -115,6 +116,7 @@ class Replay:
         self.request_ids = set()      # every model request ID seen
         self.settled = set()          # model request IDs that already reached their one outcome
         self.retries = set()          # (parcel, kind) stops that already had a recorded retry
+        self.fault_hold = False       # paused by a fault hold that has not yet been resumed, replaced or expired
         self.closed = False
         self.previous = None
 
@@ -145,6 +147,7 @@ class Replay:
                 self.violation(e, "REVISION_DECREASED", "state revision decreased")
         if self.closed:
             self.violation(e, "EVENT_AFTER_CLOSE", f"{kind} recorded after episode_closed")
+        self.before_this = prev
         self.previous = e
         handler = getattr(self, "on_" + kind, None) if kind in KNOWN_EVENTS else None
         if handler is None:
@@ -233,11 +236,11 @@ class Replay:
 
     def on_request_failed(self, e):
         self.conclude(e, after_interpretation=False)
-        self.paused = True
+        self.paused, self.fault_hold = True, False
 
     def on_clarification_required(self, e):
         self.conclude(e, after_interpretation=True)
-        self.paused = True
+        self.paused, self.fault_hold = True, False
 
     def on_instruction_applied(self, e):
         self.conclude(e, after_interpretation=True)
@@ -252,13 +255,33 @@ class Replay:
             if pid not in self.parcels:
                 self.violation(e, "UNKNOWN_PARCEL", f"{op} applied to unknown parcel {pid}")
                 return
+        if op in {"defer", "retry"} and not str(e.get("request_id")).startswith("D"):
+            self.violation(e, "RECOVERY_NOT_DIRECT", f"{op} applied from request {e.get('request_id')}; only a "
+                                                     "direct command may defer or retry parcels")
         if op == "create":
             for pid in ids:
                 p = self.parcels[pid]
                 if (p["state"], p["disposition"]) != ("awaiting_pickup", "inactive"):
                     self.violation(e, "ILLEGAL_CREATE", f"{pid} activated while {p['state']}/{p['disposition']}")
                 p["disposition"] = "active"
-            self.paused = False
+            self.paused = self.fault_hold = False
+        elif op == "defer":
+            if not ids:
+                self.violation(e, "ILLEGAL_DEFER", "defer applied without naming a parcel")
+            for pid in ids:
+                p = self.parcels[pid]
+                if p["disposition"] != "active" or p["state"] == "delivered":
+                    self.violation(e, "ILLEGAL_DEFER", f"{pid} deferred while {p['state']}/{p['disposition']}")
+                p["disposition"] = "deferred"
+        elif op == "retry":
+            if not ids:
+                self.violation(e, "ILLEGAL_RETRY", "retry applied without naming a parcel")
+            for pid in ids:
+                p = self.parcels[pid]
+                if p["disposition"] != "deferred" or p["state"] == "delivered":
+                    self.violation(e, "ILLEGAL_RETRY", f"{pid} retried while {p['state']}/{p['disposition']}")
+                p["disposition"] = "active"
+                self.retries -= {(pid, "pickup"), (pid, "drop")}
         elif op == "cancel":
             for pid in ids:
                 p = self.parcels[pid]
@@ -266,9 +289,9 @@ class Replay:
                     self.violation(e, "ILLEGAL_CANCEL", f"{pid} cancelled while {p['state']}/{p['disposition']}")
                 p["disposition"] = "cancelled"
         elif op == "pause":
-            self.paused = True
+            self.paused, self.fault_hold = True, False
         elif op == "resume":
-            self.paused = False
+            self.paused = self.fault_hold = False
         elif op == "prioritize" and len(ids) != 1:
             self.violation(e, "ILLEGAL_PRIORITY", f"prioritize needs exactly one parcel, got {ids}")
 
@@ -373,6 +396,23 @@ class Replay:
             self.violation(e, "RETRY_WITHOUT_ARRIVAL", f"retry of {stop} without a matching Nav2 result")
         self.retries.add((stop.get("parcel"), stop.get("kind")))
 
+    def on_fault_hold(self, e):
+        """A hold for recovery is only justified right after the recorded retry of a failed goal."""
+        prev = self.before_this
+        if not prev or prev.get("type") != "navigation_retry" or prev.get("stop") != e.get("stop"):
+            self.violation(e, "FAULT_HOLD_WITHOUT_FAILURE", "fault hold not directly after the retry of that stop")
+        if self.paused:
+            self.violation(e, "FAULT_HOLD_WHILE_PAUSED", "fault hold recorded while already paused")
+        self.paused = self.fault_hold = True
+
+    def on_fault_hold_expired(self, e):
+        if not self.fault_hold:
+            self.violation(e, "EXPIRY_WITHOUT_FAULT_HOLD", "a fault hold expired but none was in force")
+        self.paused = self.fault_hold = False
+
+    def on_command_rejected(self, e):
+        pass  # A refused direct command changes nothing; it is recorded so every command has an outcome.
+
     def on_parcel_deferred(self, e):
         pid = e.get("parcel")
         p = self.parcels.get(pid)
@@ -389,7 +429,7 @@ class Replay:
         p["disposition"] = "deferred"
 
     def on_planning_failed(self, e):
-        self.paused = True
+        self.paused, self.fault_hold = True, False
 
     def on_mission_finished(self, e):
         remaining = obligations(self.parcels)
