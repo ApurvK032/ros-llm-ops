@@ -10,7 +10,7 @@ if [[ -f "$stamp" && -z "$(find src -newer "$stamp" -print -quit)" ]]; then
   exit 0
 fi
 echo "Building the ROS workspace (ros_ws)..."
-colcon build --event-handlers console_direct- --cmake-args -DCMAKE_BUILD_TYPE=Release > build.log 2>&1 || {
+colcon build --event-handlers console_direct- --cmake-args -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE=/usr/bin/python3 > build.log 2>&1 || {
   tail -30 build.log >&2
   exit 1
 }
