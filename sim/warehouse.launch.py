@@ -1,5 +1,6 @@
 """Stock TurtleBot3/Nav2 simulation plus the read-only warehouse display."""
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -50,4 +51,7 @@ def generate_launch_description():
         return [ExecuteProcess(cmd=cmd, cwd=str(root), output="screen")]
 
     description.add_action(OpaqueFunction(function=visuals))
+    if os.environ.get("SCAN_RELAY") == "1":
+        description.add_action(ExecuteProcess(cmd=[sys.executable, "-B", "-m", "warehouse_agent.sensor_relay"],
+                                              cwd=str(root), output="screen"))
     return description

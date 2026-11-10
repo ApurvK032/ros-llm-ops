@@ -1,5 +1,6 @@
 """Generate Nav2 parameters from its installed defaults and our world config."""
 
+import os
 from pathlib import Path
 
 import yaml
@@ -28,6 +29,13 @@ def generate():
         "xy_goal_tolerance": 0.12, "yaw_goal_tolerance": 0.10, "stateful": False})
     for key in ("local_costmap", "global_costmap"):
         parameters[key][key]["ros__parameters"]["robot_radius"] = world.config["robot_radius"]
+    if os.environ.get("SCAN_RELAY") == "1":
+        # Scenario runs put a relay between the lidar and Nav2 so the scan can be interrupted (sensor_relay.py).
+        parameters["amcl"]["ros__parameters"]["scan_topic"] = "scan_nav"
+        parameters["collision_monitor"]["ros__parameters"]["scan"]["topic"] = "scan_nav"
+        parameters["local_costmap"]["local_costmap"]["ros__parameters"]["voxel_layer"]["scan"]["topic"] = "/scan_nav"
+        parameters["global_costmap"]["global_costmap"]["ros__parameters"]["obstacle_layer"]["scan"]["topic"] = \
+            "/scan_nav"
     (directory / "nav2_params.yaml").write_text(yaml.safe_dump(parameters, sort_keys=False))
     # The packaged URDF uses an older mesh layout. Repair a display-only copy.
     robot_share = Path(get_package_share_directory("nav2_minimal_tb3_sim"))

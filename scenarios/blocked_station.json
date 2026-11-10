@@ -1,0 +1,14 @@
+{
+  "name": "blocked_station",
+  "description": "A box is left on the PICK_B approach pose just after the robot collects P1, so the robot cannot reach the pose it must stop at to collect P2.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 720,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 2.0},
+  "fault": {"type": "blocked_path", "at": "PICK_B", "size": [0.6, 0.6, 0.8]},
+  "ground_truth": {
+    "category": "blocked_station",
+    "component": "environment",
+    "location": "PICK_B",
+    "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
+  }
+}

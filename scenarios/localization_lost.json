@@ -1,0 +1,13 @@
+{
+  "name": "localization_lost",
+  "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 720,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "localization_jump", "offset": [1.5, 0.0, 0.6]},
+  "ground_truth": {
+    "category": "localization_lost",
+    "component": "amcl",
+    "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+  }
+}

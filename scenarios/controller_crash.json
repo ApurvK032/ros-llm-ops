@@ -1,0 +1,14 @@
+{
+  "name": "controller_crash",
+  "description": "The Nav2 controller server is killed while the robot drives to its second stop.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "node_crash", "node": "controller_server"},
+  "ground_truth": {
+    "category": "node_crash",
+    "component": "nav2",
+    "node": "controller_server",
+    "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
+  }
+}
