@@ -1,0 +1,88 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T03:21:00.116434+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "0025744",
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T03:21:36.407988+00:00",
+    "monotonic": 262566.445294025,
+    "type": "localization_jump",
+    "seconds_late": 3.6,
+    "details": {
+      "estimate_before": [
+        -6.167,
+        -3.679,
+        -1.08
+      ],
+      "estimate_after": [
+        -4.667,
+        -3.679,
+        -0.48
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "seconds_after_mission_start": 22.9
+  },
+  "outcome": {
+    "result": "no_route",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 203.1,
+    "seconds_to_first_abnormal_event": 180.2,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "checker": {
+    "ok": true,
+    "events": 14,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

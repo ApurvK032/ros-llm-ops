@@ -1,0 +1,91 @@
+{
+  "scenario": {
+    "name": "blocked_station",
+    "description": "A box is left on the PICK_B approach pose just after the robot collects P1, so the robot cannot reach the pose it must stop at to collect P2.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "blocked_path",
+      "at": "PICK_B",
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 2.0
+    },
+    "ground_truth": {
+      "category": "blocked_station",
+      "component": "environment",
+      "location": "PICK_B",
+      "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T03:03:05.545709+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "0025744",
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T03:03:41.182844+00:00",
+    "monotonic": 261491.220147909,
+    "type": "blocked_path",
+    "details": {
+      "entity": "fault_obstacle",
+      "position": [
+        1.5,
+        -0.9
+      ],
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ],
+      "at": "PICK_B"
+    },
+    "seconds_after_mission_start": 19.0
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P1",
+      "P3"
+    ],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 4,
+      "cancelled": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 0.729 m, heading error 2.172 rad, facing error 2.472 rad, parcel clearance 1.176 m"
+    },
+    "mission_seconds": 493.5,
+    "seconds_to_first_abnormal_event": 235.5,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "checker": {
+    "ok": true,
+    "events": 30,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}
