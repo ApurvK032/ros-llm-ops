@@ -27,6 +27,8 @@ def main() -> int:
     scenario.add_argument("--no-fault", action="store_true", help="Control run: same mission, fault not injected")
     scenario.add_argument("--no-record", action="store_true", help="Skip the MCAP recording")
     scenario.add_argument("--model", default="qwen3.5:4b")
+    scenario.add_argument("--recover", metavar="WHO", help="Attach the recovery agent: 'rules' for the fixed "
+                          "playbook, or a local model name such as qwen3.5:9b")
     scenario.add_argument("--output", type=Path, help="Result directory (default: artifacts/scenarios/<name>/<time>)")
     diagnose = sub.add_parser("diagnose", help="Diagnose recorded scenario runs and score against the injected fault")
     diagnose.add_argument("runs", type=Path, nargs="+", help="Run directories written by 'scenario'")
@@ -69,8 +71,11 @@ def run_scenario_file(args):
     scenario = load_scenario(args.file, World().waypoints)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     suffix = "-control" if args.no_fault and scenario.fault else ""
+    if args.recover:
+        suffix += "-recover-" + "".join(c if c.isalnum() else "_" for c in args.recover)
     output = args.output or ROOT / "artifacts/scenarios" / scenario.name / (stamp + suffix)
-    result = run_scenario(scenario, output, inject=not args.no_fault, record=not args.no_record, model=args.model)
+    result = run_scenario(scenario, output, inject=not args.no_fault, record=not args.no_record, model=args.model,
+                          recover=args.recover)
     print(summary_line(result))
     print(f"Result: {output / 'result.json'}")
     # A fault that could not be injected makes the run invalid; a failed mission is a valid result.

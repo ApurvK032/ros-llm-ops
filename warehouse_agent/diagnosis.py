@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from urllib.request import Request, urlopen
 
+from .faults import CRASHABLE_NODES
 from .scenario import read_events
 
 CATEGORIES = {
@@ -56,9 +57,11 @@ ANSWER = {
 class Incident:
     """One recorded run: its journal, extracted evidence and, when known, the injected fault."""
 
-    def __init__(self, run):
+    def __init__(self, run, live=False):
+        """live=True reads the monitor's latest snapshot of a mission that is still running."""
         self.run = Path(run)
-        self.evidence = json.loads((self.run / "evidence.json").read_text(encoding="utf-8"))
+        name = "live_evidence.json" if live else "evidence.json"
+        self.evidence = json.loads((self.run / name).read_text(encoding="utf-8"))
         self.events = read_events(self.run / "journal.jsonl")
         result = self.run / "result.json"
         self.result = json.loads(result.read_text(encoding="utf-8")) if result.exists() else {}
@@ -67,6 +70,13 @@ class Incident:
         applied = next((e for e in self.events if e["type"] == "instruction_applied"), None)
         self.origin = applied["monotonic"] if applied else (self.events[0]["monotonic"] if self.events else 0.0)
         self.end = self.evidence["meta"]["recording_end"]
+        # Checks ignore what happened up to here. A live agent moves it forward after each recovery, so a fault
+        # it has dealt with is not reported again; for a finished recording it stays at the very beginning.
+        self.since = -math.inf
+
+    def recent(self, t):
+        """True for something that happened during the mission and after the last point already dealt with."""
+        return t > max(1.0, self.since)
 
     def at(self, event):
         return round(event["monotonic"] - self.origin, 1)
@@ -102,7 +112,9 @@ def mission_summary(incident):
     state = next((e["state"] for e in reversed(events) if isinstance(e.get("state"), dict)), {})
     parcels = state.get("parcels", {})
     goals = [{"start": start, "seconds": round(end - start, 1), "stop": f"{stop['kind']} {stop['parcel']}",
-              "waypoint": stop["waypoint"], "outcome": outcome or "still running when the recording ended"}
+              "waypoint": stop["waypoint"], "outcome": outcome or (
+                  "still under way" if incident.evidence["meta"].get("live")
+                  else "still running when the recording ended")}
              for start, end, stop, outcome in incident.goals()]
     held = next((e["reason"] for e in events if e["type"] == "planning_failed"), None)
     return {
@@ -122,7 +134,9 @@ def node_health(incident):
     """Nav2 process health: heartbeats each server sends to the lifecycle manager, and processes that died."""
     bonds, end = incident.evidence["bonds"], incident.end
     silent = sorted(((b["last"], name) for name, b in bonds.items() if b["silent_for_s"] > 1.0))
-    died = incident.evidence["processes_died"]
+    # Only Nav2 servers: the launch log also reports helper processes, and the lidar is judged by its scans.
+    died = [d for d in incident.evidence["processes_died"]
+            if d["t"] > incident.since and d["process"] in CRASHABLE_NODES]
     unusual = [f"{d['process']} process died at about {d['t']} s (exit code {d['exit_code']})" for d in died]
     if silent and len(silent) < len(bonds):
         unusual += [f"{name} heartbeat stopped at {last} s; recording ends at {end} s" for last, name in silent]
@@ -149,7 +163,8 @@ def lidar_status(incident):
     covered[0] = min(bucket, start + bucket - incident.evidence["meta"]["recording_start"])
     # Intervals before the mission began are start-up (the recorder and the lidar come up at different moments).
     low = [i for i, (n, seconds) in enumerate(zip(counts, covered, strict=True))
-           if start + i*bucket >= 0 and seconds >= 1.0 and n < 0.5*nominal*seconds/bucket]
+           if start + i*bucket >= max(0.0, incident.since) and seconds >= 1.0
+           and n < 0.5*nominal*seconds/bucket]
     unusual = []
     if low and low == list(range(low[0], len(counts))):
         unusual.append(f"scans stopped arriving at about {round(start + low[0]*bucket, 1)} s and never resumed "
@@ -173,7 +188,8 @@ def motion_status(incident):
     stalled, uncommanded = [], []
     for start, end, stop, _ in incident.goals():
         run_stalled = run_idle = 0
-        for second in range(int(start) + 3, int(end)):
+        first = int(start) + 3 if incident.since < start else math.ceil(incident.since)
+        for second in range(first, int(end)):
             row = rows.get(second)
             measured = abs(row[1]) if row and row[1] is not None else 0.0
             turning = abs(row[2]) if row and row[2] is not None else 0.0
@@ -204,8 +220,8 @@ def motion_status(incident):
 def localization_status(incident):
     """The pose estimate: sudden jumps in the map-to-odometry correction, external pose resets, AMCL spread."""
     evidence = incident.evidence
-    jumps = [j for j in evidence["localization_jumps"] if j["t"] > 1.0]
-    resets = [r for r in evidence["pose_resets"] if r["t"] > 1.0]
+    jumps = [j for j in evidence["localization_jumps"] if incident.recent(j["t"])]
+    resets = [r for r in evidence["pose_resets"] if incident.recent(r["t"])]
     big = [j for j in jumps if j["shift_m"] >= 1.0 or j["turn_rad"] >= 0.5]
     spread = [row[4] for row in evidence["amcl"]]
     unusual = [f"the pose estimate jumped {j['shift_m']} m and {j['turn_rad']} rad in one update at {j['t']} s"
@@ -221,7 +237,8 @@ def localization_status(incident):
 
 def parameter_changes(incident):
     """Parameters changed on running nodes during the mission (startup configuration is not listed)."""
-    changes = [c for c in incident.evidence["parameter_changes"] if c["node"] not in HARNESS_NODES and c["t"] > 1.0]
+    changes = [c for c in incident.evidence["parameter_changes"]
+               if c["node"] not in HARNESS_NODES and incident.recent(c["t"])]
     return {"changes": changes,
             "unusual": [f"{c['node']} parameter {p['name']} was set to {json.dumps(p['value'])} at {c['t']} s"
                         for c in changes for p in c["changed"]][:6]}
@@ -231,7 +248,7 @@ def obstacles(incident):
     """Obstacles in the global costmap that are not in the static map: where, how large, how long, near what."""
     found = []
     for cluster in incident.evidence["new_obstacles"]:
-        if cluster["snapshots"] < 3:
+        if cluster["snapshots"] < 3 or cluster["last_seen"] <= incident.since:
             continue
         name, distance = min(((n, math.dist(p[:2], (cluster["x"], cluster["y"])))
                               for n, p in incident.waypoints.items()), key=lambda item: item[1],
@@ -257,9 +274,14 @@ def obstacles(incident):
 
 def planning_status(incident):
     """Planner and controller behaviour: how often each failed, recovery behaviours run, planner messages."""
-    counts = incident.evidence["behaviour_tree"]["failure_counts"]
+    counts = dict(incident.evidence["behaviour_tree"]["failure_counts"])
+    if incident.since > -math.inf:
+        # Totals cover the whole mission; recount the two that matter from the timed list.
+        for name in ("ComputePathToPose", "FollowPath"):
+            counts[name] = sum(1 for f in incident.evidence["behaviour_tree"]["failures"]
+                               if f["node"] == name and f["t"] > incident.since)
     planner_logs = [log for log in incident.evidence["logs"] if log["node"] == "planner_server" and "failed" in
-                    log["text"].lower() and log["t"] > 1.0]
+                    log["text"].lower() and incident.recent(log["t_last"])]
     summary = {"planner_failures": counts.get("ComputePathToPose", 0), "controller_failures": counts.get("FollowPath", 0),
                "recoveries_started": {k.split(":")[1]: v for k, v in counts.items() if k.startswith("started:")},
                "planner_messages": [f"{log['t']} s: {log['text'][:140]}" for log in planner_logs[:3]]}
@@ -275,7 +297,7 @@ def nav2_warnings(incident):
     """Warnings and errors logged by Nav2 nodes during the mission, grouped, with first time and count."""
     groups = {}
     for log in incident.evidence["logs"]:
-        if log["t"] <= 1.0 or "/" + log["node"] in HARNESS_NODES:
+        if not incident.recent(log["t_last"]) or "/" + log["node"] in HARNESS_NODES:
             continue
         key = (log["level"], log["node"], re.sub(r"-?\d+(\.\d+)?", "#", log["text"])[:110])
         group = groups.setdefault(key, {"first_s": log["t"], "count": 0, "example": log["text"][:160]})

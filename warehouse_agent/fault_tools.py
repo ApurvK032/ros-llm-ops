@@ -44,8 +44,63 @@ def set_parameter(node, target, name, value):
             else old, "new": value}
 
 
+def planar(transform):
+    return (transform.translation.x, transform.translation.y,
+            2*math.atan2(transform.rotation.z, transform.rotation.w))
+
+
+def set_initial_pose(node, pose, variance_xy, variance_yaw, attempts=3):
+    """Publish /initialpose and confirm, from the transforms, that the estimate actually moved there.
+
+    A single publish can be lost: the first subscriber to match is not necessarily AMCL, and a late one gets
+    nothing. So wait for the subscribers to settle, publish, and check the result before reporting success.
+    Returns (estimate before, estimate after, publishes needed).
+    """
+    from geometry_msgs.msg import PoseWithCovarianceStamped
+    from tf2_ros import Buffer, TransformException, TransformListener
+    buffer = Buffer()
+    listener = TransformListener(buffer, node)
+
+    def estimate():
+        try:
+            return planar(buffer.lookup_transform("map", "base_footprint", rclpy.time.Time()).transform)
+        except TransformException:
+            return None
+
+    if not spin_until(node, lambda: estimate() is not None, 5):
+        raise RuntimeError("No map to base_footprint transform; is localization running?")
+    before = estimate()
+    publisher = node.create_publisher(PoseWithCovarianceStamped, "initialpose", 10)
+    spin_until(node, lambda: publisher.get_subscription_count() > 0, 5)
+    spin_until(node, lambda: False, 0.8)     # let the remaining subscribers match too
+
+    def arrived():
+        now = estimate()
+        return now is not None and math.dist(now[:2], pose[:2]) < 0.35 and \
+            abs(math.atan2(math.sin(now[2] - pose[2]), math.cos(now[2] - pose[2]))) < 0.35
+
+    for attempt in range(1, attempts + 1):
+        message = PoseWithCovarianceStamped()
+        message.header.frame_id = "map"
+        message.header.stamp = node.get_clock().now().to_msg()
+        message.pose.pose.position.x, message.pose.pose.position.y = float(pose[0]), float(pose[1])
+        message.pose.pose.orientation.z, message.pose.pose.orientation.w = math.sin(pose[2]/2), math.cos(pose[2]/2)
+        message.pose.covariance[0] = message.pose.covariance[7] = variance_xy
+        message.pose.covariance[35] = variance_yaw
+        publisher.publish(message)
+        if spin_until(node, arrived, 3.0):
+            del listener
+            return before, estimate(), attempt
+    raise RuntimeError(f"The pose estimate did not move to {[round(v, 2) for v in pose]} after {attempts} tries")
+
+
 def offset_pose(node, dx, dy, dyaw):
-    """Tell AMCL the robot is somewhere it is not: its current estimate shifted by an offset in the map frame."""
+    """Tell AMCL the robot is somewhere it is not: its current estimate shifted by an offset in the map frame.
+
+    One publish, as soon as the estimate is known: the robot is moving, so a pose computed now is only the
+    intended fault for an instant, and publishing it again later would be a different fault. Whether it took is
+    then checked from the map-to-odometry correction, and an injection that did not take is an error.
+    """
     from geometry_msgs.msg import PoseWithCovarianceStamped
     from tf2_ros import Buffer, TransformException, TransformListener
     buffer = Buffer()
@@ -60,11 +115,16 @@ def offset_pose(node, dx, dy, dyaw):
             return False
         return True
 
+    def correction():
+        try:
+            return planar(buffer.lookup_transform("map", "odom", rclpy.time.Time()).transform)
+        except TransformException:
+            return None
+
     if not spin_until(node, have_pose, 5):
         raise RuntimeError("No map to base_link transform; is localization running?")
-    del listener
-    x, y = transform.translation.x, transform.translation.y
-    yaw = 2*math.atan2(transform.rotation.z, transform.rotation.w)
+    x, y, yaw = planar(transform)
+    before = correction()
     wrong = [x + dx, y + dy, math.atan2(math.sin(yaw + dyaw), math.cos(yaw + dyaw))]
     publisher = node.create_publisher(PoseWithCovarianceStamped, "initialpose", 10)
     spin_until(node, lambda: publisher.get_subscription_count() > 0, 5)
@@ -77,9 +137,20 @@ def offset_pose(node, dx, dy, dyaw):
     message.pose.covariance[0] = message.pose.covariance[7] = 0.04
     message.pose.covariance[35] = 0.04
     publisher.publish(message)
-    spin_until(node, lambda: False, 0.5)
+
+    def shifted():
+        now = correction()
+        return before is not None and now is not None and (
+            math.dist(now[:2], before[:2]) > 0.5 or
+            abs(math.atan2(math.sin(now[2] - before[2]), math.cos(now[2] - before[2]))) > 0.3)
+
+    took = spin_until(node, shifted, 3.0)
+    del listener
+    if not took:
+        raise RuntimeError("The pose estimate did not move; the wrong pose never reached the localizer")
     return {"estimate_before": [round(v, 3) for v in (x, y, yaw)], "estimate_after": [round(v, 3) for v in wrong],
-            "offset": [dx, dy, dyaw]}
+            "offset": [dx, dy, dyaw], "correction_before": [round(v, 3) for v in before],
+            "correction_after": [round(v, 3) for v in correction()]}
 
 
 def main():

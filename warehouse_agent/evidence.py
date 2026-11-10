@@ -83,91 +83,85 @@ def process_events(run, origin):
     return events
 
 
-def extract(run):
-    import numpy as np
-    import rosbag2_py
-    from rclpy.serialization import deserialize_message
-    from rosidl_runtime_py.utilities import get_message
+class EvidenceBuilder:
+    """Accumulates evidence one message at a time, from a recording or from live topics.
 
-    run = Path(run)
-    reader = rosbag2_py.SequentialReader()
-    reader.open(rosbag2_py.StorageOptions(uri=str(run / "bag"), storage_id="mcap"),
-                rosbag2_py.ConverterOptions("", ""))
-    types = {t.name: get_message(t.type) for t in reader.get_all_topics_and_types()}
-    origin = mission_start(run)
-    counts, first_stamp, last_stamp = {}, None, None
-    rates = {topic: {} for topic in RATE_TOPICS}
-    logs, bonds, bt_failures, bt_counts = [], {}, [], {}
-    parameters, pose_resets, plans = [], [], []
-    motion = {}       # second -> sums for averaging
-    odom_pose, map_odom, map_odom_series, jumps = None, None, [], []
-    pose_series, amcl = [], []
-    scans = {"/scan": {}, "/scan_nav": {}}
-    baseline, grid, obstacle_bins, snapshots = None, None, {}, 0
-    last_plan_second = None
+    Everything is kept in wall-clock seconds; snapshot() converts to seconds from the start of the mission, which
+    a live monitor only learns once the mission has begun.
+    """
 
-    while reader.has_next():
-        topic, data, stamp = reader.read_next()
-        wall = stamp / 1e9
-        first_stamp = first_stamp or wall
-        last_stamp = wall
-        origin = origin or first_stamp
-        t = wall - origin
-        counts[topic] = counts.get(topic, 0) + 1
-        bucket = int(t // BUCKET)
-        if topic in rates:
-            rates[topic][bucket] = rates[topic].get(bucket, 0) + 1
-        if topic not in ("/rosout", "/bond", "/behavior_tree_log", "/parameter_events", "/initialpose", "/plan",
-                         "/odom", "/cmd_vel", "/tf", "/amcl_pose", "/scan", "/scan_nav",
-                         "/global_costmap/costmap"):
-            continue
-        message = deserialize_message(data, types[topic])
+    TOPICS = ("/rosout", "/bond", "/behavior_tree_log", "/parameter_events", "/initialpose", "/plan", "/odom",
+              "/cmd_vel", "/tf", "/amcl_pose", "/scan", "/scan_nav", "/global_costmap/costmap")
+
+    def __init__(self):
+        self.counts, self.first, self.last = {}, None, None
+        self.stamps = {topic: [] for topic in RATE_TOPICS}
+        self.logs, self.bonds, self.bt_failures, self.bt_counts = [], {}, [], {}
+        self.parameters, self.pose_resets, self.plans = [], [], []
+        self.motion = {}       # wall second -> sums for averaging
+        self.odom_pose, self.map_odom, self.map_odom_series, self.jumps = None, None, [], []
+        self.pose_series, self.amcl = [], []
+        self.scans = {"/scan": [], "/scan_nav": []}
+        self.baseline, self.grid, self.obstacle_bins, self.costmaps = None, None, {}, 0
+        self.last_plan_second = None
+
+    def count(self, topic, wall):
+        """Note that a message arrived; enough for topics whose content is not examined."""
+        self.first = self.first or wall
+        self.last = wall
+        self.counts[topic] = self.counts.get(topic, 0) + 1
+        if topic in self.stamps:
+            self.stamps[topic].append(wall)
+
+    def add(self, topic, message, wall):
+        self.count(topic, wall)
         if topic == "/rosout":
             if message.level >= 30:
                 text = " ".join(message.msg.split())
-                if logs and logs[-1]["node"] == message.name and logs[-1]["text"] == text:
-                    logs[-1]["count"] += 1
-                    logs[-1]["t_last"] = round(t, 1)
+                if self.logs and self.logs[-1]["node"] == message.name and self.logs[-1]["text"] == text:
+                    self.logs[-1]["count"] += 1
+                    self.logs[-1]["t_last"] = wall
                 else:
-                    logs.append({"t": round(t, 1), "t_last": round(t, 1), "level": LEVELS.get(message.level, "WARN"),
-                                 "node": message.name, "text": text, "count": 1})
+                    self.logs.append({"t": wall, "t_last": wall, "level": LEVELS.get(message.level, "WARN"),
+                                      "node": message.name, "text": text, "count": 1})
         elif topic == "/bond":
             # Both ends of a bond publish under the node's name: the node itself and the lifecycle manager.
             # Keep them apart, or the manager's side hides the moment the node went quiet.
-            bond = bonds.setdefault(message.id, {"first": round(t, 1), "instances": {}})
+            bond = self.bonds.setdefault(message.id, {"first": wall, "instances": {}})
             bond["active"] = bool(message.active)
-            bond["instances"][message.instance_id] = t
+            bond["instances"][message.instance_id] = wall
         elif topic == "/behavior_tree_log":
             for entry in message.event_log:
                 if entry.current_status == "FAILURE":
-                    bt_counts[entry.node_name] = bt_counts.get(entry.node_name, 0) + 1
-                    if len(bt_failures) < 400:
-                        bt_failures.append({"t": round(t, 1), "node": entry.node_name})
+                    self.bt_counts[entry.node_name] = self.bt_counts.get(entry.node_name, 0) + 1
+                    # GoalUpdated "fails" on every tick without a new goal; it is not a failure worth timing.
+                    if entry.node_name != "GoalUpdated" and len(self.bt_failures) < 5000:
+                        self.bt_failures.append({"t": wall, "node": entry.node_name})
                 elif entry.current_status == "RUNNING" and entry.node_name in (
                         "Spin", "BackUp", "Wait", "DriveOnHeading", "RecoveryActions"):
                     key = "started:" + entry.node_name
-                    bt_counts[key] = bt_counts.get(key, 0) + 1
+                    self.bt_counts[key] = self.bt_counts.get(key, 0) + 1
         elif topic == "/parameter_events":
             changed = [{"name": p.name, "value": _parameter_value(p.value)} for p in message.changed_parameters]
             if changed:
-                parameters.append({"t": round(t, 1), "node": message.node, "changed": changed})
+                self.parameters.append({"t": wall, "node": message.node, "changed": changed})
         elif topic == "/initialpose":
             p = message.pose.pose
-            pose_resets.append({"t": round(t, 1), "x": round(p.position.x, 2), "y": round(p.position.y, 2),
-                                "yaw": round(yaw_of(p.orientation), 2)})
+            self.pose_resets.append({"t": wall, "x": round(p.position.x, 2), "y": round(p.position.y, 2),
+                                     "yaw": round(yaw_of(p.orientation), 2)})
         elif topic == "/plan":
-            if last_plan_second != int(t) and message.poses:
-                last_plan_second = int(t)
+            if self.last_plan_second != int(wall) and message.poses:
+                self.last_plan_second = int(wall)
                 points = [(p.pose.position.x, p.pose.position.y) for p in message.poses]
                 length = sum(math.dist(a, b) for a, b in zip(points, points[1:], strict=False))
-                plans.append([round(t, 1), round(length, 2), round(points[-1][0], 2), round(points[-1][1], 2)])
+                self.plans.append([wall, round(length, 2), round(points[-1][0], 2), round(points[-1][1], 2)])
         elif topic == "/odom":
-            second = motion.setdefault(int(t), {"v": 0.0, "w": 0.0, "n": 0, "cv": 0.0, "cw": 0.0, "cn": 0})
+            second = self.motion.setdefault(int(wall), {"v": 0.0, "w": 0.0, "n": 0, "cv": 0.0, "cw": 0.0, "cn": 0})
             second["v"] += message.twist.twist.linear.x
             second["w"] += message.twist.twist.angular.z
             second["n"] += 1
         elif topic == "/cmd_vel":
-            second = motion.setdefault(int(t), {"v": 0.0, "w": 0.0, "n": 0, "cv": 0.0, "cw": 0.0, "cn": 0})
+            second = self.motion.setdefault(int(wall), {"v": 0.0, "w": 0.0, "n": 0, "cv": 0.0, "cw": 0.0, "cn": 0})
             second["cv"] += message.linear.x
             second["cw"] += message.angular.z
             second["cn"] += 1
@@ -177,91 +171,154 @@ def extract(run):
                         yaw_of(transform.transform.rotation))
                 if transform.header.frame_id == "odom" and transform.child_frame_id in ("base_footprint",
                                                                                          "base_link"):
-                    odom_pose = pose
+                    self.odom_pose = pose
                 elif transform.header.frame_id == "map" and transform.child_frame_id == "odom":
-                    if map_odom is not None:
-                        shift = math.dist(pose[:2], map_odom[:2])
-                        turn = abs(wrap(pose[2] - map_odom[2]))
+                    if self.map_odom is not None:
+                        shift = math.dist(pose[:2], self.map_odom[:2])
+                        turn = abs(wrap(pose[2] - self.map_odom[2]))
                         if shift > 0.3 or turn > 0.2:
                             # A correction this large between two updates is a discontinuity, not drift.
-                            jumps.append({"t": round(t, 1), "shift_m": round(shift, 2), "turn_rad": round(turn, 2)})
-                    if not map_odom_series or t - map_odom_series[-1][0] >= 1.0:
-                        map_odom_series.append([round(t, 1)] + [round(v, 3) for v in pose])
-                    map_odom = pose
-            if odom_pose and map_odom and (not pose_series or t - pose_series[-1][0] >= 1.0):
-                pose_series.append([round(t, 1)] + [round(v, 2) for v in compose(map_odom, odom_pose)])
+                            self.jumps.append({"t": wall, "shift_m": round(shift, 2), "turn_rad": round(turn, 2),
+                                               "before": [round(v, 3) for v in self.map_odom]})
+                    if not self.map_odom_series or wall - self.map_odom_series[-1][0] >= 1.0:
+                        self.map_odom_series.append([wall] + [round(v, 3) for v in pose])
+                    self.map_odom = pose
+            if self.odom_pose and self.map_odom and (not self.pose_series or wall - self.pose_series[-1][0] >= 1.0):
+                self.pose_series.append([wall] + [round(v, 2) for v in compose(self.map_odom, self.odom_pose)])
         elif topic == "/amcl_pose":
             p, c = message.pose.pose, message.pose.covariance
-            amcl.append([round(t, 1), round(p.position.x, 2), round(p.position.y, 2), round(yaw_of(p.orientation), 2),
-                         round(math.sqrt(max(c[0], 0) + max(c[7], 0)), 3)])
-        elif topic in scans:
-            entry = scans[topic].setdefault(bucket, {"n": 0, "valid": 0.0, "min": math.inf})
+            self.amcl.append([wall, round(p.position.x, 2), round(p.position.y, 2), round(yaw_of(p.orientation), 2),
+                              round(math.sqrt(max(c[0], 0) + max(c[7], 0)), 3)])
+        elif topic in self.scans:
             valid = [r for r in message.ranges if math.isfinite(r) and message.range_min < r < message.range_max]
-            entry["n"] += 1
-            entry["valid"] += len(valid) / max(len(message.ranges), 1)
-            entry["min"] = min(entry["min"], min(valid, default=math.inf))
+            self.scans[topic].append((wall, len(valid) / max(len(message.ranges), 1), min(valid, default=math.inf)))
         elif topic == "/global_costmap/costmap":
-            snapshots += 1
-            cells = np.frombuffer(bytes(message.data), dtype=np.int8).reshape(message.info.height,
-                                                                              message.info.width)
-            if baseline is None:
-                baseline = cells.copy()
-                grid = (message.info.origin.position.x, message.info.origin.position.y, message.info.resolution)
-                continue
-            if cells.shape != baseline.shape:
-                continue
-            rows, cols = np.nonzero((cells == LETHAL) & (baseline < 50))
-            if len(rows) == 0:
-                continue
-            xs = grid[0] + (cols + 0.5)*grid[2]
-            ys = grid[1] + (rows + 0.5)*grid[2]
-            keys, numbers = np.unique(np.stack([np.floor(xs/OBSTACLE_BIN), np.floor(ys/OBSTACLE_BIN)], axis=1),
-                                      axis=0, return_counts=True)
-            for (bx, by), number in zip(keys.astype(int).tolist(), numbers.tolist(), strict=True):
-                if number < 4:
-                    continue
-                inside = (np.floor(xs/OBSTACLE_BIN) == bx) & (np.floor(ys/OBSTACLE_BIN) == by)
-                box = [float(xs[inside].min()), float(xs[inside].max()), float(ys[inside].min()),
-                       float(ys[inside].max())]
-                seen = obstacle_bins.setdefault((bx, by), {"first": t, "snapshots": 0, "cells": 0, "box": box})
-                seen["last"] = t
-                seen["snapshots"] += 1
-                if number >= seen["cells"]:
-                    seen["cells"], seen["box"] = number, box
+            self.add_costmap(message, wall)
 
-    end = (last_stamp or 0) - (origin or 0)
-    return {
-        "meta": {"mission_start_wall": origin, "recording_start": round((first_stamp or 0) - (origin or 0), 1),
-                 "recording_end": round(end, 1), "message_counts": counts, "bucket_s": BUCKET,
-                 "costmap_snapshots": snapshots},
-        "rates": {topic: _buckets(values, end) for topic, values in rates.items() if counts.get(topic)},
-        "logs": logs,
-        "bonds": {name: _bond(b, end) for name, b in sorted(bonds.items())},
-        "behaviour_tree": {"failure_counts": dict(sorted(bt_counts.items())), "failures": bt_failures},
-        "parameter_changes": parameters,
-        "pose_resets": pose_resets,
-        # Without a teardown marker (older runs), at least drop deaths after the recording stopped.
-        "processes_died": [d for d in process_events(run, origin or 0) if d["t"] <= end],
-        "motion": [[second, round(m["v"]/m["n"], 3) if m["n"] else None, round(m["w"]/m["n"], 3) if m["n"] else None,
-                    round(m["cv"]/m["cn"], 3) if m["cn"] else None, round(m["cw"]/m["cn"], 3) if m["cn"] else None]
-                   for second, m in sorted(motion.items())],
-        "pose": pose_series,
-        "map_to_odom": map_odom_series,
-        "localization_jumps": jumps,
-        "amcl": amcl,
-        "plans": plans,
-        "lidar": {topic: [[round(b*BUCKET, 1), e["n"], round(e["valid"]/e["n"], 2),
-                           None if math.isinf(e["min"]) else round(e["min"], 2)] for b, e in sorted(values.items())]
-                  for topic, values in scans.items() if values},
-        "new_obstacles": _clusters(obstacle_bins),
-    }
+    def add_costmap(self, message, wall):
+        import numpy as np
+        self.costmaps += 1
+        cells = np.frombuffer(bytes(message.data), dtype=np.int8).reshape(message.info.height, message.info.width)
+        if self.baseline is None:
+            self.baseline = cells.copy()
+            self.grid = (message.info.origin.position.x, message.info.origin.position.y, message.info.resolution)
+            return
+        if cells.shape != self.baseline.shape:
+            return
+        rows, cols = np.nonzero((cells == LETHAL) & (self.baseline < 50))
+        if len(rows) == 0:
+            return
+        xs = self.grid[0] + (cols + 0.5)*self.grid[2]
+        ys = self.grid[1] + (rows + 0.5)*self.grid[2]
+        keys, numbers = np.unique(np.stack([np.floor(xs/OBSTACLE_BIN), np.floor(ys/OBSTACLE_BIN)], axis=1),
+                                  axis=0, return_counts=True)
+        for (bx, by), number in zip(keys.astype(int).tolist(), numbers.tolist(), strict=True):
+            if number < 4:
+                continue
+            inside = (np.floor(xs/OBSTACLE_BIN) == bx) & (np.floor(ys/OBSTACLE_BIN) == by)
+            box = [float(xs[inside].min()), float(xs[inside].max()), float(ys[inside].min()),
+                   float(ys[inside].max())]
+            seen = self.obstacle_bins.setdefault((bx, by), {"first": wall, "snapshots": 0, "cells": 0, "box": box})
+            seen["last"] = wall
+            seen["snapshots"] += 1
+            if number >= seen["cells"]:
+                seen["cells"], seen["box"] = number, box
+
+    def snapshot(self, origin=None, end=None, processes_died=()):
+        """The evidence so far, timed in seconds from origin (the mission start; else the first message)."""
+        origin = origin or self.first or 0.0
+        end = (end or self.last or origin) - origin
+
+        def rel(wall):
+            return round(wall - origin, 1)
+
+        def bucketed(stamps):
+            values = {}
+            for wall in stamps:
+                bucket = int((wall - origin) // BUCKET)
+                values[bucket] = values.get(bucket, 0) + 1
+            return values
+
+        lidar = {}
+        for topic, scans in self.scans.items():
+            buckets = {}
+            for wall, valid, nearest in scans:
+                entry = buckets.setdefault(int((wall - origin) // BUCKET), {"n": 0, "valid": 0.0, "min": math.inf})
+                entry["n"] += 1
+                entry["valid"] += valid
+                entry["min"] = min(entry["min"], nearest)
+            if buckets:
+                lidar[topic] = [[round(b*BUCKET, 1), e["n"], round(e["valid"]/e["n"], 2),
+                                 None if math.isinf(e["min"]) else round(e["min"], 2)]
+                                for b, e in sorted(buckets.items())]
+        bins = {key: {**value, "first": value["first"] - origin, "last": value["last"] - origin}
+                for key, value in self.obstacle_bins.items()}
+        return {
+            "meta": {"mission_start_wall": origin, "recording_start": rel(self.first or origin),
+                     "recording_end": round(end, 1), "message_counts": dict(self.counts), "bucket_s": BUCKET,
+                     "costmap_snapshots": self.costmaps,
+                     # Finer than the buckets: what is arriving right now, for a live agent checking a fix.
+                     "recent_rate_hz": {topic: round(sum(1 for wall in reversed(stamps[-400:])
+                                                         if wall - origin > end - 3.0) / 3.0, 1)
+                                        for topic, stamps in self.stamps.items() if stamps}},
+            "rates": {topic: _buckets(bucketed(stamps), end) for topic, stamps in self.stamps.items() if stamps},
+            "logs": [{**log, "t": rel(log["t"]), "t_last": rel(log["t_last"])} for log in self.logs],
+            "bonds": {name: _bond({"first": rel(b["first"]), "active": b["active"],
+                                   "instances": {k: v - origin for k, v in b["instances"].items()}}, end)
+                      for name, b in sorted(self.bonds.items())},
+            "behaviour_tree": {"failure_counts": dict(sorted(self.bt_counts.items())),
+                               "failures": [{**f, "t": rel(f["t"])} for f in self.bt_failures]},
+            "parameter_changes": [{**c, "t": rel(c["t"])} for c in self.parameters],
+            "pose_resets": [{**r, "t": rel(r["t"])} for r in self.pose_resets],
+            "processes_died": [d for d in processes_died if d["t"] <= end],
+            "motion": [[math.floor(second - origin), round(m["v"]/m["n"], 3) if m["n"] else None,
+                        round(m["w"]/m["n"], 3) if m["n"] else None,
+                        round(m["cv"]/m["cn"], 3) if m["cn"] else None,
+                        round(m["cw"]/m["cn"], 3) if m["cn"] else None]
+                       for second, m in sorted(self.motion.items())],
+            "pose": [[rel(row[0]), *row[1:]] for row in self.pose_series],
+            "map_to_odom": [[rel(row[0]), *row[1:]] for row in self.map_odom_series],
+            "localization_jumps": [{**j, "t": rel(j["t"])} for j in self.jumps],
+            "amcl": [[rel(row[0]), *row[1:]] for row in self.amcl],
+            "plans": [[rel(row[0]), *row[1:]] for row in self.plans],
+            "lidar": lidar,
+            "new_obstacles": _clusters(bins),
+        }
+
+
+def extract(run):
+    """Read a finished run's bag into evidence."""
+    import rosbag2_py
+    from rclpy.serialization import deserialize_message
+    from rosidl_runtime_py.utilities import get_message
+
+    run = Path(run)
+    reader = rosbag2_py.SequentialReader()
+    reader.open(rosbag2_py.StorageOptions(uri=str(run / "bag"), storage_id="mcap"),
+                rosbag2_py.ConverterOptions("", ""))
+    types = {t.name: get_message(t.type) for t in reader.get_all_topics_and_types()}
+    builder = EvidenceBuilder()
+    while reader.has_next():
+        topic, data, stamp = reader.read_next()
+        if topic in EvidenceBuilder.TOPICS:
+            builder.add(topic, deserialize_message(data, types[topic]), stamp / 1e9)
+        else:
+            builder.count(topic, stamp / 1e9)
+    origin = mission_start(run) or builder.first or 0.0
+    # Without a teardown marker (older runs), snapshot() at least drops deaths after the recording stopped.
+    return builder.snapshot(origin, builder.last, process_events(run, origin))
 
 
 def _bond(bond, end):
-    """When a node's heartbeat was last heard: the earlier of the bond's two ends to fall silent."""
-    last = min(bond["instances"].values())
+    """When a node's heartbeat was last heard: the earlier of the bond's two ends to fall silent.
+
+    A restarted node bonds again under new instance IDs, so only the two most recently heard ends count;
+    the ends that died with the old process are history.
+    """
+    heard = sorted(bond["instances"].values(), reverse=True)[:2]
+    last = min(heard)
     return {"first": bond["first"], "last": round(last, 1), "silent_for_s": round(end - last, 1),
-            "last_active_flag": bond["active"], "restarts": max(0, len(bond["instances"]) - 2)}
+            "last_active_flag": bond["active"], "restarts": math.ceil(max(0, len(bond["instances"]) - 2) / 2)}
 
 
 def _parameter_value(value):

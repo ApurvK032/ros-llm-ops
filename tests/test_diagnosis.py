@@ -87,6 +87,12 @@ class Checks(Case):
         answer = rule_based(incident)["diagnosis"]
         self.assertEqual((answer["category"], answer["component"]), ("node_crash", "controller_server"))
 
+    def test_only_nav2_servers_count_as_crashed_processes(self):
+        evidence = healthy_evidence()
+        evidence["processes_died"] = [{"t": 35.0, "process": "python3", "exit_code": -9},
+                                      {"t": 36.0, "process": "gz", "exit_code": -9}]
+        self.assertEqual(diagnosis.node_health(self.incident(evidence))["unusual"], [])
+
     def test_when_every_heartbeat_stops_the_first_to_stop_is_named(self):
         evidence = healthy_evidence()
         for name, bond in evidence["bonds"].items():
@@ -200,6 +206,45 @@ class Checks(Case):
         self.assertEqual(warnings["distinct_messages"], 1)
         self.assertEqual(warnings["messages"][0]["count"], 7)
         self.assertEqual(warnings["messages"][0]["first_s"], 30.8)
+
+
+class Since(Case):
+    """A live agent moves the starting point forward after each recovery; what it dealt with is not reported again."""
+
+    def test_checks_ignore_what_happened_before_the_starting_point(self):
+        evidence = healthy_evidence()
+        evidence["parameter_changes"] = [
+            {"t": 21.2, "node": "/velocity_smoother", "changed": [{"name": "max_velocity", "value": [0.0, 0.0, 0.0]}]}]
+        evidence["localization_jumps"] = [{"t": 22.5, "shift_m": 2.5, "turn_rad": 0.5}]
+        evidence["pose_resets"] = [{"t": 22.3, "x": 0.0, "y": 0.0, "yaw": 0.0}]
+        evidence["processes_died"] = [{"t": 19.4, "process": "controller_server", "exit_code": -9}]
+        evidence["logs"] = [{"t": 30.0, "t_last": 34.0, "level": "ERROR", "node": "controller_server",
+                             "text": "Failed to make progress", "count": 3}]
+        evidence["new_obstacles"] = [{"x": 1.5, "y": -0.9, "extent_m": 0.9, "first_seen": 10.0, "last_seen": 38.0,
+                                      "snapshots": 14}]
+        evidence["behaviour_tree"] = {"failure_counts": {"FollowPath": 3},
+                                      "failures": [{"t": 30.0, "node": "FollowPath"}, {"t": 34.0, "node": "FollowPath"},
+                                                   {"t": 70.0, "node": "FollowPath"}]}
+        for row in evidence["motion"][20:35]:
+            row[1:] = [0.0, 0.0, None, None]
+        incident = self.incident(evidence, FAILED)
+        before = health_report(incident)
+        self.assertTrue(all(before[name] != "nothing unusual" for name in (
+            "node_health", "motion_status", "localization_status", "parameter_changes", "obstacles",
+            "planning_status", "nav2_warnings")))
+        incident.since = 40.0
+        after = health_report(incident)
+        self.assertEqual({name: after[name] for name in after if name not in ("mission", "planning_status")},
+                         {name: "nothing unusual" for name in after if name not in ("mission", "planning_status")})
+        self.assertEqual(after["planning_status"], ["the controller aborted path following 1 time(s)"])
+
+    def test_scans_that_stopped_and_came_back_are_not_reported_after_the_starting_point(self):
+        evidence = healthy_evidence()
+        evidence["rates"]["/scan_nav"]["counts"] = [10] + [25]*5 + [0]*3 + [25]*12
+        incident = self.incident(evidence)
+        self.assertIn("dropped below half of normal in 3 of 21 intervals", diagnosis.lidar_status(incident)["unusual"][0])
+        incident.since = 40.0
+        self.assertEqual(diagnosis.lidar_status(incident)["unusual"], [])
 
 
 class Agent(Case):
@@ -319,8 +364,10 @@ class EvidenceHelpers(unittest.TestCase):
         bond = {"first": -2.0, "active": True, "instances": {"node-side": 19.4, "manager-side": 23.3}}
         self.assertEqual(_bond(bond, end=30.0), {"first": -2.0, "last": 19.4, "silent_for_s": 10.6,
                                                  "last_active_flag": True, "restarts": 0})
-        bond["instances"]["node-after-restart"] = 30.0
-        self.assertEqual(_bond(bond, end=30.0)["restarts"], 1)
+        # After a restart the node bonds again under new IDs; the ends that died with the old process are history.
+        bond["instances"].update({"node-after-restart": 60.0, "manager-after-restart": 59.9})
+        again = _bond(bond, end=60.0)
+        self.assertEqual((again["last"], again["silent_for_s"], again["restarts"]), (59.9, 0.1, 1))
 
     def test_process_deaths_are_read_from_the_launch_log(self):
         with tempfile.TemporaryDirectory() as directory:

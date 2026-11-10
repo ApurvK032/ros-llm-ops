@@ -252,8 +252,11 @@ def start_simulation(log_path, attempts=3):
     raise RuntimeError("Simulation not ready")
 
 
-def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0):
+def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0, recover=None):
     """Run one scenario end to end and write result.json into the output directory. Returns the result.
+
+    recover attaches the recovery agent: "rules" for the fixed playbook, or the name of a local model. The
+    supervisor then holds on faults and accepts direct commands, and a live monitor feeds the agent.
 
     The recording continues for settle_s after the supervisor exits: the system's reaction to a fault (a
     lifecycle manager noticing a dead node, a sensor staying silent) often arrives after the mission has ended.
@@ -265,12 +268,29 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
     journal = output / "journal.jsonl"
     started_wall = datetime.now(UTC)
     injection = {"injected": False}
-    sim = bag = agent = model_server = None
+    sim = bag = agent = model_server = monitor = recovery = None
     timed_out = False
     try:
         with open(output / "model.log", "w", encoding="utf-8") as model_log:
             model_server = ensure_model(model, model_log)
+            if recover not in (None, "rules"):
+                if recover != model:
+                    ensure_model(recover, model_log)
+                # Load the model before the mission starts, as an agent on call would already be running;
+                # otherwise the first diagnosis pays for the load.
+                from .diagnosis import chat
+                chat(MODEL_ENDPOINT, {"model": recover, "stream": False, "think": False, "keep_alive": "30m",
+                                      "options": {"num_ctx": 8192, "num_predict": 1},
+                                      "messages": [{"role": "user", "content": "ready"}]})
         sim = start_simulation(output / "simulation.log")
+        if recover:
+            from .recovery import RecoveryAgent
+            monitor = subprocess.Popen(
+                ["bash", "-c", "source /opt/ros/jazzy/setup.bash && source ros_ws/install/setup.bash && "
+                 f"exec python3 -B -m warehouse_agent.monitor {output}"],
+                cwd=ROOT, env=ros_env(), stdout=open(output / "monitor.log", "w"),  # noqa: SIM115
+                stderr=subprocess.STDOUT, start_new_session=True)
+            recovery = RecoveryAgent(output, recover)
         if record:
             topics = " ".join(RECORD_TOPICS)
             bag = subprocess.Popen(
@@ -280,7 +300,8 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                 stderr=subprocess.STDOUT, start_new_session=True)
         agent_log = open(output / "agent.log", "w", encoding="utf-8")  # noqa: SIM115
         agent = subprocess.Popen(["bash", "scripts/run_agent.sh", "--command", scenario.command, "--journal",
-                                  str(journal), "--timeout", str(scenario.timeout_s), "--model", model],
+                                  str(journal), "--timeout", str(scenario.timeout_s), "--model", model,
+                                  *(["--recovery", "--on-fault", "hold"] if recover else [])],
                                  cwd=ROOT, stdout=agent_log, stderr=subprocess.STDOUT, start_new_session=True)
         hard_deadline = time.monotonic() + scenario.timeout_s + 180
         while agent.poll() is None:
@@ -299,17 +320,27 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                         injection = {"injected": True, "time": datetime.now(UTC).isoformat(),
                                      "monotonic": time.monotonic(), "type": scenario.fault["type"],
                                      "seconds_late": round(time.monotonic() - due, 1), "details": details}
-            time.sleep(0.1)
+            if recovery:
+                recovery.step()     # returns at once unless there is a fault to deal with
+            time.sleep(0.1 if not recovery else 0.5)
         if not timed_out:
             time.sleep(settle_s)
     finally:
         _stop(agent, grace=20)
+        _stop(monitor, grace=5)
         _stop(bag, grace=10)
         # Stopping the simulation kills processes too; anything logged after this point is teardown, not the run.
         sim_log = output / "simulation.log"
         log_bytes = sim_log.stat().st_size if sim_log.exists() else 0
         _stop(sim)
         _stop(model_server, grace=5)
+        # Processes the recovery agent restarted are outside the simulation's process group.
+        restarted = output / "restarted.json"
+        for pid in json.loads(restarted.read_text()) if restarted.exists() else []:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
     events = read_events(journal)
     log_text = (output / "agent.log").read_text(encoding="utf-8", errors="replace") if agent else ""
     outcome = classify(events, log_text, injection.get("monotonic"))
@@ -325,6 +356,7 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                                               "settle_s": settle_s, "simulation_log_bytes": log_bytes,
                                               "supervisor_exit_code": agent.returncode if agent else None},
         "fault": injection, "outcome": outcome,
+        "recovery": recovery.summary(injection.get("monotonic")) if recovery else None,
         "checker": None if report is None else {"ok": report["ok"], "events": report["events"],
                                                 "violations": report["violations"],
                                                 "warnings": report["warnings"]},
@@ -345,6 +377,11 @@ def summary_line(result):
     injected = (f"{fault['type']} at +{fault.get('seconds_after_mission_start')} s" if fault["injected"]
                 else ("fault NOT injected: " + fault["error"] if "error" in fault else "no fault"))
     checked = "no journal" if checker is None else f"{len(checker['violations'])} violations"
+    recovery = result.get("recovery")
+    recovered = "" if not recovery else (
+        f" | recovery ({recovery['mode']}): {recovery['actions_carried_out']} actions, "
+        f"{recovery['actions_refused']} refused, {recovery['actions_failed']} failed, resumed "
+        f"{recovery.get('seconds_fault_to_resume')} s after the fault")
     return (f"{result['scenario']['name']}: {outcome['result']} | delivered {len(outcome['delivered'])}, "
             f"deferred {len(outcome['deferred'])}, onboard {len(outcome['stranded_onboard'])} | "
-            f"{outcome['mission_seconds']} s | {injected} | checker: {checked}")
+            f"{outcome['mission_seconds']} s | {injected} | checker: {checked}{recovered}")
