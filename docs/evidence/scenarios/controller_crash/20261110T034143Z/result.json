@@ -1,0 +1,81 @@
+{
+  "scenario": {
+    "name": "controller_crash",
+    "description": "The Nav2 controller server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "controller_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "nav2",
+      "node": "controller_server",
+      "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T03:41:43.326693+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "446c12a",
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T03:42:19.108269+00:00",
+    "monotonic": 263809.145572996,
+    "type": "node_crash",
+    "seconds_late": 0.1,
+    "details": {
+      "node": "controller_server",
+      "pid": 669667,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.6
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.003 m, heading error 3.057 rad, facing error 1.986 rad, parcel clearance 7.825 m",
+      "P1": "Navigation failed; approach error 13.593 m, heading error 1.645 rad, facing error 1.499 rad, parcel clearance 14.135 m",
+      "P3": "Navigation failed; approach error 13.036 m, heading error 1.504 rad, facing error 2.042 rad, parcel clearance 11.665 m"
+    },
+    "mission_seconds": 20.3,
+    "seconds_to_first_abnormal_event": 0.1,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

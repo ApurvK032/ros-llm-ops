@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "A 1.0 m obstacle appeared on the PICK_B stopping pose from 46.2 s to 462.2 s, preventing the robot from reaching the goal.",
+    "evidence": [
+      "Obstacle detected at nearest_waypoint: PICK_B with distance_to_it_m: 0.24",
+      "Navigation goals for pickup P2 at PICK_B failed twice due to inability to reach the stopping pose",
+      "Mission ended partial at 462.4 s with P2 deferred"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "obstacles"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 4.7,
+  "output_tokens": 457,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

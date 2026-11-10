@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "blocked_path",
+    "component": "PICK_B",
+    "root_cause": "The robot failed to reach the PICK_B waypoint for parcel P2 after a long duration (14.4s - 376.9s), while successfully completing the pickup at PICK_A and attempting the drop-off at DROP_A. The failure occurred repeatedly without a node crash or sensor dropout, indicating an obstacle blocking the path between waypoints.",
+    "evidence": [
+      "pickup P2 at PICK_B: failed after 184.5 s",
+      "pickup P2 at PICK_B: failed after 177.9 s",
+      "drop P1 at DROP_A: failed after 178.0 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 2.7,
+  "output_tokens": 185,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "blocked_path",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

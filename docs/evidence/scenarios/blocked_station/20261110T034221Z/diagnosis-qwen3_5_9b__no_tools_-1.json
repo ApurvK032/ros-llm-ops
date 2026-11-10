@@ -1,0 +1,24 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "The robot failed to reach the pickup pose for P2 at PICK_B twice (at 14.2s and 251.8s), with the second attempt taking significantly longer (156.2s) than typical, suggesting it was stuck trying to approach a blocked stopping pose.",
+    "evidence": [
+      "Goal 'pickup P2 at PICK_B' failed after 237.6 s",
+      "Goal 'pickup P2 at PICK_B' failed again after 156.2 s starting at 251.8 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 2.5,
+  "output_tokens": 170,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

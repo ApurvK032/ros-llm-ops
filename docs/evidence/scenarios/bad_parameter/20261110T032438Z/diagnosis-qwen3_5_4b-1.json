@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "bad_parameter",
+    "component": "/velocity_smoother",
+    "root_cause": "The max_velocity parameter was set to [0.0, 0.0, 0.0] at 21.2 s, preventing the robot from moving despite active navigation goals.",
+    "evidence": [
+      "Parameter change: /velocity_smoother max_velocity set to [0.0, 0.0, 0.0] at 21.2 s",
+      "Motion status: Robot stood still with no non-zero velocity commands from 22 s onwards despite active goals",
+      "Controller errors: Failed to make progress starting at 30.8 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "parameter_changes"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 5.5,
+  "output_tokens": 554,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "bad_parameter",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

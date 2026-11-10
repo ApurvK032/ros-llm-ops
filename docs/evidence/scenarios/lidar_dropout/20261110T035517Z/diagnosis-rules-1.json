@@ -1,0 +1,23 @@
+{
+  "diagnosis": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "root_cause": "scans stopped arriving at about 20.0 s and never resumed (normal rate 5.0 Hz)",
+    "evidence": [
+      "scans stopped arriving at about 20.0 s and never resumed (normal rate 5.0 Hz)"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "sensor_dropout",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

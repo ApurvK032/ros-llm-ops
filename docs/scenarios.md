@@ -16,7 +16,7 @@ under `artifacts/scenarios/<name>/<time>/`:
 | --- | --- |
 | `result.json` | The scenario, what the fault actually changed and when, the outcome, and the checker's verdict |
 | `journal.jsonl` | The supervisor's journal, as for any mission |
-| `bag/` | MCAP recording: TF, raw and relayed lidar, odometry, plans, costmaps, Nav2 health, `/rosout`, mission status |
+| `bag/` | MCAP recording: TF, raw and relayed lidar, odometry, plans, costmaps, Nav2 health, `/rosout`, mission status. It runs on for 10 s after the mission ends, to catch the system's reaction |
 | `simulation.log`, `agent.log` | Console output of the simulator and the supervisor |
 
 Requirements are the same as the demo (ROS 2 Jazzy, Gazebo Harmonic, Ollama with `qwen3.5:4b`); no display is
@@ -51,35 +51,36 @@ Nav2 runs as separate processes, and Nav2 reads the lidar through the relay (`SC
 
 ## Baseline: no diagnosis or recovery
 
-One run of each scenario on 9 November 2026 (RTX 4070, Ubuntu 24.04), with the supervisor as it is today and
-nothing responding to the fault. The command is always
-`Deliver all three parcels`; every fault lands about 20 s into the mission, after P1 is onboard and while the
-robot drives to collect P2.
+Each scenario recorded twice on 9 November 2026 (RTX 4070, Ubuntu 24.04), with the supervisor as it is today and
+nothing responding to the fault. The command is always `Deliver all three parcels`; every fault lands about 20 s
+into the mission, after P1 is onboard and while the robot drives to collect P2. The table shows the later
+recording of each; the earlier one ended the same way in every scenario.
 
 | Scenario | Fault | Result | Delivered | Mission time | What happened |
 | --- | --- | --- | --- | --- | --- |
-| [`nominal`](evidence/scenarios/nominal/result.json) | none | complete | 3 of 3 | 123.3 s | Control run |
-| [`blocked_station`](evidence/scenarios/blocked_station/result.json) | Box on the PICK_B approach pose | partial | 2 of 3 | 493.5 s | Two attempts on P2 cost 431 s (one hit the 240 s navigation timeout) before P2 was deferred |
-| [`controller_crash`](evidence/scenarios/controller_crash/result.json) | `controller_server` killed | partial | 0 of 3 | 19.9 s | Every goal failed at once; all three parcels were deferred within a second of the crash, P1 still onboard |
-| [`lidar_dropout`](evidence/scenarios/lidar_dropout/result.json) | No scans reach Nav2 | partial | 0 of 3 | 22.6 s | Goals failed immediately; all three parcels deferred within 1.5 s of the dropout, P1 still onboard |
-| [`localization_lost`](evidence/scenarios/localization_lost/result.json) | Pose estimate shifted 1.5 m and 0.6 rad | no route | 0 of 3 | 203.1 s | The goal failed after 180 s; the supervisor then found no route from the pose it believed and held, P1 still onboard |
-| [`bad_parameter`](evidence/scenarios/bad_parameter/result.json) | `velocity_smoother.max_velocity` set to zero | timeout | 0 of 3 | 717.3 s | Each goal took about 180 s to fail; the run hit its 720 s limit with P2 deferred and P1 still onboard |
+| [`nominal`](evidence/scenarios/nominal/20261110T035152Z/result.json) | none | complete | 3 of 3 | 123.3 s | Control run |
+| [`blocked_station`](evidence/scenarios/blocked_station/20261110T035925Z/result.json) | Box on the PICK_B stopping pose | partial | 2 of 3 | 462.4 s | Two attempts on P2 cost 397 s (the first hit the 240 s navigation timeout) before P2 was deferred |
+| [`controller_crash`](evidence/scenarios/controller_crash/20261110T035421Z/result.json) | `controller_server` killed | partial | 0 of 3 | 20.1 s | Every goal failed at once; all three parcels were deferred within a second of the crash, P1 still onboard |
+| [`lidar_dropout`](evidence/scenarios/lidar_dropout/20261110T035517Z/result.json) | No scans reach Nav2 | partial | 0 of 3 | 22.2 s | Goals failed immediately; all three parcels deferred within 1.5 s of the dropout, P1 still onboard |
+| [`localization_lost`](evidence/scenarios/localization_lost/20261110T035612Z/result.json) | Pose estimate shifted 1.5 m and 0.6 rad | no route | 0 of 3 | 170.8 s | The goal failed after about 150 s; the supervisor then found no route from the pose it believed and held, P1 still onboard |
+| [`bad_parameter`](evidence/scenarios/bad_parameter/20261110T040727Z/result.json) | `velocity_smoother.max_velocity` set to zero | timeout | 0 of 3 | 719.7 s | Each goal took about 180 s to fail; the run hit its 720 s limit with P2 deferred and P1 still onboard |
 
-All six journals pass `warehouse_agent verify` with 0 violations: the supervisor never broke one of its own
+All twelve journals pass `warehouse_agent verify` with 0 violations: the supervisor never broke one of its own
 rules, but only the control delivered everything.
 
 What the baseline shows:
 
 - **Symptoms overlap.** Five different root causes all surface to the supervisor as "navigation failed". The
-  journal alone cannot tell a blocked station from a dead lidar or a zeroed speed limit; the recording can.
+  journal alone cannot tell a blocked station from a dead lidar or a zeroed speed limit; the recording can
+  (see [diagnosis](diagnosis.md)).
 - **Retries have no delay.** After the controller crash and the lidar dropout the supervisor used every retry
   and deferred the whole mission in under two seconds. A fault that might clear in ten seconds ends the mission.
 - **Slow faults are silent for minutes.** With lost localization or a zero speed limit, the first sign in the
-  journal comes about 180 s after the fault.
+  journal comes 150 to 180 s after the fault.
 
-These are single runs. The control took 123.1 s through the harness without the relay, 123.3 s with it, and
-123.2 s through the demo launcher; the fault scenarios have not yet been repeated, so the times above are
-examples, not a distribution.
+Repeatability, from two recordings per scenario: the result, and which parcels were delivered, deferred or left
+onboard, were identical both times in all six scenarios. Mission times matched within a second except
+`localization_lost` (203.1 s and 170.8 s). Two recordings are a check, not a distribution.
 
 ## Limitations
 
@@ -88,5 +89,5 @@ examples, not a distribution.
 - A localization fault can let the supervisor accept a pickup or drop at the wrong physical place, because
   arrival checks use the localization estimate. The harness does not yet compare transfers with Gazebo's
   ground-truth pose.
-- Recordings are not committed (5 to 160 MB per run); results and journals are, under
-  [`docs/evidence/scenarios/`](evidence/scenarios/).
+- Recordings are not committed (5 to 160 MB per run). Each run's result, journal and extracted evidence are,
+  under [`docs/evidence/scenarios/`](evidence/scenarios/).

@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "no_fault",
+    "component": "none",
+    "root_cause": "The mission completed successfully with all parcels delivered and no unusual observations reported in the health report.",
+    "evidence": [
+      "Mission ended as complete at 123.3 s.",
+      "All three parcels (P1, P2, P3) were delivered.",
+      "Health report shows 'nothing unusual' for all components including navigation nodes, sensors, motion, localization, and obstacles."
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 4.0,
+  "output_tokens": 259,
+  "score": {
+    "expected": "no_fault",
+    "given": "no_fault",
+    "category_correct": true,
+    "named_the_specific_cause": null
+  },
+  "label": "qwen3.5:9b"
+}

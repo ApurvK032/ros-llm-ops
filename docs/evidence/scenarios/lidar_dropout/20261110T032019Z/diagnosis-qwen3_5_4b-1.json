@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "root_cause": "The lidar stopped delivering scans at approximately 20.0 s, which caused the controller to fail transforming poses into the costmap frame and eventually abort path following.",
+    "evidence": [
+      "lidar_status: scans stopped arriving at about 20.0 s",
+      "controller_server ERROR from 22.0 s: Unable to transform goal pose into costmap frame",
+      "controller_server ERROR from 22.2 s: Failed to transform end pose to global frame"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 3.2,
+  "output_tokens": 314,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "sensor_dropout",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

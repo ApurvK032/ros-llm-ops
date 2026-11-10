@@ -1,0 +1,21 @@
+{
+  "diagnosis": {
+    "category": "no_fault",
+    "component": "none",
+    "root_cause": "",
+    "evidence": [],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "no_fault",
+    "given": "no_fault",
+    "category_correct": true,
+    "named_the_specific_cause": null
+  },
+  "label": "rules"
+}

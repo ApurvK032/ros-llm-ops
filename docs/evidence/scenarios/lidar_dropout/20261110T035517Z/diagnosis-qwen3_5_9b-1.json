@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "root_cause": "The lidar stopped delivering data at approximately 20.0 s, which caused the navigation controller to fail transforming poses and abort path following shortly after.",
+    "evidence": [
+      "health_report: 'lidar_status': ['scans stopped arriving at about 20.0 s and never resumed']",
+      "health_report: 'nav2_warnings' show transform errors starting at 21.6 s",
+      "health_report: 'planning_status' shows controller aborted path following 10 times"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "lidar_status"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 4.7,
+  "output_tokens": 280,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "sensor_dropout",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

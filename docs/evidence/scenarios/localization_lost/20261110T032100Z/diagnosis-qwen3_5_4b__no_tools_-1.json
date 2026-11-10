@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "unknown",
+    "component": "navigation_stack",
+    "root_cause": "The mission report indicates a failure to reach DROP_A with the message 'no estimated route', but provides no sensor data, localization logs, or actuator feedback to determine if this was caused by an obstacle (blocked_path), a missing map feature, a localization drift, or a node crash. Without evidence of the robot's state relative to the environment or internal navigation errors, the specific root cause cannot be identified from the provided information.",
+    "evidence": [
+      "mission held at 203.3 s",
+      "no estimated route to DROP_A",
+      "failed after 188.7 s"
+    ],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.5,
+  "output_tokens": 154,
+  "score": {
+    "expected": "localization_lost",
+    "given": "unknown",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

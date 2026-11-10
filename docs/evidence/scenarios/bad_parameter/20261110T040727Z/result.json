@@ -1,0 +1,95 @@
+{
+  "scenario": {
+    "name": "bad_parameter",
+    "description": "A configuration change sets the velocity smoother's speed limit to zero while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "summary": "velocity_smoother.max_velocity is zero, so every velocity command is clamped to zero and the robot cannot move."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T04:07:28.001253+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "446c12a",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 135411,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T04:08:00.479853+00:00",
+    "monotonic": 265350.517160314,
+    "type": "bad_parameter",
+    "seconds_late": 3.9,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 23.4
+  },
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 3,
+      "cancelled": 1
+    },
+    "retries": 2,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.639 m, heading error 2.259 rad, facing error 1.078 rad, parcel clearance 8.524 m"
+    },
+    "mission_seconds": 719.7,
+    "seconds_to_first_abnormal_event": 177.5,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "checker": {
+    "ok": true,
+    "events": 25,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

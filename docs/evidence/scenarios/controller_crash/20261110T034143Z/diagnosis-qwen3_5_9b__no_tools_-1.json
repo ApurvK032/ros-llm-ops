@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "DROP_A",
+    "root_cause": "The robot failed to reach the drop-off pose for P1 at 19.7s and subsequent attempts at 19.9s and 20.0s immediately after arriving from PICK_B. Since the mission ended with parcels still on the robot and no movement observed despite navigation goals being issued, an obstacle is blocking the stopping pose at DROP_A.",
+    "evidence": [
+      "pickup P2 at PICK_B: failed after 5.2 s",
+      "pickup P2 at PICK_B: failed after 0.2 s",
+      "drop P1 at DROP_A: failed after 0.1 s (at 19.7s)",
+      "drop P1 at DROP_A: failed after 0.1 s (at 19.9s)",
+      "pickup P3 at PICK_C: failed after 0.1 s (at 20.1s)"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 3.5,
+  "output_tokens": 242,
+  "score": {
+    "expected": "node_crash",
+    "given": "blocked_station",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

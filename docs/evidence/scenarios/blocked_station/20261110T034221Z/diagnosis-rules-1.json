@@ -1,0 +1,23 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "a 1.0 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 46.2 s to 462.2 s",
+    "evidence": [
+      "a 1.0 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 46.2 s to 462.2 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

@@ -1,0 +1,29 @@
+{
+  "diagnosis": {
+    "category": "localization_lost",
+    "component": "AMCL/localization node",
+    "root_cause": "External pose reset at 21.5 s set the robot's estimated position to (-4.78, -3.4), causing a significant drift from reality (confirmed by a 2.66 m jump at 21.7 s). This unreliable localization led to repeated planning failures and eventual mission failure when obstacles appeared near PICK_B.",
+    "evidence": [
+      "External pose reset (/initialpose) set estimate to (-4.78, -3.4) at 21.5 s",
+      "Pose estimate jumped 2.66 m and 0.54 rad at 21.7 s",
+      "Planner failed to find a path 21 times",
+      "Obstacles appeared near PICK_B from 151.7 s to 180.7 s, preventing route completion"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "localization_status"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 7.0,
+  "output_tokens": 730,
+  "score": {
+    "expected": "localization_lost",
+    "given": "localization_lost",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

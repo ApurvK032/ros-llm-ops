@@ -1,0 +1,24 @@
+{
+  "diagnosis": {
+    "category": "localization_lost",
+    "component": "amcl pose estimate",
+    "root_cause": "the pose estimate jumped 2.66 m and 0.54 rad in one update at 21.7 s",
+    "evidence": [
+      "the pose estimate jumped 2.66 m and 0.54 rad in one update at 21.7 s",
+      "an external pose reset (/initialpose) set the estimate to (-4.78, -3.4) at 21.5 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "localization_lost",
+    "given": "localization_lost",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

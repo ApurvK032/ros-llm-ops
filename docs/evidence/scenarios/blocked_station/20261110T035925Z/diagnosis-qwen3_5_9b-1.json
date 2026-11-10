@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B stopping pose",
+    "root_cause": "An obstacle appeared on the PICK_B stopping pose from 45.1 s to 471.1 s, preventing the robot from reaching the goal for parcel P2.",
+    "evidence": [
+      "Obstacle reported at PICK_B stopping pose from 45.1 s to 471.1 s",
+      "Pickup P2 goal cancelled after 240.1 s (while obstacle present)",
+      "Second attempt to pickup P2 failed after 156.5 s (while obstacle still present)",
+      "Mission ended partial with P2 deferred"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 6.7,
+  "output_tokens": 453,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

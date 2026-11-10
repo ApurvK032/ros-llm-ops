@@ -1,0 +1,24 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "The robot failed to reach the stopping pose for PICK_B twice (at 240.1s and 156.5s), indicating an obstacle is blocking the waypoint location itself rather than the path leading to it.",
+    "evidence": [
+      "pickup P2 at PICK_B: cancelled after 240.1 s",
+      "pickup P2 at PICK_B: failed after 156.5 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.3,
+  "output_tokens": 128,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

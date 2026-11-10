@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B waypoint",
+    "root_cause": "A 0.9 m obstacle appeared on the PICK_B stopping pose between 45.1 s and 471.1 s, preventing the robot from reaching the goal.",
+    "evidence": [
+      "obstacles: a 0.9 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 45.1 s to 471.1 s",
+      "pickup P2 at PICK_B: cancelled after 240.1 s",
+      "pickup P2 at PICK_B: failed after 156.5 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 3.3,
+  "output_tokens": 314,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "The robot failed to pick up parcel P2 at PICK_B after a long wait (156.5s). The goal was first cancelled and then failed. Since the mission ended with P2 deferred and no mention of path obstructions or sensor drops, the most likely cause is that an obstacle appeared on the stopping pose at PICK_B, preventing the robot from reaching the pickup location.",
+    "evidence": [
+      "Goal 'pickup P2 at PICK_B' failed after 156.5s",
+      "Mission ended partial with P2 deferred",
+      "No sensor dropout or node crash reported prior to failure"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 2.7,
+  "output_tokens": 180,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

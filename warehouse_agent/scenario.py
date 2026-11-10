@@ -252,8 +252,12 @@ def start_simulation(log_path, attempts=3):
     raise RuntimeError("Simulation not ready")
 
 
-def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b"):
-    """Run one scenario end to end and write result.json into the output directory. Returns the result."""
+def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0):
+    """Run one scenario end to end and write result.json into the output directory. Returns the result.
+
+    The recording continues for settle_s after the supervisor exits: the system's reaction to a fault (a
+    lifecycle manager noticing a dead node, a sensor staying silent) often arrives after the mission has ended.
+    """
     from .world import World
     world = World()
     output = Path(output)
@@ -296,9 +300,14 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b")
                                      "monotonic": time.monotonic(), "type": scenario.fault["type"],
                                      "seconds_late": round(time.monotonic() - due, 1), "details": details}
             time.sleep(0.1)
+        if not timed_out:
+            time.sleep(settle_s)
     finally:
         _stop(agent, grace=20)
         _stop(bag, grace=10)
+        # Stopping the simulation kills processes too; anything logged after this point is teardown, not the run.
+        sim_log = output / "simulation.log"
+        log_bytes = sim_log.stat().st_size if sim_log.exists() else 0
         _stop(sim)
         _stop(model_server, grace=5)
     events = read_events(journal)
@@ -313,6 +322,7 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b")
     result = {
         "scenario": asdict(scenario), "run": {"started": started_wall.isoformat(), "fault_requested": inject,
                                               "recorded": record, "model": model, "commit": _commit(),
+                                              "settle_s": settle_s, "simulation_log_bytes": log_bytes,
                                               "supervisor_exit_code": agent.returncode if agent else None},
         "fault": injection, "outcome": outcome,
         "checker": None if report is None else {"ok": report["ok"], "events": report["events"],

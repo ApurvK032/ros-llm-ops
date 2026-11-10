@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "unknown",
+    "component": "navigation stack",
+    "root_cause": "The mission failed to complete multiple goals (pickup P2, drop P1) with repeated timeouts and cancellations. However, the provided tools only report timing data and status flags without specific sensor logs, pose history, or parameter values required to distinguish between a blocked path, localization loss, actuator fault, or other causes.",
+    "evidence": [
+      "Multiple failed goals at PICK_B and DROP_A",
+      "Repeated timeout attempts (178.0s) followed by cancellation",
+      "No delivery of any parcel"
+    ],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.5,
+  "output_tokens": 142,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "unknown",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

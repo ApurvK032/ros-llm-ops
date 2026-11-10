@@ -26,18 +26,21 @@
     }
   },
   "run": {
-    "started": "2026-11-10T03:03:05.545709+00:00",
+    "started": "2026-11-10T03:59:25.794534+00:00",
     "fault_requested": true,
     "recorded": true,
     "model": "qwen3.5:4b",
-    "commit": "0025744",
+    "commit": "446c12a",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 100531,
     "supervisor_exit_code": 1
   },
   "fault": {
     "injected": true,
-    "time": "2026-11-10T03:03:41.182844+00:00",
-    "monotonic": 261491.220147909,
+    "time": "2026-11-10T03:59:53.422262+00:00",
+    "monotonic": 264863.459564953,
     "type": "blocked_path",
+    "seconds_late": 2.6,
     "details": {
       "entity": "fault_obstacle",
       "position": [
@@ -51,7 +54,7 @@
       ],
       "at": "PICK_B"
     },
-    "seconds_after_mission_start": 19.0
+    "seconds_after_mission_start": 18.9
   },
   "outcome": {
     "result": "partial",
@@ -70,9 +73,9 @@
     },
     "retries": 1,
     "deferral_reasons": {
-      "P2": "Navigation failed; approach error 0.729 m, heading error 2.172 rad, facing error 2.472 rad, parcel clearance 1.176 m"
+      "P2": "Navigation failed; approach error 0.703 m, heading error 2.553 rad, facing error 2.694 rad, parcel clearance 1.233 m"
     },
-    "mission_seconds": 493.5,
+    "mission_seconds": 462.4,
     "seconds_to_first_abnormal_event": 235.5,
     "first_abnormal_event": "navigation_finished"
   },

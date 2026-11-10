@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "no_fault",
+    "component": "none",
+    "root_cause": "The mission completed successfully with all three parcels delivered (P1, P2, P3) and no deferred tasks or errors reported in the navigation goals.",
+    "evidence": [
+      "Mission ended as: complete at 123.3 s.",
+      "Delivered: ['P1', 'P2', 'P3']. Deferred: none.",
+      "All navigation goals (pickup/drop for all parcels) succeeded without delays or failures."
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.3,
+  "output_tokens": 124,
+  "score": {
+    "expected": "no_fault",
+    "given": "no_fault",
+    "category_correct": true,
+    "named_the_specific_cause": null
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

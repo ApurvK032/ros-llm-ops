@@ -1,0 +1,90 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T03:56:12.216990+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "446c12a",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 61054,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T03:56:45.801134+00:00",
+    "monotonic": 264675.838437875,
+    "type": "localization_jump",
+    "seconds_late": 2.7,
+    "details": {
+      "estimate_before": [
+        -6.278,
+        -3.401,
+        -1.316
+      ],
+      "estimate_after": [
+        -4.778,
+        -3.401,
+        -0.716
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "seconds_after_mission_start": 22.1
+  },
+  "outcome": {
+    "result": "no_route",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 170.8,
+    "seconds_to_first_abnormal_event": 148.7,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "checker": {
+    "ok": true,
+    "events": 14,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "diagnosis": {
+    "category": "localization_lost",
+    "component": "AMCL/localization",
+    "root_cause": "The robot's pose estimate became unreliable due to a large jump (2.51 m, 0.53 rad) at 22.5 s following an external reset at 22.3 s. This was caused by lidar scans appearing as 'wall-sized structures' where the map is free, indicating severe sensor-to-map misalignment. The resulting incorrect pose prevented the planner from finding a valid path to PICK_B.",
+    "evidence": [
+      "pose estimate jumped 2.51 m and 0.53 rad at 22.5 s",
+      "external pose reset set estimate to (-4.67, -3.68) at 22.3 s",
+      "two wall-sized structures appeared where map is free (lidar scans not lining up with map)",
+      "planner failed to find a path 21 times"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "localization_status",
+    "obstacles"
+  ],
+  "model": "qwen3.5:4b",
+  "used_tools": true,
+  "seconds": 7.2,
+  "output_tokens": 752,
+  "score": {
+    "expected": "localization_lost",
+    "given": "localization_lost",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:4b"
+}

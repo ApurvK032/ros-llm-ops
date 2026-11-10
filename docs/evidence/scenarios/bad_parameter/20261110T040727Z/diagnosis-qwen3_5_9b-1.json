@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "bad_parameter",
+    "component": "/velocity_smoother node parameter max_velocity",
+    "root_cause": "The parameter 'max_velocity' was set to [0.0, 0.0, 0.0] at 23.3 s, which prevented the robot from moving while a goal was active starting at 14.6 s.",
+    "evidence": [
+      "Parameter change reported at 23.3 s.",
+      "Motion status shows robot stood still with no velocity commands from 24 s onwards despite active goals.",
+      "Planning status shows controller aborted path following 81 times due to lack of progress."
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "parameter_changes"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 4.7,
+  "output_tokens": 291,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "bad_parameter",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

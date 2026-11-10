@@ -1,0 +1,33 @@
+{
+  "diagnosis": {
+    "category": "node_crash",
+    "component": "controller_server",
+    "root_cause": "controller_server process died at about 18.5 s (exit code -9)",
+    "evidence": [
+      "controller_server process died at about 18.5 s (exit code -9)",
+      "controller_server heartbeat stopped at 19.4 s; recording ends at 30.3 s",
+      "docking_server heartbeat stopped at 23.5 s; recording ends at 30.3 s",
+      "waypoint_follower heartbeat stopped at 23.6 s; recording ends at 30.3 s",
+      "bt_navigator heartbeat stopped at 23.7 s; recording ends at 30.3 s",
+      "collision_monitor heartbeat stopped at 23.8 s; recording ends at 30.3 s",
+      "velocity_smoother heartbeat stopped at 23.9 s; recording ends at 30.3 s",
+      "behavior_server heartbeat stopped at 24.1 s; recording ends at 30.3 s",
+      "route_server heartbeat stopped at 24.2 s; recording ends at 30.3 s",
+      "planner_server heartbeat stopped at 25.2 s; recording ends at 30.3 s",
+      "smoother_server heartbeat stopped at 25.3 s; recording ends at 30.3 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "node_crash",
+    "given": "node_crash",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

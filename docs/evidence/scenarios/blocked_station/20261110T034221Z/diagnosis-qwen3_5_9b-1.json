@@ -1,0 +1,31 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B stopping pose",
+    "root_cause": "A 1.0 m obstacle appeared on the PICK_B stopping pose from 46.2 s to 462.2 s, preventing the robot from reaching the goal.",
+    "evidence": [
+      "obstacles: a 1.0 m obstacle not in the map appeared on the PICK_B stopping pose",
+      "mission: pickup P2 at PICK_B failed twice (at 14.2s and 251.8s)",
+      "nav2_warnings: controller_server ERROR 'Failed to make progress' starting at 77.0 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "obstacles",
+    "localization_status",
+    "planning_status",
+    "nav2_warnings"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 9.2,
+  "output_tokens": 608,
+  "score": {
+    "expected": "blocked_station",
+    "given": "blocked_station",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

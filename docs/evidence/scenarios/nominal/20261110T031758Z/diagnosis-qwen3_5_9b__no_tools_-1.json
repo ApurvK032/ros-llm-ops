@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "no_fault",
+    "component": "none",
+    "root_cause": "The mission report indicates all three parcels (P1, P2, P3) were successfully delivered at the specified times with no deferred tasks or remaining items. The sequence of events shows consistent success for pickup and drop-off goals without any interruptions, crashes, or localization errors.",
+    "evidence": [
+      "Mission ended as: complete",
+      "Delivered: ['P1', 'P2', 'P3']",
+      "Deferred: none",
+      "Still on the robot: none",
+      "All navigation goals succeeded"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 2.5,
+  "output_tokens": 161,
+  "score": {
+    "expected": "no_fault",
+    "given": "no_fault",
+    "category_correct": true,
+    "named_the_specific_cause": null
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

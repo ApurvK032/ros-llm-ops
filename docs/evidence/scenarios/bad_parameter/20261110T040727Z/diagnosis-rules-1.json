@@ -1,0 +1,23 @@
+{
+  "diagnosis": {
+    "category": "bad_parameter",
+    "component": "/velocity_smoother max_velocity",
+    "root_cause": "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 23.3 s",
+    "evidence": [
+      "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 23.3 s"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "bad_parameter",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

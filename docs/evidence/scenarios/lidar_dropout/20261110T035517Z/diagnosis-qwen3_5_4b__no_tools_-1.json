@@ -1,0 +1,24 @@
+{
+  "diagnosis": {
+    "category": "unknown",
+    "component": "navigation_stack",
+    "root_cause": "The mission ended with all goals failed within a very short timeframe (0.1s to 0.2s) after the first successful pickup. While this pattern suggests a potential issue like a sensor dropout or localization loss, the provided logs do not contain specific error messages, state transitions indicating pose mismatch, or explicit sensor failure reports required to definitively diagnose the root cause among the defined categories.",
+    "evidence": [
+      "All subsequent goals failed almost immediately after success.",
+      "No specific error type (e.g., 'localization_lost', 'sensor_dropout') is explicitly reported in the goal status logs."
+    ],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.6,
+  "output_tokens": 158,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "unknown",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

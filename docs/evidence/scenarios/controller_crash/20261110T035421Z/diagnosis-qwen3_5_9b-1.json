@@ -1,0 +1,28 @@
+{
+  "diagnosis": {
+    "category": "node_crash",
+    "component": "controller_server",
+    "root_cause": "The controller_server process died at 18.5 s (exit code -9), which caused all subsequent navigation nodes to stop receiving heartbeats and fail shortly after.",
+    "evidence": [
+      "controller_server process died at about 18.5 s",
+      "All other Nav2 nodes stopped responding between 19.4 s and 25.3 s",
+      "Navigation goals failed immediately after the crash"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "node_health"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 4.3,
+  "output_tokens": 242,
+  "score": {
+    "expected": "node_crash",
+    "given": "node_crash",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

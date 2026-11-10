@@ -1,0 +1,23 @@
+{
+  "diagnosis": {
+    "category": "node_crash",
+    "component": "controller_server",
+    "root_cause": "controller_server process died at about 18.7 s (exit code -9)",
+    "evidence": [
+      "controller_server process died at about 18.7 s (exit code -9)"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "rules",
+  "used_tools": true,
+  "seconds": 0.0,
+  "output_tokens": 0,
+  "score": {
+    "expected": "node_crash",
+    "given": "node_crash",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "rules"
+}

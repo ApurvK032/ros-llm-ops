@@ -1,0 +1,30 @@
+{
+  "diagnosis": {
+    "category": "node_crash",
+    "component": "controller_server",
+    "root_cause": "The controller_server process died at 18.7 s (exit code -9), which caused the navigation stack to stop responding and led to subsequent goal failures.",
+    "evidence": [
+      "controller_server process died at about 18.7 s (exit code -9)",
+      "the controller aborted path following 10 time(s)",
+      "bt_navigator ERROR from 19.7 s: Goal failed"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "node_health",
+    "planning_status",
+    "nav2_warnings"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 4.4,
+  "output_tokens": 263,
+  "score": {
+    "expected": "node_crash",
+    "given": "node_crash",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

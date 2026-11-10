@@ -1,0 +1,26 @@
+{
+  "diagnosis": {
+    "category": "unknown",
+    "component": "navigation stack",
+    "root_cause": "The mission ended in a partial state with all parcels deferred and no successful deliveries recorded. While multiple goals failed rapidly after the first pickup, the provided logs show repeated failure attempts at specific waypoints (PICK_B, DROP_A, PICK_C) without clear evidence of an obstacle blocking a stopping pose (blocked_station), a physical blockage on the path (blocked_path), a node crash, sensor dropout, localization loss, parameter change, or actuator fault. The rapid succession of failures suggests a potential issue, but the specific diagnostic criteria for the defined fault categories are not met based solely on the provided text.",
+    "evidence": [
+      "Mission ended partial at 22.6s",
+      "All parcels deferred",
+      "Multiple goal failures occurring within seconds of each other",
+      "No explicit error messages indicating obstacle detection, sensor failure, or node termination"
+    ],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.9,
+  "output_tokens": 204,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "unknown",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:4b (no tools)"
+}

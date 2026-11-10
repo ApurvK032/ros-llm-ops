@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "blocked_station",
+    "component": "PICK_B",
+    "root_cause": "The robot failed to reach the stopping pose for pickup P2 at PICK_B (first attempt failed after 7.5s, second after 0.2s). Subsequently, it could not reach DROP_A or PICK_C. Since the robot stopped moving towards these goals immediately after failing at PICK_B, an obstacle likely blocked the stopping pose at PICK_B.",
+    "evidence": [
+      "Goal 'pickup P2 at PICK_B' failed after 7.5s.",
+      "Goal 'pickup P2 at PICK_B' failed again after 0.2s (likely a retry or re-planning attempt).",
+      "All subsequent goals (drop P1, pickup P3) failed immediately after the robot stopped responding to navigation commands."
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:9b",
+  "used_tools": false,
+  "seconds": 3.0,
+  "output_tokens": 205,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "blocked_station",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:9b (no tools)"
+}

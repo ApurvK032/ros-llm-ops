@@ -1,0 +1,27 @@
+{
+  "diagnosis": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "root_cause": "The lidar stopped delivering data at approximately 20.0 s, which caused the navigation stack to lose sensor input and subsequently fail all subsequent goals.",
+    "evidence": [
+      "health_report: 'scans stopped arriving at about 20.0 s'",
+      "lidar_status: 'rate_hz_by_interval' shows a drop from 5.0 Hz to 1.8 Hz starting at interval 20.0"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "lidar_status"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 5.6,
+  "output_tokens": 354,
+  "score": {
+    "expected": "sensor_dropout",
+    "given": "sensor_dropout",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

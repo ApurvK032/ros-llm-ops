@@ -1,0 +1,30 @@
+{
+  "diagnosis": {
+    "category": "localization_lost",
+    "component": "AMCL localization node",
+    "root_cause": "The robot's pose estimate jumped significantly (2.51 m) at 22.5 s, coinciding with an external pose reset. This caused the planner to fail repeatedly (21 times) because it was trying to plan paths from incorrect positions relative to the map, leading to the mission failure.",
+    "evidence": [
+      "Pose estimate jumped 2.51 m at 22.5 s",
+      "External pose reset set estimate to (-4.67, -3.68) at 22.3 s",
+      "Planner failed 21 times due to inability to create a plan from the estimated pose"
+    ],
+    "confidence": "high"
+  },
+  "tool_calls": [
+    "health_report",
+    "localization_status",
+    "obstacles",
+    "planning_status"
+  ],
+  "model": "qwen3.5:9b",
+  "used_tools": true,
+  "seconds": 9.5,
+  "output_tokens": 629,
+  "score": {
+    "expected": "localization_lost",
+    "given": "localization_lost",
+    "category_correct": true,
+    "named_the_specific_cause": true
+  },
+  "label": "qwen3.5:9b"
+}

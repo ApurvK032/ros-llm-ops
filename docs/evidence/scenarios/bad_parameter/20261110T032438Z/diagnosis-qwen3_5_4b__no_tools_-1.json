@@ -1,0 +1,25 @@
+{
+  "diagnosis": {
+    "category": "unknown",
+    "component": "navigation stack",
+    "root_cause": "The mission failed to complete multiple waypoints (PICK_B, DROP_A) with repeated failures and cancellations, but the provided observation tools do not report specific sensor data loss, pose drift, actuator failure, or parameter changes. Without evidence of a node crash, blocked path, or localization loss from the available logs, no specific fault category can be confirmed.",
+    "evidence": [
+      "Multiple failed goals at PICK_B and DROP_A",
+      "Mission ended without delivery",
+      "No explicit sensor dropout, pose mismatch, or actuator failure reported in the mission summary"
+    ],
+    "confidence": "low"
+  },
+  "tool_calls": [],
+  "model": "qwen3.5:4b",
+  "used_tools": false,
+  "seconds": 1.6,
+  "output_tokens": 147,
+  "score": {
+    "expected": "bad_parameter",
+    "given": "unknown",
+    "category_correct": false,
+    "named_the_specific_cause": false
+  },
+  "label": "qwen3.5:4b (no tools)"
+}
