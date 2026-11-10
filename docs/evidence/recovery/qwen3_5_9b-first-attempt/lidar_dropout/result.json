@@ -1,0 +1,329 @@
+{
+  "scenario": {
+    "name": "lidar_dropout",
+    "description": "The lidar stops delivering scans while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2; costmaps and localization stop updating and the collision monitor has no data."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T08:38:23.126172+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 56376,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T08:38:55.587052+00:00",
+    "monotonic": 281605.624354656,
+    "type": "sensor_dropout",
+    "seconds_late": 1.7,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.9
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P2",
+      "P3"
+    ],
+    "deferred": [
+      "P1"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 5,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 143.5,
+    "seconds_to_first_abnormal_event": 0.9,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.8,
+        "monotonic_detected": 281607.626945117,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "scans stopped arriving at about 20.0 s and never resumed (normal rate 5.0 Hz)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 749023,
+              "new_pid": 749735
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          },
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": false,
+            "why": "controller_server shows no sign of being dead or silent"
+          },
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": false,
+            "why": "no jump in the pose estimate was observed"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          },
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": false,
+            "why": "controller_server shows no sign of being dead or silent"
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P1",
+            "permitted": true,
+            "why": "an active parcel",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P1"
+              ],
+              "accepted": true,
+              "request_id": "D1",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "clear obstacle at DROP_A",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering data at 20.0 s, which caused the controller_server to fail transforming poses and led to the navigation goal failure.",
+          "evidence": [
+            "Lidar scans stopped arriving at about 20.0 s (normal rate 5.0 Hz).",
+            "Controller server errors starting at 21.8 s due to transformPose exceptions.",
+            "BT navigator reported goal failed at 21.9 s."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "lidar_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            },
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P1"
+            },
+            {
+              "action": "escalate",
+              "target": "clear obstacle at DROP_A"
+            }
+          ],
+          "resume": false,
+          "note": "The diagnosis indicates a sensor dropout (lidar) causing the controller to fail. The primary fix is restarting the lidar driver. Once scans resume, costmaps must be cleared because they accumulated data during the period of wrong/no pose estimates. The controller server should then be restarted to process the new valid data and relocalize. Since P1 is 'onboard' and heading to DROP_A (the next destination), it cannot proceed safely without sensor data or a valid map, so it must be deferred and an escalation requested for that specific drop-off point. P2 and P3 are still awaiting pickup, so they remain active."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "monotonic_done": 281631.273950584,
+        "seconds": 23.6
+      },
+      {
+        "detected_at_s": 46.8,
+        "monotonic_detected": 281631.77474095,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "python3 process died at about 35.0 s (exit code -9)",
+          "scan rate dropped below half of normal in 4 of 11 intervals, first at 20.0 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 749735,
+              "new_pid": 749949
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P1",
+            "permitted": false,
+            "why": "P1 is not an active, undelivered parcel"
+          },
+          {
+            "action": "escalate",
+            "target": "Check and replace the lidar sensor or its connection cable.",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar scan rate dropped significantly starting at 20.0 s (below half normal), causing data gaps that led to transformPose errors and eventual navigation failure.",
+          "evidence": [
+            "Lidar scan rate dropped below half of normal in 4 of 11 intervals, first at 20.0 s",
+            "Controller server errors starting at 21.8 s due to inability to transform goal pose (caused by missing sensor data)",
+            "Python3 process died at 35.0 s as a consequence of the navigation failure"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "node_health",
+          "lidar_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P1"
+            },
+            {
+              "action": "escalate",
+              "target": "Check and replace the lidar sensor or its connection cable."
+            }
+          ],
+          "resume": true,
+          "note": "The diagnosis confirms a sensor dropout in the lidar causing navigation failure. The lidar_driver must be restarted to restore data flow. Costmaps accumulated during the bad pose estimate must be cleared before resuming. Parcel P1 is already marked as deferred in the input state but requires explicit action confirmation; however, since it is 'onboard' and 'deferred', we ensure it remains deferred while escalating for the hardware fix. The other parcels (P2, P3) are active and awaiting pickup at valid locations once the sensor is restored."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 5 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 281653.306056084,
+        "seconds": 21.5
+      }
+    ],
+    "actions_proposed": 12,
+    "actions_refused": 4,
+    "actions_failed": 0,
+    "actions_carried_out": 8,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": null
+  },
+  "checker": {
+    "ok": true,
+    "events": 33,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

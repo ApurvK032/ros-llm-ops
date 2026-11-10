@@ -1,0 +1,219 @@
+{
+  "scenario": {
+    "name": "bad_parameter",
+    "description": "A configuration change sets the velocity smoother's speed limit to zero while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "summary": "velocity_smoother.max_velocity is zero, so every velocity command is clamped to zero and the robot cannot move."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T08:30:37.697703+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 47677,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T08:31:15.368336+00:00",
+    "monotonic": 281145.405638783,
+    "type": "bad_parameter",
+    "seconds_late": 2.9,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 22.1
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P1",
+      "P3"
+    ],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 4,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 109.9,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.5,
+        "monotonic_detected": 281145.906881693,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 22.0 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": true,
+            "why": "an active parcel",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P2"
+              ],
+              "accepted": true,
+              "request_id": "D2",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "Clear the obstacle at DROP_A so P1 can be delivered, then resume normal operation.",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother node parameter max_velocity",
+          "root_cause": "At 22.0 s, the max_velocity parameter was set to [0.0, 0.0, 0.0], which prevents the robot from moving. This caused the mission to fail at 22.5 s while attempting to deliver P2.",
+          "evidence": [
+            "Mission ended at 22.5 s with no parcels delivered.",
+            "Health report shows a parameter change: /velocity_smoother max_velocity set to [0.0, 0.0, 0.0] at 22.0 s.",
+            "This parameter change is the earliest unusual observation and directly explains why the robot stopped moving before completing the second pickup."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            },
+            {
+              "action": "escalate",
+              "target": "Clear the obstacle at DROP_A so P1 can be delivered, then resume normal operation."
+            }
+          ],
+          "resume": true,
+          "note": "The parameter causing the stop is restored. Costmaps are cleared to prevent stale data from the stopped state. P2 (awaiting pickup) is deferred as it cannot proceed without movement. P1 is currently onboard at DROP_A; since the robot was stopped there, we escalate to clear any potential blockage or confirm the drop status before resuming. Once the parameter is fixed and costmaps cleared, the robot can move again."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 281165.546312488,
+        "seconds": 19.6
+      }
+    ],
+    "actions_proposed": 4,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 4,
+    "seconds_fault_to_detection": 0.5,
+    "seconds_fault_to_resume": 20.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 29,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

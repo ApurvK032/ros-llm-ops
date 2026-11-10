@@ -1,0 +1,226 @@
+{
+  "scenario": {
+    "name": "blocked_station",
+    "description": "A box is left on the PICK_B approach pose just after the robot collects P1, so the robot cannot reach the pose it must stop at to collect P2.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "blocked_path",
+      "at": "PICK_B",
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 2.0
+    },
+    "ground_truth": {
+      "category": "blocked_station",
+      "component": "environment",
+      "location": "PICK_B",
+      "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T09:38:48.107574+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 50241,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T09:39:25.309523+00:00",
+    "monotonic": 285235.346826941,
+    "type": "blocked_path",
+    "seconds_late": 2.8,
+    "details": {
+      "entity": "fault_obstacle",
+      "position": [
+        1.5,
+        -0.9
+      ],
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ],
+      "at": "PICK_B"
+    },
+    "seconds_after_mission_start": 19.2
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P1",
+      "P3"
+    ],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 4,
+      "cancelled": 2
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 141.9,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 50.2,
+        "monotonic_detected": 285266.390141596,
+        "alerts": [
+          "a 0.8 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 45.3 s to 49.3 s"
+        ],
+        "actions": [],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "none",
+          "root_cause": "The mission ended before the obstacle appeared. The obstacle on PICK_B was detected at 45.3 s, but the recording ended at 50.2 s with navigation still running for PICK_B. Since no planner/controller failures, localization issues, actuator faults, or parameter changes occurred during the actual navigation window (0-35.8 s), and the robot was moving normally, the failure to complete the mission is attributed to the recording ending prematurely rather than a fault in the system.",
+          "evidence": [
+            "Mission ended at 50.2 s with PICK_B still running",
+            "Obstacle on PICK_B first seen at 45.3 s (after navigation had already been attempted)",
+            "No planner or controller failures recorded",
+            "Localization stable with no pose jumps",
+            "Motion commands executed normally with measured speeds matching commanded speeds"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles",
+          "planning_status",
+          "localization_status",
+          "motion_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis category is 'no_fault'. The mission failure was due to the recording ending prematurely, not a system fault. No recovery actions are required."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 285284.724048922,
+        "seconds": 18.3
+      },
+      {
+        "detected_at_s": 74.2,
+        "monotonic_detected": 285290.733587809,
+        "alerts": [
+          "a 0.7 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 45.3 s to 73.3 s"
+        ],
+        "actions": [
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": true,
+            "why": "an obstacle was seen on the PICK_B stopping pose",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P2"
+              ],
+              "accepted": true,
+              "request_id": "D4",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "remove obstacle at (1.56, -1.16)",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "blocked_station",
+          "component": "PICK_B stopping pose",
+          "root_cause": "A 0.7 m obstacle appeared on the PICK_B waypoint's stopping pose between 45.3 s and 73.3 s, preventing the robot from reaching the goal.",
+          "evidence": [
+            "Obstacle detected at (1.56, -1.16) with extent 0.7m",
+            "Obstacle first seen at 45.3s, last seen at 73.3s",
+            "Distance to PICK_B stopping pose: 0.27m",
+            "Pickup P2 goal cancelled after 36.6s and still running at end of recording (74.2s) due to this obstacle"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            },
+            {
+              "action": "escalate",
+              "target": "remove obstacle at (1.56, -1.16)"
+            }
+          ],
+          "note": "The diagnosis category is 'blocked_station'. Per instructions, the robot cannot move the obstacle. Parcel P2 is awaiting pickup at PICK_B and its next goal is PICK_B, which is blocked by the obstacle. Therefore, defer P2 and escalate to remove the obstacle."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "monotonic_done": 285300.188767941,
+        "seconds": 9.5
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 31.0,
+    "seconds_fault_to_resume": 49.4
+  },
+  "checker": {
+    "ok": true,
+    "events": 35,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

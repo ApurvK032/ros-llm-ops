@@ -1,0 +1,336 @@
+{
+  "scenario": {
+    "name": "controller_crash",
+    "description": "The Nav2 controller server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "controller_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "nav2",
+      "node": "controller_server",
+      "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T08:32:54.731396+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 43236,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T08:33:25.873162+00:00",
+    "monotonic": 281275.910464959,
+    "type": "node_crash",
+    "seconds_late": 0.3,
+    "details": {
+      "node": "controller_server",
+      "pid": 747148,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.6
+  },
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 1,
+      "rejected": 4
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P1": "Navigation rejected; approach error 13.535 m, heading error 1.594 rad, facing error 1.476 rad, parcel clearance 14.081 m",
+      "P3": "Navigation rejected; approach error 13.157 m, heading error 1.548 rad, facing error 2.023 rad, parcel clearance 11.795 m"
+    },
+    "mission_seconds": 295.9,
+    "seconds_to_first_abnormal_event": 1.0,
+    "first_abnormal_event": "navigation_finished"
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 20.1,
+        "monotonic_detected": 281276.911942161,
+        "alerts": [
+          "controller_server process died at about 19.5 s (exit code -9)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "error": "error: service /lifecycle_manager_navigation/is_active did not answer within 5.0 s"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "error": "error: service /local_costmap/clear_entirely_local_costmap is not available"
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": true,
+            "why": "an active parcel",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P2"
+              ],
+              "accepted": true,
+              "request_id": "D2",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "Clear the obstacle at PICK_B to allow pickup P2 to proceed.",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "controller_server",
+          "root_cause": "The controller_server process died at 19.5 s (exit code -9), which occurred after the pickup P2 attempt failed at 14.3 s + 6.3 s = 20.6 s start time? Wait, let's re-calculate. Pickup P2 started at 14.3s and failed after 6.3s, meaning it stopped trying around 20.6s. The controller died at 19.5s. This crash prevented the robot from completing the navigation task for pickup P2.",
+          "evidence": [
+            "pickup P2 to PICK_B started at 14.3 s: failed after 6.3 s",
+            "controller_server process died at about 19.5 s (exit code -9)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "node_health"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            },
+            {
+              "action": "escalate",
+              "target": "Clear the obstacle at PICK_B to allow pickup P2 to proceed."
+            }
+          ],
+          "resume": true,
+          "note": "The controller_server crashed (exit code -9), preventing navigation. It is restarted first. Costmaps are cleared to remove stale data from the crash period. Since the diagnosis indicates a process crash rather than a physical blockage at the current moment, but P2 failed its pickup attempt, we defer P2 and escalate for human intervention to ensure the environment is safe/cleared before retrying or if the failure was due to an unresolvable obstacle that caused the crash."
+        },
+        "monotonic_done": 281312.147715216,
+        "seconds": 35.2
+      },
+      {
+        "detected_at_s": 56.1,
+        "monotonic_detected": 281312.648556157,
+        "alerts": [
+          "controller_server process died at about 19.5 s (exit code -9)",
+          "controller_server heartbeat stopped at 19.5 s; recording ends at 56.1 s",
+          "docking_server heartbeat stopped at 23.5 s; recording ends at 56.1 s",
+          "waypoint_follower heartbeat stopped at 23.6 s; recording ends at 56.1 s",
+          "bt_navigator heartbeat stopped at 23.7 s; recording ends at 56.1 s",
+          "collision_monitor heartbeat stopped at 23.9 s; recording ends at 56.1 s",
+          "velocity_smoother heartbeat stopped at 24.0 s; recording ends at 56.1 s",
+          "behavior_server heartbeat stopped at 24.1 s; recording ends at 56.1 s",
+          "route_server heartbeat stopped at 24.2 s; recording ends at 56.1 s",
+          "planner_server heartbeat stopped at 24.6 s; recording ends at 56.1 s",
+          "smoother_server heartbeat stopped at 24.7 s; recording ends at 56.1 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "error": "error: service /lifecycle_manager_navigation/is_active did not answer within 5.0 s"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "error": "error: service /local_costmap/clear_entirely_local_costmap is not available"
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": false,
+            "why": "P2 is not an active, undelivered parcel"
+          }
+        ],
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "controller_server",
+          "root_cause": "The controller_server process died at 19.5 s (exit code -9), which caused the navigation stack to stop responding and prevented the robot from completing the mission.",
+          "evidence": [
+            "health_report: 'controller_server process died at about 19.5 s'",
+            "health_report: 'bt_navigator ERROR ... Goal failed' starting at 20.5 s",
+            "health_report: 'lifecycle_manager_navigation ERROR ... SERVER controller_server IS DOWN'"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            }
+          ],
+          "resume": true,
+          "note": "The controller_server crashed (exit code -9). Restarting it restores navigation. Clearing costmaps is necessary after a crash/relocalization scenario to prevent stale obstacle data from the failed state. Parcel P2 was already marked as 'deferred' in the diagnosis; however, since the robot cannot move and the mission is paused due to the fault, deferring P2 explicitly ensures it doesn't attempt to execute while the system recovers. The other parcels (P1 active, P3 active) can resume once the server is up."
+        },
+        "monotonic_done": 281338.422444724,
+        "seconds": 25.8
+      },
+      {
+        "detected_at_s": 82.2,
+        "monotonic_detected": 281338.923196627,
+        "alerts": [
+          "controller_server process died at about 19.5 s (exit code -9)",
+          "controller_server heartbeat stopped at 19.5 s; recording ends at 82.2 s",
+          "docking_server heartbeat stopped at 23.5 s; recording ends at 82.2 s",
+          "waypoint_follower heartbeat stopped at 23.6 s; recording ends at 82.2 s",
+          "bt_navigator heartbeat stopped at 23.7 s; recording ends at 82.2 s",
+          "collision_monitor heartbeat stopped at 23.9 s; recording ends at 82.2 s",
+          "velocity_smoother heartbeat stopped at 24.0 s; recording ends at 82.2 s",
+          "behavior_server heartbeat stopped at 24.1 s; recording ends at 82.2 s",
+          "route_server heartbeat stopped at 24.2 s; recording ends at 82.2 s",
+          "planner_server heartbeat stopped at 24.6 s; recording ends at 82.2 s",
+          "smoother_server heartbeat stopped at 24.7 s; recording ends at 82.2 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "error": "error: service /lifecycle_manager_navigation/is_active did not answer within 5.0 s"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "error": "error: service /local_costmap/clear_entirely_local_costmap is not available"
+          },
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": false,
+            "why": "P2 is not an active, undelivered parcel"
+          }
+        ],
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "controller_server",
+          "root_cause": "The controller_server process died at 19.5 s (exit code -9), causing all downstream Nav2 nodes to stop responding shortly after. This crash occurred during the attempt to navigate to PICK_B, preventing the mission from completing.",
+          "evidence": [
+            "controller_server process died at about 19.5 s",
+            "All other Nav2 heartbeat processes stopped between 23.5 s and 24.7 s following the crash",
+            "bt_navigator reported 'Goal failed' starting at 20.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            },
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            }
+          ],
+          "resume": true,
+          "note": "The controller_server crashed (exit code -9), causing the Nav2 stack to fail. Restarting the server is the primary fix. Clearing costmaps is necessary after a crash/relocalization scenario to prevent stale obstacle data from the failed navigation attempt. Parcel P2 was already marked as 'deferred' in the diagnosis, but since the robot cannot move (mission paused due to fault), we explicitly defer it again to ensure it doesn't block the recovery logic or attempt an impossible drop. The other parcels (P1 active onboard, P3 active awaiting pickup) can resume once the controller is back up."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 281372.094959351,
+        "seconds": 33.2
+      }
+    ],
+    "actions_proposed": 10,
+    "actions_refused": 2,
+    "actions_failed": 6,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 1.0,
+    "seconds_fault_to_resume": null
+  },
+  "checker": {
+    "ok": true,
+    "events": 38,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

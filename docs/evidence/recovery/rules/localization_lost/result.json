@@ -1,0 +1,205 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T09:22:00.674587+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 52697,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T09:22:33.994507+00:00",
+    "monotonic": 284224.031810448,
+    "type": "localization_jump",
+    "seconds_late": 2.5,
+    "details": {
+      "estimate_before": [
+        -6.275,
+        -3.386,
+        -1.354
+      ],
+      "estimate_after": [
+        -4.775,
+        -3.386,
+        -0.754
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ],
+      "correction_before": [
+        -7.171,
+        -5.623,
+        -0.003
+      ],
+      "correction_after": [
+        -4.439,
+        -5.697,
+        0.56
+      ]
+    },
+    "seconds_after_mission_start": 21.9
+  },
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 139.7,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 22.7,
+        "monotonic_detected": 284225.033585518,
+        "alerts": [
+          "the pose estimate jumped 2.73 m and 0.56 rad at 21.7 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 21.7 s",
+            "result": {
+              "pose_set": [
+                -5.843,
+                -4.245,
+                -1.999
+              ],
+              "estimate_was": [
+                -4.037,
+                -3.485,
+                -0.97
+              ],
+              "estimate_now": [
+                -5.777,
+                -4.216,
+                -2.019
+              ],
+              "moved_m": 1.89,
+              "from_correction": [
+                -7.164,
+                -5.617,
+                -0.001
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl pose estimate",
+          "root_cause": "the pose estimate jumped 2.73 m and 0.56 rad in one update at 21.7 s",
+          "evidence": [
+            "the pose estimate jumped 2.73 m and 0.56 rad in one update at 21.7 s",
+            "an external pose reset (/initialpose) set the estimate to (-4.77, -3.39) at 21.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "Diagnosed localization_lost."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 284239.803004991,
+        "seconds": 14.8
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 1.0,
+    "seconds_fault_to_resume": 15.8
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

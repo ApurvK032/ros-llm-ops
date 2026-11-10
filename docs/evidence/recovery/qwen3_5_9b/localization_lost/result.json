@@ -1,0 +1,208 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    }
+  },
+  "run": {
+    "started": "2026-11-10T09:08:36.282226+00:00",
+    "fault_requested": true,
+    "recorded": true,
+    "model": "qwen3.5:4b",
+    "commit": "e183c8f",
+    "settle_s": 10.0,
+    "simulation_log_bytes": 52711,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-10T09:09:09.670459+00:00",
+    "monotonic": 283419.707762819,
+    "type": "localization_jump",
+    "seconds_late": 2.6,
+    "details": {
+      "estimate_before": [
+        -6.284,
+        -3.42,
+        -1.332
+      ],
+      "estimate_after": [
+        -4.784,
+        -3.42,
+        -0.732
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ],
+      "correction_before": [
+        -7.187,
+        -5.617,
+        -0.008
+      ],
+      "correction_after": [
+        -4.523,
+        -5.713,
+        0.539
+      ]
+    },
+    "seconds_after_mission_start": 21.9
+  },
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 148.7,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.7,
+        "monotonic_detected": 283420.709562898,
+        "alerts": [
+          "the pose estimate jumped 2.68 m and 0.55 rad at 21.7 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 21.7 s",
+            "result": {
+              "pose_set": [
+                -5.829,
+                -4.249,
+                -1.824
+              ],
+              "estimate_was": [
+                -4.163,
+                -3.641,
+                -1.058
+              ],
+              "estimate_now": [
+                -5.762,
+                -4.198,
+                -1.834
+              ],
+              "moved_m": 1.69,
+              "from_correction": [
+                -7.199,
+                -5.607,
+                -0.012
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "AMCL localization node",
+          "root_cause": "The robot's pose estimate jumped 2.68 m and 0.55 rad at 21.7 s, immediately following an external pose reset at 21.5 s. This loss of accurate localization caused the navigation stack to fail reaching the goal for P2 before the mission ended.",
+          "evidence": [
+            "Pose estimate jumped 2.68 m and 0.55 rad in one update at 21.7 s",
+            "External pose reset (/initialpose) set the estimate to (-4.78, -3.42) at 21.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates a sudden jump in the pose estimate caused by an external reset, leading to lost localization. The primary fix is to relocalize using odometry and the last good correction. Since costmaps accumulate obstacles based on the (now wrong) pose estimate, they must be cleared immediately after relocalization to prevent navigation failures."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 283444.383963917,
+        "seconds": 23.7
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 1.0,
+    "seconds_fault_to_resume": 24.7
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": "bag",
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log"
+  }
+}

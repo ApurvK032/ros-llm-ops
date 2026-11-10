@@ -42,7 +42,7 @@ actually in place (`fault.monotonic`) and how late that was (`fault.seconds_late
 | `blocked_path` | Drops a static box at a waypoint or position | Gazebo `create` service; the box has a visual, so the rendered lidar sees it |
 | `node_crash` | Kills one Nav2 server with SIGKILL | The simulation runs Nav2 as separate processes (`use_composition:=False`) |
 | `sensor_dropout` | Stops (`drop`) or freezes (`freeze`) the lidar scans Nav2 receives | A relay node between `/scan` and `/scan_nav` |
-| `localization_jump` | Shifts AMCL's pose estimate by an offset from the true pose | A confident `/initialpose` at the shifted pose |
+| `localization_jump` | Shifts AMCL's pose estimate by an offset from the true pose | One confident `/initialpose` at the shifted pose; the injector then checks the estimate moved and reports an error if it did not |
 | `bad_parameter` | Sets one parameter on a running node to a harmful value | Parameter service; the previous value is recorded |
 
 Scenario runs differ from the plain demo in two ways, both applied to every scenario run including the control:
@@ -81,6 +81,8 @@ What the baseline shows:
 Repeatability, from two recordings per scenario: the result, and which parcels were delivered, deferred or left
 onboard, were identical both times in all six scenarios. Mission times matched within a second except
 `localization_lost` (203.1 s and 170.8 s). Two recordings are a check, not a distribution.
+
+What an agent that responds to these faults achieves is in [recovery](recovery.md).
 
 ## Limitations
 
