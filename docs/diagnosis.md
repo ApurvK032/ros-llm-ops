@@ -39,6 +39,11 @@ reset.
 
 ## Results
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/diagnosis-scoreboard-dark.png">
+  <img src="figures/diagnosis-scoreboard-light.png" alt="Recordings diagnosed with the right fault category out of twelve, for rules, two models with tools, and two models without">
+</picture>
+
 Twelve recordings: the six scenarios, each recorded twice (see [scenarios](scenarios.md)). One diagnosis per
 recording at temperature 0, on an RTX 4070. A cell is correct categories out of recordings; "specific" is how many
 of those also named the right node, parameter, sensor or waypoint.

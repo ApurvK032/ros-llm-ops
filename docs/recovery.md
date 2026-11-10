@@ -76,6 +76,11 @@ state (`ILLEGAL_DEFER`, `ILLEGAL_RETRY`).
 
 ## Results
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/recovery-delivered-dark.png">
+  <img src="figures/recovery-delivered-light.png" alt="Parcels delivered out of three for five faults, supervisor alone and with the recovery agent">
+</picture>
+
 One run per cell, on 10 November 2026 (RTX 4070, Ubuntu 24.04), all with the same code. The baseline is the
 supervisor alone ([scenarios](scenarios.md)); a mission with no fault takes 123 s. Each cell is parcels delivered
 and mission time; the second table is the time from the fault being in place to the mission resuming.
@@ -95,6 +100,11 @@ and mission time; the second table is the time from the fault being in place to 
 | `lidar_dropout` | restart the lidar driver | 9.5 s | 19.4 s | 21.3 s |
 | `localization_lost` | relocalize, clear costmaps | 15.8 s | 24.7 s | 33.8 s |
 | `blocked_station` | defer P2, escalate | 35.9 s | 42.7 s | 64.8 s (second look) |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/recovery-time-dark.png">
+  <img src="figures/recovery-time-light.png" alt="Seconds from fault to mission resuming for five faults, for the playbook, qwen3.5:9b and qwen3.5:4b">
+</picture>
 
 All fifteen journals pass `warehouse_agent verify` with 0 violations. In these fifteen runs every proposed action
 was permitted and none failed.

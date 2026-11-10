@@ -2,19 +2,63 @@
 
 [![CI](https://github.com/ApurvK032/ros-llm-ops/actions/workflows/ci.yml/badge.svg)](https://github.com/ApurvK032/ros-llm-ops/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Tell a warehouse robot what to deliver in plain English, then change the plan while it works.**
+**A warehouse robot you can talk to, and an on-call agent that repairs it when something breaks.**
 
-ROS LLM Ops is a mission supervisor for a ROS 2 warehouse robot. A local language model turns operator requests into typed commands; the supervisor validates them against the robot's current state, sequences the remaining pickups and drops, and drives a TurtleBot3 through Nav2 in Gazebo. Operators can reprioritize, cancel, pause, and query the mission mid-run, and cargo only changes after the robot's arrival is verified.
+ROS LLM Ops is a mission supervisor for a ROS 2 warehouse robot, with a recovery layer that watches it work. A local language model turns operator requests into typed commands; the supervisor validates them against the robot's current state, sequences the pickups and drops, and drives a TurtleBot3 through Nav2. When a fault hits (a crashed Nav2 server, a dead lidar, a lost pose, a bad parameter, a blocked station), a recovery agent pauses the mission, works out what went wrong from live ROS data, and repairs it through a gate that only lets through actions the evidence supports.
 
-**Stack:** ROS 2 Jazzy · Nav2 · Gazebo Harmonic · Python · Ollama / Qwen3.5 4B (local, no API key)
+**Stack:** ROS 2 Jazzy · Nav2 · Gazebo Harmonic · Python · Ollama / Qwen3.5 (local, no API key)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-controller_crash-dark.gif">
+  <img src="docs/figures/replay-controller_crash-light.gif" alt="Two replays of the same mission side by side. The navigation controller is killed 19 seconds in. Alone, the supervisor abandons the mission with nothing delivered. With the recovery agent, the controller is restarted and all three parcels are delivered.">
+</picture>
+
+*Two recorded runs of the same mission, replayed from their data. The Nav2 controller is killed 19 s in. Left: the supervisor alone gives up with nothing delivered. Right: the recovery agent restarts the controller and the mission finishes.*
+
+[When something breaks](#when-something-breaks) · [Quick start](#quick-start) · [Example missions](#example-missions) · [How it works](#how-it-works) · [Results](#results) · [Roadmap](#roadmap) · [Design](docs/design.md)
+
+## When something breaks
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/recovery-delivered-dark.png">
+  <img src="docs/figures/recovery-delivered-light.png" alt="For five injected faults, parcels delivered out of three by the supervisor alone and with the recovery agent. Four faults go from zero to three; the blocked station stays at two.">
+</picture>
+
+One fault is injected about 20 s into a three-parcel mission, and the run is recorded and scored.
+
+- **Alone, the supervisor delivers nothing in four of the five faults.** It never breaks one of its own rules, but it retries without a pause, so a crash or a dead lidar ends the mission within two seconds.
+- **With the recovery agent, those four missions finish with all three parcels**, 5 to 35 s later than a fault-free run. The agent restores the changed parameter, restarts the dead process, or rolls the pose estimate back to before it jumped.
+- **A blocked station cannot be fixed by the robot.** The agent skips that parcel, delivers the other two and flags it for a person: 104 s instead of the 462 s the supervisor spends trying.
+- **Every action passes a gate.** A parameter is restored only if it was seen to change, a process restarted only if it was seen dead, a parcel skipped only if something stands where it must go. No action takes a free-form value from the model.
+- **A fixed playbook does as well as a local model here, and faster.** With one clean fault per run, rules over the same evidence match `qwen3.5:9b` and `qwen3.5:4b` on both diagnosis and recovery. The model's first attempt did worse, and the gate and tools changed because of it; that is written up too.
+
+These are single runs of the five faults the tools were built for, not a measured recovery rate. Every journal passes the independent checker.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-blocked_station-dark.gif">
+  <img src="docs/figures/replay-blocked_station-light.gif" alt="Two replays side by side. A box is left on the Pick B stopping pose. Alone, the supervisor circles it for six minutes before giving up on that parcel. With the recovery agent, the robot skips that parcel at once and delivers the other two.">
+</picture>
+
+*A box is left where the robot must stop. Both runs deliver two of three; the agent's is done in 104 s, the supervisor's in 462 s.*
+
+| | |
+| --- | --- |
+| [Fault-injection scenarios](docs/scenarios.md) | The five faults, how they are injected, and what the supervisor does alone |
+| [Diagnosis](docs/diagnosis.md) | Read-only checks over recorded evidence, a model that uses them as tools, and a scoreboard |
+| [Recovery](docs/recovery.md) | The live monitor, the gate, the actions, results by decision-maker, and what went wrong on the way |
+
+```bash
+python3 -B -m warehouse_agent scenario scenarios/controller_crash.json                    # the fault, supervisor alone
+python3 -B -m warehouse_agent scenario scenarios/controller_crash.json --recover rules    # with the playbook
+python3 -B -m warehouse_agent scenario scenarios/controller_crash.json --recover qwen3.5:9b
+python3 -B -m warehouse_agent diagnose docs/evidence/scenarios/*/* --rules                # needs no ROS or model
+```
+
+## What it does
 
 ![Maze warehouse with seven shelf sections and separate parcel approach poses](docs/evidence/maze/maze-ready.png)
 
 *The 18 × 14 m Gazebo warehouse, ready for a mission. Parcels wait on the shelves; ground circles mark where the robot must stop and face them.*
-
-[Quick start](#quick-start) · [Example missions](#example-missions) · [How it works](#how-it-works) · [Results](#results) · [Roadmap](#roadmap) · [Design](docs/design.md)
-
-## What it does
 
 - **Natural-language missions, locally.** Qwen3.5 4B runs through Ollama with schema-constrained output. The model only proposes one typed intent; it never sees coordinates, moves the robot, or reports outcomes.
 - **Changes while the robot is moving.** Prioritize a parcel, deliver onboard cargo first, cancel an uncollected order, pause, resume, or ask what the robot is carrying.
@@ -165,6 +209,8 @@ Get the generated password with `bash scripts/run_browser.sh info`, forward the 
 
 ## Results
 
+Fault, diagnosis and recovery results are under [When something breaks](#when-something-breaks). This section is the fault-free mission.
+
 ![All three parcels delivered to their pedestals](docs/evidence/maze/maze-delivered.png)
 
 In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops with all six Nav2 goals succeeding, **123.0 s** after the intent was accepted. An independent observer compared every transfer with Gazebo's ground-truth robot pose:
@@ -175,7 +221,7 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 | Facing error toward the parcel | 10.1° | 14.3° |
 | Conservative parcel clearance | 0.422 m | ≥ 0.20 m |
 
-30 unit tests run in CI on every pull request. Earlier runs in the original layout covered browser-operated delivery and mid-mission pause, cancel, priority, and onboard-first updates against Nav2. These are single development runs, not a reliability benchmark; see [results](docs/results.md) for every measurement and its evidence.
+The unit and property-based tests run in CI on every pull request. Earlier runs in the original layout covered browser-operated delivery and mid-mission pause, cancel, priority, and onboard-first updates against Nav2. These are single development runs, not a reliability benchmark; see [results](docs/results.md) for every measurement and its evidence.
 
 ## Project map
 
@@ -191,10 +237,15 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 | [warehouse_agent/ros_backend.py](warehouse_agent/ros_backend.py) | Nav2 goals, cancellation, measured pose, and status topic |
 | [warehouse_agent/visualization.py](warehouse_agent/visualization.py) | RViz and Gazebo markers and the mission panel |
 | [warehouse_agent/cli.py](warehouse_agent/cli.py) | Operator loop and direct controls |
+| [warehouse_agent/scenario.py](warehouse_agent/scenario.py), [faults.py](warehouse_agent/faults.py) | Fault-injection scenario runner and the five fault injectors |
+| [warehouse_agent/evidence.py](warehouse_agent/evidence.py), [monitor.py](warehouse_agent/monitor.py) | Evidence from a recording, and the same evidence live from the topics |
+| [warehouse_agent/diagnosis.py](warehouse_agent/diagnosis.py) | Read-only checks, the model that uses them as tools, the rule baseline, and scoring |
+| [warehouse_agent/recovery.py](warehouse_agent/recovery.py), [recovery_tools.py](warehouse_agent/recovery_tools.py) | Recovery agent, its gate and playbook, and the ROS-side recovery actions |
+| [scenarios/](scenarios/) | One JSON file per scenario: the mission, the fault, when it lands, and the ground truth |
 | [ros_ws/src/warehouse_interfaces](ros_ws/src/warehouse_interfaces) | Typed ROS 2 messages, services, and the ApproachAndVerify action |
 | [sim/](sim/), [scripts/](scripts/) | Launch configuration, Gazebo marker helper, installers, and launchers |
 | [tests/](tests/), [tests_ros/](tests_ros/) | Unit and property-based tests (no ROS required); tests against the built ROS messages |
-| [docs/](docs/) | Design, results, guides, and recorded evidence |
+| [docs/](docs/) | Design, results, guides, figures, and recorded evidence ([scripts/make_figures.py](scripts/make_figures.py) redraws the figures from it) |
 
 ## Roadmap
 
@@ -204,9 +255,12 @@ In the current maze, `Deliver all three parcels` completed 3 pickups and 3 drops
 - [x] Live visualization, mission panel, and browser access
 - [x] **Correctness core, part 1:** independent journal checker, property-based tests with a mutation check, and explicit state machines
 - [x] **Correctness core, part 2:** request IDs with exactly one recorded outcome each, and journaling the normalized command that was applied
+- [x] **Fault injection:** a scenario runner with five fault types, recorded and scored, and the supervisor's behaviour alone as the baseline
+- [x] **Diagnosis:** read-only checks over recorded evidence, a local model that uses them as tools, a rule baseline, and a scoreboard
+- [x] **Recovery:** fault holds, direct defer and retry commands, a command service, a live monitor, and a recovery agent whose actions pass an evidence gate
+- [ ] **Harder cases and real rates:** unrelated anomalies together, faults no rule covers, repeated trials, and transfers checked against Gazebo's ground-truth pose
 - [ ] **ROS 2-native packaging:** colcon packages, typed messages and actions, a lifecycle supervisor node, a C++ approach-and-verify action server, and Docker
 - [ ] **Richer operations:** orders added mid-mission, robot capacity, multi-part requests, a plan preview before changes commit, and better sequencing
-- [ ] **Reliability campaign:** fault injection (blocked aisles, Nav2 aborts, cancel races) with repeated trials and published results
 - [ ] Later: multiple robots with task allocation, an operator dashboard, and sensor-based arrival verification
 
 Current limitations are listed in the [design doc](docs/design.md#known-limitations).
@@ -214,7 +268,8 @@ Current limitations are listed in the [design doc](docs/design.md#known-limitati
 ## Documentation
 
 - [Design](docs/design.md): architecture, state model, request and timing rules, planning, limitations
-- [Results](docs/results.md): every measurement with its evidence
+- [Scenarios](docs/scenarios.md), [diagnosis](docs/diagnosis.md) and [recovery](docs/recovery.md): fault injection, what the supervisor does alone, diagnosing a run, and repairing one
+- [Results](docs/results.md): every fault-free measurement with its evidence
 - [Runbook](docs/runbook.md): operation, separate terminals, troubleshooting
 - [Environment](docs/environment.md) and [browser access](docs/browser-access.md): setup guides
 - [Warehouse layout](docs/warehouse-layout.md) and [visual guide](docs/visuals.md): floor plan, markers, and panel
