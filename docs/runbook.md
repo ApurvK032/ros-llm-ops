@@ -85,11 +85,22 @@ If ROS discovery commands show only `/rosout`, check `ROS_DOMAIN_ID=42` and use 
 
 The launcher now resets inherited background interrupt handling, signals the ROS launch parent, and removes any remaining GUI subprocess. Startup followed by `/quit` exits with code 0 and leaves no simulator processes. Gazebo, RViz and the Nav2 container still report native shutdown errors on this WSL setup. This is a known unresolved integration issue; it occurs after the successful mission results. The [recorded launcher checks](evidence/mvp-results.json) summarize the outcome. Raw logs with local environment details are kept out of the public repository.
 
-## Nav2 bringup can abort, and the launcher retries
+## WSL2 clock jumps can stop Nav2
 
-Nav2's `lifecycle_manager_navigation` sometimes gives up during startup: "Failed to change state for node: bt_navigator … Aborting bringup". It happened in 2 of 4 launches on 30 September 2026. In both failed logs, the timestamps around that moment jump by about 32 s, and comparing clocks directly showed the WSL2 VM clock 32.1 s behind Windows before being stepped back into sync. So the likely cause is the WSL2 clock being stepped while Nav2's lifecycle service calls are in flight; it is an environment issue, not a mission issue.
+**Symptom.** Nav2 aborts its own bringup ("Failed to change state for node: bt_navigator … Aborting bringup"), or shuts itself down mid-mission ("CRITICAL FAILURE: SERVER docking_server IS DOWN after not receiving a heartbeat for 4000 ms"). The supervisor then sees rejected goals, retries once, and defers the affected parcels with a `partial` result, as its policy requires.
 
-`scripts/demo.sh` therefore waits for the navigation lifecycle manager to report its nodes active before starting the supervisor. If Nav2 aborts its bringup instead, the launcher stops the simulation, keeps the log as `artifacts/simulation.attemptN.log`, and relaunches, up to 3 attempts. Nothing has happened in the warehouse by then, so a restart is safe. The browser desktop launches the simulation separately and does not retry yet.
+**Cause.** On 30 September 2026 this hit 3 of 8 headless launches on the development machine. In every failed log, wall-clock timestamps flip back and forth by about 30 s (for example …121.8 → …154.3 → …123.7), and comparing clocks directly showed the WSL2 clock 32.1 s behind Windows, then back in sync two seconds later. A clock that jumps by 30 s makes Nav2's lifecycle service calls and its 4-second heartbeat checks fail even though every node is healthy. The machine ran WSL kernel `6.18.33.2`; Microsoft's next kernel, [`6.18.35.2`](https://github.com/microsoft/WSL2-Linux-Kernel/releases), "include[s] a fix for an out-of-tree-patch that had x86 using the wrong timer MSR", a timekeeping regression that fits these symptoms.
+
+**Fix.** Update WSL from Windows PowerShell, then restart it (this stops every running distribution):
+
+```powershell
+wsl --update
+wsl --shutdown
+```
+
+Afterwards, `uname -r` inside Ubuntu should report `6.18.35.2` or newer.
+
+**Mitigation until then.** `scripts/demo.sh` waits for Nav2's navigation stack to report active before starting the supervisor, and restarts the simulation (up to 3 attempts, keeping `artifacts/simulation.attemptN.log`) when Nav2 aborts its bringup. Nothing has happened in the warehouse at that point, so a restart is safe. A mid-mission shutdown is not retried: the supervisor reports it honestly instead. The browser desktop launches the simulation separately and does not retry yet.
 
 ## WSL interop can disappear
 

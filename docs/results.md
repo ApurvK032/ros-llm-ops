@@ -35,7 +35,7 @@ The same mission ran headless (no GUI) on the refactored supervisor (explicit st
 | Smallest conservative parcel clearance | 0.486 m (minimum 0.20 m) |
 | Journal checker | 0 violations, 0 warnings; request R1 requested → interpreted → applied |
 
-The first launch attempt that day failed before any mission started: Nav2 aborted its own bringup, most likely because the WSL2 clock was stepped during startup. The launcher now retries automatically (see the [runbook](runbook.md#nav2-bringup-can-abort-and-the-launcher-retries)). It is reported here rather than omitted. Evidence: [journal](evidence/maze/post-m1-delivery.jsonl).
+The first launch attempt that day failed before any mission started: Nav2 aborted its own bringup, most likely because the WSL2 clock was stepped during startup. The launcher now retries automatically (see the [runbook](runbook.md#wsl2-clock-jumps-can-stop-nav2)). It is reported here rather than omitted. Evidence: [journal](evidence/maze/post-m1-delivery.jsonl).
 
 ## Original 10 × 8 m warehouse
 
