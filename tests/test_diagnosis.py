@@ -108,6 +108,27 @@ class Checks(Case):
                          ["scans stopped arriving at about 25.0 s and never resumed (normal rate 5.0 Hz)"])
         self.assertEqual(rule_based(incident)["diagnosis"]["category"], "sensor_dropout")
 
+    def test_a_lidar_that_repeats_one_scan_is_reported_although_its_rate_is_normal(self):
+        evidence = healthy_evidence()
+        evidence["lidar"]["/scan_nav"] = [[t, 25, 1.0, 0.8, 1.0 if t >= 40 else 0.0] for t in range(0, int(END), 5)]
+        incident = self.incident(evidence, FAILED)
+        self.assertEqual(diagnosis.lidar_status(incident)["unusual"], [
+            "from about 40 s every scan was identical to the one before it, in 12 interval(s) of 5 s; "
+            "a working lidar never repeats a scan exactly"])
+        self.assertEqual(rule_based(incident)["diagnosis"]["category"], "sensor_dropout")
+        incident.since = 62.0   # the driver was restarted; what it repeated before then is history
+        self.assertIn("in 7 interval(s)", diagnosis.lidar_status(incident)["unusual"][0])
+        evidence["lidar"]["/scan_nav"] = [[t, 25, 1.0, 0.8, 1.0 if 40 <= t < 60 else 0.0]
+                                          for t in range(0, int(END), 5)]
+        recovered = self.incident(evidence)
+        recovered.since = 62.0
+        self.assertEqual(diagnosis.lidar_status(recovered)["unusual"], [])
+
+    def test_a_few_repeated_scans_or_an_almost_empty_interval_are_not_a_stuck_lidar(self):
+        evidence = healthy_evidence()
+        evidence["lidar"]["/scan_nav"] = [[0, 25, 1.0, 0.8, 0.2], [5, 3, 1.0, 0.8, 1.0], [10, 25, 1.0, 0.8]]
+        self.assertEqual(diagnosis.lidar_status(self.incident(evidence))["unusual"], [])
+
     def test_a_thin_first_interval_before_the_mission_is_start_up_not_a_dropout(self):
         evidence = healthy_evidence()
         evidence["rates"]["/scan_nav"]["counts"] = [3] + [25]*20
@@ -340,6 +361,17 @@ class Scoreboard(unittest.TestCase):
 
 
 class EvidenceHelpers(unittest.TestCase):
+    def test_a_scan_sent_again_unchanged_is_counted_as_repeated(self):
+        from types import SimpleNamespace
+
+        from warehouse_agent.evidence import EvidenceBuilder
+        builder = EvidenceBuilder()
+        fresh = [[1.0, 2.0, float("inf")], [1.01, 2.0, float("inf")], [1.02, 1.99, float("inf")]]
+        for index, ranges in enumerate([*fresh, fresh[-1], fresh[-1], fresh[-1]]):
+            builder.add("/scan_nav", SimpleNamespace(ranges=ranges, range_min=0.1, range_max=3.5), 100.0 + index/5)
+        row = builder.snapshot(origin=100.0)["lidar"]["/scan_nav"][0]
+        self.assertEqual(row, [0.0, 6, 0.67, 1.0, 0.5])
+
     def test_compose_applies_a_planar_transform(self):
         x, y, yaw = compose((1.0, 2.0, 1.5707963267948966), (1.0, 0.0, 0.0))
         self.assertAlmostEqual(x, 1.0)

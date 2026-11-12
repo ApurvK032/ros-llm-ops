@@ -150,7 +150,7 @@ def node_health(incident):
 
 
 def lidar_status(incident):
-    """Lidar scans reaching navigation: message rate over time, share of valid ranges, closest return."""
+    """Lidar scans reaching navigation: message rate over time, share of valid ranges, repeated scans."""
     topic = "/scan_nav" if "/scan_nav" in incident.evidence["rates"] else "/scan"
     rate = incident.evidence["rates"].get(topic)
     if not rate or not rate["counts"]:
@@ -176,6 +176,12 @@ def lidar_status(incident):
     weak = [row[0] for row in quality if row[2] < 0.5]
     if weak:
         unusual.append(f"fewer than half the ranges were valid from {weak[0]} s")
+    # Recordings made before repeated scans were counted have four columns.
+    stuck = [row[0] for row in quality if len(row) > 4 and row[1] >= 5 and row[4] >= 0.9
+             and row[0] >= max(0.0, incident.since)]
+    if stuck:
+        unusual.append(f"from about {stuck[0]} s every scan was identical to the one before it, in {len(stuck)} "
+                       f"interval(s) of {bucket:g} s; a working lidar never repeats a scan exactly")
     return {"normal_rate_hz": round(nominal/bucket, 1),
             "rate_hz_by_interval": [[round(start + i*bucket, 1), round(n/max(seconds, 0.1), 1)]
                                     for i, (n, seconds) in enumerate(zip(counts, covered, strict=True))][-12:],

@@ -1,4 +1,4 @@
-"""Fault-injection scenarios: run one headless mission, inject one fault at a set moment, record it, score it.
+"""Fault-injection scenarios: run one headless mission, inject faults at set moments, record it, score it.
 
 The runner only orchestrates processes (simulator, supervisor, recorder) and reads the supervisor's journal; it
 never touches mission state. Scenario loading, triggers and outcome classification are pure functions, tested
@@ -7,6 +7,7 @@ without ROS.
 
 import json
 import os
+import shlex
 import shutil
 import signal
 import subprocess
@@ -40,12 +41,15 @@ class Scenario:
     fault: dict | None = None
     trigger: dict | None = None
     ground_truth: dict | None = None
+    additional: tuple = ()          # further faults in the same run, each {"fault", "trigger"}
+    expected: dict | None = None    # what a correct response achieves: parcels delivered, actions needed
 
 
 def load_scenario(path, waypoints):
     """Read and validate a scenario file. Raises ValueError with the reason on any problem."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
-    unknown = set(data) - {"name", "description", "command", "timeout_s", "fault", "trigger", "ground_truth"}
+    unknown = set(data) - {"name", "description", "command", "timeout_s", "fault", "trigger", "ground_truth",
+                           "additional", "expected"}
     if unknown:
         raise ValueError(f"Unknown scenario keys: {', '.join(sorted(unknown))}")
     for key in ("name", "description", "command"):
@@ -57,15 +61,43 @@ def load_scenario(path, waypoints):
     fault, trigger = data.get("fault"), data.get("trigger")
     if (fault is None) != (trigger is None):
         raise ValueError("A scenario has both a fault and a trigger, or neither (a control run)")
+    additional = data.get("additional", [])
+    if not isinstance(additional, list) or (additional and fault is None):
+        raise ValueError("additional is a list of further faults, and needs a first fault to add to")
     if fault is not None:
-        if not isinstance(fault, dict) or fault.get("type") not in FAULTS:
-            raise ValueError(f"fault.type must be one of {', '.join(FAULTS)}")
-        FAULTS[fault["type"]][0](fault, waypoints)
-        check_trigger(trigger)
+        check_fault(fault, trigger, waypoints)
+        for item in additional:
+            if not isinstance(item, dict) or set(item) != {"fault", "trigger"}:
+                raise ValueError("Each additional fault is an object with exactly 'fault' and 'trigger'")
+            check_fault(item["fault"], item["trigger"], waypoints)
         if not isinstance(data.get("ground_truth"), dict) or "category" not in data["ground_truth"]:
             raise ValueError("A fault scenario needs ground_truth with at least a 'category'")
+    check_expected(data.get("expected"))
     return Scenario(data["name"], data["description"], data["command"], float(timeout), fault, trigger,
-                    data.get("ground_truth"))
+                    data.get("ground_truth"), tuple(additional), data.get("expected"))
+
+
+def check_fault(fault, trigger, waypoints):
+    if not isinstance(fault, dict) or fault.get("type") not in FAULTS:
+        raise ValueError(f"fault.type must be one of {', '.join(FAULTS)}")
+    FAULTS[fault["type"]][0](fault, waypoints)
+    check_trigger(trigger)
+
+
+def check_expected(expected):
+    """expected says what a correct response achieves; it is only used to judge runs, never by the agent."""
+    if expected is None:
+        return
+    if not isinstance(expected, dict) or set(expected) - {"delivered", "actions", "acceptable"}:
+        raise ValueError("expected takes 'delivered', and optionally 'actions' and 'acceptable'")
+    if not isinstance(expected.get("delivered"), int) or expected["delivered"] < 0:
+        raise ValueError("expected.delivered is the number of parcels a correct response delivers")
+    for key in ("actions", "acceptable"):
+        pairs = expected.get(key, [])
+        if not isinstance(pairs, list) or not all(
+                isinstance(pair, list) and len(pair) == 2 and all(isinstance(part, str) for part in pair)
+                for pair in pairs):
+            raise ValueError(f"expected.{key} is a list of [action, target] pairs")
 
 
 def check_trigger(trigger):
@@ -252,11 +284,13 @@ def start_simulation(log_path, attempts=3):
     raise RuntimeError("Simulation not ready")
 
 
-def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0, recover=None):
+def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0, recover=None,
+                 watch=None):
     """Run one scenario end to end and write result.json into the output directory. Returns the result.
 
     recover attaches the recovery agent: "rules" for the fixed playbook, or the name of a local model. The
-    supervisor then holds on faults and accepts direct commands, and a live monitor feeds the agent.
+    supervisor then holds on faults and accepts direct commands, and a live monitor feeds the agent. watch
+    starts that monitor without an agent, so a run that is not recorded still leaves its evidence behind.
 
     The recording continues for settle_s after the supervisor exits: the system's reaction to a fault (a
     lifecycle manager noticing a dead node, a sensor staying silent) often arrives after the mission has ended.
@@ -267,8 +301,10 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
     output.mkdir(parents=True, exist_ok=False)
     journal = output / "journal.jsonl"
     started_wall = datetime.now(UTC)
-    injection = {"injected": False}
-    sim = bag = agent = model_server = monitor = recovery = None
+    planned = [{"fault": scenario.fault, "trigger": scenario.trigger}, *scenario.additional] \
+        if inject and scenario.fault else []
+    injections = [{"injected": False} for _ in planned] or [{"injected": False}]
+    sim = bag = agent = model_server = monitor = recovery = truth = None
     timed_out = False
     try:
         with open(output / "model.log", "w", encoding="utf-8") as model_log:
@@ -283,13 +319,19 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                                       "options": {"num_ctx": 8192, "num_predict": 1},
                                       "messages": [{"role": "user", "content": "ready"}]})
         sim = start_simulation(output / "simulation.log")
-        if recover:
-            from .recovery import RecoveryAgent
+        truth = subprocess.Popen(
+            ["bash", "-c", "source /opt/ros/jazzy/setup.bash && "
+             f"exec python3 -B -m warehouse_agent.ground_truth {shlex.quote(str(output))}"],
+            cwd=ROOT, env=ros_env(), stdout=open(output / "truth.log", "w"),  # noqa: SIM115
+            stderr=subprocess.STDOUT, start_new_session=True)
+        if recover or watch:
             monitor = subprocess.Popen(
                 ["bash", "-c", "source /opt/ros/jazzy/setup.bash && source ros_ws/install/setup.bash && "
                  f"exec python3 -B -m warehouse_agent.monitor {output}"],
                 cwd=ROOT, env=ros_env(), stdout=open(output / "monitor.log", "w"),  # noqa: SIM115
                 stderr=subprocess.STDOUT, start_new_session=True)
+        if recover:
+            from .recovery import RecoveryAgent
             recovery = RecoveryAgent(output, recover)
         if record:
             topics = " ".join(RECORD_TOPICS)
@@ -308,18 +350,22 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
             if time.monotonic() > hard_deadline:
                 timed_out = True
                 break
-            if inject and scenario.fault and not injection["injected"] and "error" not in injection:
-                due = trigger_time(scenario.trigger, read_events(journal))
+            waiting = [index for index, entry in enumerate(injections[:len(planned)])
+                       if not entry["injected"] and "error" not in entry]
+            events = read_events(journal) if waiting else []
+            for index in waiting:
+                fault = planned[index]["fault"]
+                due = trigger_time(planned[index]["trigger"], events)
                 if due is not None and time.monotonic() >= due:
                     try:
-                        details = FAULTS[scenario.fault["type"]][1](scenario.fault, world.waypoints)
+                        details = FAULTS[fault["type"]][1](fault, world.waypoints)
                     except (FaultError, subprocess.TimeoutExpired) as exc:
-                        injection["error"] = str(exc)
+                        injections[index]["error"] = str(exc)
                     else:
                         # "monotonic" is when the fault was in place; the injector itself takes a few seconds.
-                        injection = {"injected": True, "time": datetime.now(UTC).isoformat(),
-                                     "monotonic": time.monotonic(), "type": scenario.fault["type"],
-                                     "seconds_late": round(time.monotonic() - due, 1), "details": details}
+                        injections[index] = {"injected": True, "time": datetime.now(UTC).isoformat(),
+                                             "monotonic": time.monotonic(), "type": fault["type"],
+                                             "seconds_late": round(time.monotonic() - due, 1), "details": details}
             if recovery:
                 recovery.step()     # returns at once unless there is a fault to deal with
             time.sleep(0.1 if not recovery else 0.5)
@@ -328,6 +374,7 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
     finally:
         _stop(agent, grace=20)
         _stop(monitor, grace=5)
+        _stop(truth, grace=3)
         _stop(bag, grace=10)
         # Stopping the simulation kills processes too; anything logged after this point is teardown, not the run.
         sim_log = output / "simulation.log"
@@ -341,27 +388,34 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                 os.kill(pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+    from .ground_truth import check_transfers, read_truth
     events = read_events(journal)
     log_text = (output / "agent.log").read_text(encoding="utf-8", errors="replace") if agent else ""
+    injection = injections[0]
     outcome = classify(events, log_text, injection.get("monotonic"))
     if timed_out:
         outcome["result"] = "timeout"
     applied = next((e for e in events if e["type"] == "instruction_applied"), None)
-    if injection["injected"] and applied:
-        injection["seconds_after_mission_start"] = round(injection["monotonic"] - applied["monotonic"], 1)
+    for entry in injections:
+        if entry["injected"] and applied:
+            entry["seconds_after_mission_start"] = round(entry["monotonic"] - applied["monotonic"], 1)
+    checked = check_transfers(events, read_truth(output / "truth.jsonl"), world)
+    outcome["delivered_verified"] = checked["delivered_verified"]
     report = verify_file(journal).as_dict() if journal.exists() else None
     result = {
         "scenario": asdict(scenario), "run": {"started": started_wall.isoformat(), "fault_requested": inject,
                                               "recorded": record, "model": model, "commit": _commit(),
+                                              "uncommitted_changes": _dirty(),
                                               "settle_s": settle_s, "simulation_log_bytes": log_bytes,
                                               "supervisor_exit_code": agent.returncode if agent else None},
-        "fault": injection, "outcome": outcome,
+        "fault": injection, "additional_faults": injections[1:], "outcome": outcome, "pose_check": checked,
         "recovery": recovery.summary(injection.get("monotonic")) if recovery else None,
         "checker": None if report is None else {"ok": report["ok"], "events": report["events"],
                                                 "violations": report["violations"],
                                                 "warnings": report["warnings"]},
         "artifacts": {"journal": "journal.jsonl", "bag": "bag" if record else None,
-                      "simulation_log": "simulation.log", "supervisor_log": "agent.log"},
+                      "simulation_log": "simulation.log", "supervisor_log": "agent.log",
+                      "true_pose": "truth.jsonl", "live_evidence": "live_evidence.json" if monitor else None},
     }
     (output / "result.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return result
@@ -372,11 +426,24 @@ def _commit():
     return done.stdout.strip() or None
 
 
+def _dirty():
+    """True when tracked files differ from the commit, so a result can be tied to exact code or flagged."""
+    done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, capture_output=True,
+                          text=True)
+    return bool(done.stdout.strip()) if done.returncode == 0 else None
+
+
 def summary_line(result):
     outcome, fault, checker = result["outcome"], result["fault"], result["checker"]
     injected = (f"{fault['type']} at +{fault.get('seconds_after_mission_start')} s" if fault["injected"]
                 else ("fault NOT injected: " + fault["error"] if "error" in fault else "no fault"))
+    for extra in result.get("additional_faults", []):
+        injected += (f", {extra['type']} at +{extra.get('seconds_after_mission_start')} s" if extra["injected"]
+                     else ", second fault NOT injected: " + extra.get("error", "its trigger never came"))
     checked = "no journal" if checker is None else f"{len(checker['violations'])} violations"
+    truth = result.get("pose_check")
+    if truth and truth["samples"]:
+        checked += f" | true pose confirms {len(truth['delivered_verified'])} of {len(outcome['delivered'])}"
     recovery = result.get("recovery")
     recovered = "" if not recovery else (
         f" | recovery ({recovery['mode']}): {recovery['actions_carried_out']} actions, "

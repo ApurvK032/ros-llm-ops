@@ -319,8 +319,11 @@ class RecoveryAgent:
                 "actions_refused": sum(not a["permitted"] for a in actions),
                 "actions_failed": sum("error" in a for a in actions),
                 "actions_carried_out": sum(a["permitted"] and "error" not in a for a in actions)}
-        if injected_at is not None and self.incidents:
-            first = self.incidents[0]
+        # Timed from the scenario's main fault to the first incident after it: an earlier incident answered
+        # something else, such as a harmless change made before the fault.
+        first = next((i for i in self.incidents if injected_at is not None and i["monotonic_detected"] >= injected_at),
+                     None)
+        if first:
             done["seconds_fault_to_detection"] = round(first["monotonic_detected"] - injected_at, 1)
             done["seconds_fault_to_resume"] = round(first["monotonic_done"] - injected_at, 1) \
                 if "resume" in first else None

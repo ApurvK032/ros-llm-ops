@@ -2,5 +2,6 @@
   "name": "nominal",
   "description": "Control run: deliver all three parcels with no fault.",
   "command": "Deliver all three parcels",
-  "timeout_s": 420
+  "timeout_s": 420,
+  "expected": {"delivered": 3, "actions": []}
 }

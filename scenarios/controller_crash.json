@@ -10,5 +10,6 @@
     "component": "nav2",
     "node": "controller_server",
     "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
-  }
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "controller_server"]]}
 }

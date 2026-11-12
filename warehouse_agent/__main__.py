@@ -38,11 +38,27 @@ def main() -> int:
     diagnose.add_argument("--repeat", type=int, default=1, help="Diagnose each run this many times")
     board = sub.add_parser("scoreboard", help="Tabulate saved diagnoses by scenario and diagnoser")
     board.add_argument("runs", type=Path, nargs="+")
+    batch = sub.add_parser("batch", help="Run scenarios repeatedly against each decision-maker; resumes if stopped")
+    batch.add_argument("files", type=Path, nargs="+", help="Scenario files")
+    batch.add_argument("--output", type=Path, required=True, help="Batch directory, for example artifacts/batch/a")
+    batch.add_argument("--deciders", nargs="+", default=["none", "rules"], metavar="WHO",
+                       help="'none' (supervisor alone), 'rules' (playbook) and local model names")
+    batch.add_argument("--repeats", type=int, default=5)
+    batch.add_argument("--baseline-repeats", type=int, default=1, help="Runs of each scenario with nobody attached")
+    batch.add_argument("--model", default="qwen3.5:4b", help="The model that interprets the operator's request")
+    summary = sub.add_parser("batch-report", help="Summarize a batch directory as rates and median times")
+    summary.add_argument("directory", type=Path)
     args = parser.parse_args()
     try:
         if args.subcommand == "scoreboard":
             from .diagnosis import scoreboard
             print(scoreboard(args.runs))
+            return 0
+        if args.subcommand == "batch":
+            return run_batch_files(args)
+        if args.subcommand == "batch-report":
+            from .batch import report
+            print(report(args.directory))
             return 0
         if args.subcommand == "run":
             return run(args)
@@ -79,7 +95,28 @@ def run_scenario_file(args):
     print(summary_line(result))
     print(f"Result: {output / 'result.json'}")
     # A fault that could not be injected makes the run invalid; a failed mission is a valid result.
-    return 1 if "error" in result["fault"] else 0
+    return 1 if any("error" in fault for fault in [result["fault"], *result["additional_faults"]]) else 0
+
+
+def run_batch_files(args):
+    import signal
+
+    from .batch import report, run_batch
+    from .scenario import _stop, ensure_model
+    # A batch started in the background of a script inherits an ignored interrupt, and would pass that on to
+    # every process it starts: none of them could then be stopped the gentle way.
+    signal.signal(signal.SIGINT, signal.default_int_handler)
+    args.output.mkdir(parents=True, exist_ok=True)
+    # One model server for the whole batch, so models stay loaded from run to run.
+    with open(args.output / "model.log", "a", encoding="utf-8") as model_log:
+        server = ensure_model(args.model, model_log)
+        try:
+            missing = run_batch(args.files, args.deciders, args.repeats, args.output, args.baseline_repeats,
+                                args.model, log=lambda text: print(text, flush=True))
+        finally:
+            _stop(server, grace=5)
+    print(report(args.output, args.deciders))
+    return 1 if missing else 0
 
 
 def diagnose_runs(args):

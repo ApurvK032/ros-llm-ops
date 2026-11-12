@@ -1,0 +1,15 @@
+{
+  "name": "planner_crash",
+  "description": "The Nav2 planner server is killed while the robot drives to its second stop.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "node_crash", "node": "planner_server"},
+  "ground_truth": {
+    "category": "node_crash",
+    "component": "planner_server",
+    "node": "planner_server",
+    "summary": "The planner_server process was killed; no new path can be computed."
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "planner_server"]]}
+}

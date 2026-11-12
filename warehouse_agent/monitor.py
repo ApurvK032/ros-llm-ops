@@ -64,7 +64,8 @@ class Monitor(Node):
         from bond.msg import Status
         from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
         from nav2_msgs.msg import BehaviorTreeLog
-        from nav_msgs.msg import OccupancyGrid, Odometry, Path as PlannedPath
+        from nav_msgs.msg import OccupancyGrid, Odometry
+        from nav_msgs.msg import Path as PlannedPath
         from rcl_interfaces.msg import Log, ParameterEvent
         from sensor_msgs.msg import LaserScan
         from std_msgs.msg import String

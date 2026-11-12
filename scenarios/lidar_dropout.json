@@ -9,5 +9,6 @@
     "category": "sensor_dropout",
     "component": "lidar",
     "summary": "No lidar scans reach Nav2; costmaps and localization stop updating and the collision monitor has no data."
-  }
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "lidar_driver"]]}
 }

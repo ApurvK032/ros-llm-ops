@@ -1,0 +1,14 @@
+{
+  "name": "lidar_frozen",
+  "description": "The lidar driver gets stuck and keeps sending its last scan with fresh timestamps while the robot drives to its second stop.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "sensor_dropout", "sensor": "lidar", "mode": "freeze"},
+  "ground_truth": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "summary": "Scans keep arriving at the normal rate but never change, so localization and the costmaps work from stale data."
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "lidar_driver"]], "acceptable": [["relocalize", ""]]}
+}

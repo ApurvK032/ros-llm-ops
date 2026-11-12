@@ -9,5 +9,6 @@
     "category": "localization_lost",
     "component": "amcl",
     "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
-  }
+  },
+  "expected": {"delivered": 3, "actions": [["relocalize", ""]]}
 }

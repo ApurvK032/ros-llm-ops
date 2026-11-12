@@ -12,6 +12,7 @@ import json
 import math
 import re
 import sys
+from array import array
 from datetime import datetime
 from pathlib import Path
 
@@ -102,6 +103,7 @@ class EvidenceBuilder:
         self.odom_pose, self.map_odom, self.map_odom_series, self.jumps = None, None, [], []
         self.pose_series, self.amcl = [], []
         self.scans = {"/scan": [], "/scan_nav": []}
+        self.last_ranges = {}
         self.baseline, self.grid, self.obstacle_bins, self.costmaps = None, None, {}, 0
         self.last_plan_second = None
 
@@ -191,7 +193,14 @@ class EvidenceBuilder:
                               round(math.sqrt(max(c[0], 0) + max(c[7], 0)), 3)])
         elif topic in self.scans:
             valid = [r for r in message.ranges if math.isfinite(r) and message.range_min < r < message.range_max]
-            self.scans[topic].append((wall, len(valid) / max(len(message.ranges), 1), min(valid, default=math.inf)))
+            # A lidar's ranges carry noise, so two scans in a row are never bit-for-bit the same unless the
+            # second is the first sent again.
+            ranges = message.ranges.tobytes() if hasattr(message.ranges, "tobytes") \
+                else array("f", message.ranges).tobytes()
+            repeated = self.last_ranges.get(topic) == ranges
+            self.last_ranges[topic] = ranges
+            self.scans[topic].append((wall, len(valid) / max(len(message.ranges), 1), min(valid, default=math.inf),
+                                      repeated))
         elif topic == "/global_costmap/costmap":
             self.add_costmap(message, wall)
 
@@ -242,14 +251,18 @@ class EvidenceBuilder:
         lidar = {}
         for topic, scans in self.scans.items():
             buckets = {}
-            for wall, valid, nearest in scans:
-                entry = buckets.setdefault(int((wall - origin) // BUCKET), {"n": 0, "valid": 0.0, "min": math.inf})
+            for wall, valid, nearest, repeated in scans:
+                entry = buckets.setdefault(int((wall - origin) // BUCKET),
+                                           {"n": 0, "valid": 0.0, "min": math.inf, "repeated": 0})
                 entry["n"] += 1
                 entry["valid"] += valid
                 entry["min"] = min(entry["min"], nearest)
+                entry["repeated"] += repeated
             if buckets:
+                # Per interval: start, scans, share of valid ranges, nearest return, share of repeated scans.
                 lidar[topic] = [[round(b*BUCKET, 1), e["n"], round(e["valid"]/e["n"], 2),
-                                 None if math.isinf(e["min"]) else round(e["min"], 2)]
+                                 None if math.isinf(e["min"]) else round(e["min"], 2),
+                                 round(e["repeated"]/e["n"], 2)]
                                 for b, e in sorted(buckets.items())]
         bins = {key: {**value, "first": value["first"] - origin, "last": value["last"] - origin}
                 for key, value in self.obstacle_bins.items()}

@@ -1,0 +1,15 @@
+{
+  "name": "speed_limit",
+  "description": "An operator lowers the speed limit from 0.5 to 0.3 m/s while the robot drives to its second stop. The robot is slower and nothing is wrong.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "bad_parameter", "node": "/velocity_smoother", "name": "max_velocity", "value": [0.3, 0.0, 2.0]},
+  "ground_truth": {
+    "category": "no_fault",
+    "component": "velocity_smoother",
+    "parameter": "max_velocity",
+    "summary": "velocity_smoother.max_velocity was lowered on purpose; the mission is unaffected apart from taking longer."
+  },
+  "expected": {"delivered": 3, "actions": []}
+}

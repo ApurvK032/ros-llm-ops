@@ -1,0 +1,19 @@
+{
+  "name": "double_fault",
+  "description": "Two faults land together while the robot drives to its second stop: the speed limit is set to zero and the lidar stops delivering scans.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "bad_parameter", "node": "/velocity_smoother", "name": "max_velocity", "value": [0.0, 0.0, 0.0]},
+  "additional": [
+    {"trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0}, "fault": {"type": "sensor_dropout", "sensor": "lidar", "mode": "drop"}}
+  ],
+  "ground_truth": {
+    "category": "bad_parameter",
+    "component": "velocity_smoother",
+    "parameter": "max_velocity",
+    "also": "sensor_dropout",
+    "summary": "velocity_smoother.max_velocity is zero and no lidar scans reach Nav2; either alone stops the mission."
+  },
+  "expected": {"delivered": 3, "actions": [["restore_parameter", "/velocity_smoother max_velocity"], ["restart_process", "lidar_driver"]]}
+}

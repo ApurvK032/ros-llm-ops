@@ -1,0 +1,17 @@
+{
+  "name": "distractor_lidar",
+  "description": "An operator lowers the speed limit, which is harmless; later, on the way to the third stop, the lidar stops delivering scans.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 2, "delay_s": 5.0},
+  "fault": {"type": "sensor_dropout", "sensor": "lidar", "mode": "drop"},
+  "additional": [
+    {"trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 3.0}, "fault": {"type": "bad_parameter", "node": "/velocity_smoother", "name": "max_velocity", "value": [0.3, 0.0, 2.0]}}
+  ],
+  "ground_truth": {
+    "category": "sensor_dropout",
+    "component": "lidar",
+    "summary": "No lidar scans reach Nav2. The earlier speed-limit change is unrelated and harmless."
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "lidar_driver"]]}
+}

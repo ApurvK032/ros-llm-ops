@@ -1,0 +1,14 @@
+{
+  "name": "blocked_aisle",
+  "description": "A crate is left in the narrow passage south of the centre shelf just after the robot collects P1. Every stopping pose is free and another aisle leads to the same place.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 2.0},
+  "fault": {"type": "blocked_path", "position": [-1.0, -6.5], "size": [0.5, 0.8, 0.8]},
+  "ground_truth": {
+    "category": "blocked_path",
+    "component": "environment",
+    "summary": "A static obstacle closes one passage; the robot can reach every stop by another route."
+  },
+  "expected": {"delivered": 3, "actions": []}
+}

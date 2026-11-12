@@ -1,0 +1,15 @@
+{
+  "name": "amcl_crash",
+  "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+  "command": "Deliver all three parcels",
+  "timeout_s": 420,
+  "trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 5.0},
+  "fault": {"type": "node_crash", "node": "amcl"},
+  "ground_truth": {
+    "category": "node_crash",
+    "component": "amcl",
+    "node": "amcl",
+    "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+  },
+  "expected": {"delivered": 3, "actions": [["restart_process", "amcl"]], "acceptable": [["relocalize", ""]]}
+}

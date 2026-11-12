@@ -10,5 +10,6 @@
     "component": "velocity_smoother",
     "parameter": "max_velocity",
     "summary": "velocity_smoother.max_velocity is zero, so every velocity command is clamped to zero and the robot cannot move."
-  }
+  },
+  "expected": {"delivered": 3, "actions": [["restore_parameter", "/velocity_smoother max_velocity"]]}
 }

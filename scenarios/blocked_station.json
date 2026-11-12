@@ -10,5 +10,6 @@
     "component": "environment",
     "location": "PICK_B",
     "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
-  }
+  },
+  "expected": {"delivered": 2, "actions": [["defer_parcel", "P2"]]}
 }

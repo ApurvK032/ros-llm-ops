@@ -8,7 +8,6 @@ from pathlib import Path
 from .planner import Planner, PlanningError
 from .state import Disposition, Goal, Hold, HoldKind, Parcel, Physical
 
-
 # Operations only a person or the recovery layer may issue directly; the language model can never apply them.
 DIRECT_ONLY = {"defer", "retry"}
 DIRECT = {"pause", "resume", "status"} | DIRECT_ONLY

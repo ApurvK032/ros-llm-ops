@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from test_diagnosis import WAYPOINTS, healthy_evidence, journal
+from test_diagnosis import healthy_evidence, journal
 
 from warehouse_agent.diagnosis import Incident
 from warehouse_agent.recovery import RecoveryAgent, ToolError, gate, next_waypoint, playbook, triggers
@@ -266,6 +266,8 @@ class Agent(Case):
         self.assertEqual((summary["actions_proposed"], summary["actions_refused"], summary["actions_carried_out"],
                           summary["actions_failed"]), (5, 4, 1, 0))
         self.assertEqual(summary["seconds_fault_to_detection"], 2.0)
+        # An incident from before the scenario's main fault answered something else, so it is not timed from it.
+        self.assertNotIn("seconds_fault_to_detection", agent.summary(injected_at=record["monotonic_detected"] + 40.0))
 
     def test_a_fix_that_fails_is_tried_again_with_the_mission_held_then_handed_back(self):
         evidence = healthy_evidence()

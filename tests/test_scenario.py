@@ -73,6 +73,28 @@ class ScenarioFiles(unittest.TestCase):
             with self.subTest(name), self.assertRaises(ValueError):
                 self.load(data)
 
+    def test_further_faults_and_an_expected_outcome_are_validated_like_the_first(self):
+        second = {"trigger": {"event": "cargo_pickup", "count": 2}, "fault": {"type": "node_crash", "node": "amcl"}}
+        expected = {"delivered": 3, "actions": [["restart_process", "amcl"]], "acceptable": [["relocalize", ""]]}
+        full = {**BASE, **FAULT}
+        scenario = self.load({**full, "additional": [second], "expected": expected})
+        self.assertEqual((scenario.additional, scenario.expected), ((second,), expected))
+        self.assertEqual((self.load(full).additional, self.load(full).expected), ((), None))
+        self.assertEqual(self.load({**BASE, "expected": {"delivered": 3}}).expected, {"delivered": 3})
+        rejected = {
+            "a second fault without a first": {**BASE, "additional": [second]},
+            "a second fault of an unknown type": {**full, "additional": [{**second, "fault": {"type": "gremlins"}}]},
+            "a second fault without a trigger": {**full, "additional": [{"fault": second["fault"]}]},
+            "a second fault with a bad trigger": {**full, "additional": [{**second, "trigger": {"event": "nope"}}]},
+            "additional that is not a list": {**full, "additional": second},
+            "expected without a number of parcels": {**full, "expected": {"actions": []}},
+            "expected with an unknown key": {**full, "expected": {"delivered": 3, "speed": 1}},
+            "an action that is not a pair": {**full, "expected": {"delivered": 3, "actions": ["restart_process"]}},
+        }
+        for reason, data in rejected.items():
+            with self.subTest(reason), self.assertRaises(ValueError):
+                self.load(data)
+
     def test_a_fault_may_name_a_position_instead_of_a_waypoint(self):
         scenario = self.load({**BASE, **FAULT, "fault": {"type": "blocked_path", "position": [1.0, -2.5]}})
         self.assertEqual(scenario.fault["position"], [1.0, -2.5])
