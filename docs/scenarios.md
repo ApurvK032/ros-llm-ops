@@ -20,6 +20,11 @@ under `artifacts/scenarios/<name>/<time>/`:
 | `truth.jsonl` | The robot's true pose from the simulator, ten times a second, used to check every pickup and delivery |
 | `simulation.log`, `agent.log` | Console output of the simulator and the supervisor |
 
+With `--film`, a camera is placed in the world above the south wall and its frames are saved twice a second
+under `frames/`, named by the same clock as the journal. `python3 scripts/make_figures.py footage <run>` labels
+them from the journal and the true pose and writes the GIFs shown in the README. No display is needed: the
+simulator renders on the GPU without a window.
+
 Requirements are the same as the demo (ROS 2 Jazzy, Gazebo Harmonic, Ollama with `qwen3.5:4b`); no display is
 needed. The scenario file format is validated on load; see [`scenarios/`](../scenarios/) for examples.
 

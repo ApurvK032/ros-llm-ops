@@ -8,25 +8,22 @@ ROS LLM Ops is a mission supervisor for a ROS 2 warehouse robot, with a recovery
 
 **Stack:** ROS 2 Jazzy · Nav2 · Gazebo Harmonic · Python · Ollama / Qwen3.5 (local, no API key)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-controller_crash-dark.gif">
-  <img src="docs/figures/replay-controller_crash-light.gif" alt="Two replays of the same mission side by side. The navigation controller is killed 19 seconds in. Alone, the supervisor abandons the mission with nothing delivered. With the recovery agent, the controller is restarted and all three parcels are delivered.">
-</picture>
+![The simulated warehouse seen from a camera above the south wall, at ten times real speed. The robot collects a parcel, the Nav2 controller is killed and the robot stops, the recovery agent restarts the controller, and the robot goes on to deliver all three parcels in 140 seconds.](docs/figures/footage-controller_crash.gif)
 
-*Two recorded runs of the same mission, replayed from their data. The Nav2 controller is killed 19 s in. Left: the supervisor alone gives up with nothing delivered. Right: the recovery agent restarts the controller and the mission finishes.*
+*A mission in the simulator, at ten times real speed. The Nav2 controller is killed 19 s in; the recovery agent pauses the mission and restarts the controller, and all three parcels are delivered. Filmed by a camera placed in the headless Gazebo world; the labels are drawn afterwards from the [run's](docs/evidence/footage/controller_crash/result.json) journal and the robot's true pose.*
 
 [At a glance](#at-a-glance) · [When something breaks](#when-something-breaks) · [How recovery works](#how-recovery-works) · [Quick start](#quick-start) · [Example missions](#example-missions) · [How it works](#how-it-works) · [Roadmap](#roadmap) · [Evaluation](docs/evaluation.md) · [Design](docs/design.md)
 
 ## At a glance
 
-| | |
+| Measured | Result |
 | --- | --- |
 | Simulated missions in the [evaluation](docs/evaluation.md) | **234**, over 13 scenarios: ten faults and three cases with nothing to fix |
 | Missions that end as they should, supervisor alone | **12 of 39** |
 | The same with the recovery agent attached | **50 to 55 of 65**, depending on who decides |
 | Pickups and deliveries checked against the simulator's true pose | **1,068**; every one made with the agent attached was confirmed |
-| Mission journals that pass the independent checker | **266 of 266** |
-| Tests that need no ROS, GPU or model | **199**, and 11 of 11 planted bugs caught |
+| Mission journals that pass the independent checker | **268 of 268** |
+| Tests that need no ROS, GPU or model | **204**, and 11 of 11 planted bugs caught |
 
 ## When something breaks
 
@@ -46,30 +43,35 @@ fixing. 234 missions in all, written up in the [evaluation](docs/evaluation.md).
 - **What it cannot do yet is measured too.** A localization node that restarts in the wrong place is not recovered (0 of 15), two faults at once rarely (2 of 15), and a speed limit lowered on purpose is always put back. All 36 failures trace to three causes in the layer the decision-makers share; the evaluation names them.
 
 <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-controller_crash-dark.gif">
+  <img src="docs/figures/replay-controller_crash-light.gif" alt="Two replays of the same mission side by side. The navigation controller is killed 19 seconds in. Alone, the supervisor abandons the mission with nothing delivered. With the recovery agent, the controller is restarted and all three parcels are delivered.">
+</picture>
+
+*The same fault with and without the agent, replayed from the recorded data. Left: the supervisor alone uses up its retries in a second and gives up with nothing delivered. Right: the mission finishes.*
+
+<picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-lidar_frozen-dark.gif">
   <img src="docs/figures/replay-lidar_frozen-light.gif" alt="Two replays side by side, each drawing where the robot is and where it thinks it is. The lidar gets stuck on one scan. Alone, the robot's estimate drives on to every station and three deliveries are reported while the robot itself is pressed against a wall almost 19 metres away. With the recovery agent, the lidar driver is restarted, the estimate rejoins the robot, and three real deliveries are made.">
 </picture>
 
 *Why deliveries are checked against the true pose. The lidar gets stuck on one scan. Left: with nobody watching, the robot's own estimate (dashed) drives on to every station and the mission is reported complete, while the robot (solid) ends up against the west wall, almost 19 m away. Right: the agent restarts the lidar driver, the mission resumes 13 s after the fault, and all three deliveries are real.*
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/replay-blocked_station-dark.gif">
-  <img src="docs/figures/replay-blocked_station-light.gif" alt="Two replays side by side. A box is left on the Pick B stopping pose. Alone, the supervisor circles it for six minutes before giving up on that parcel. With the recovery agent, the robot skips that parcel at once and delivers the other two.">
-</picture>
+![The simulated warehouse from above. A red box appears on the Pick B stopping pose. The robot drives up to it, the recovery agent gives up on that parcel and tells a person, and the robot delivers the other two parcels in 102 seconds.](docs/figures/footage-blocked_station.gif)
 
-*A fault the robot cannot fix. A box is left where it must stop. Both runs deliver two of three; the agent's is done in 104 s, the supervisor's in 462 s.*
+*A fault the robot cannot fix. A box is left where it must stop to collect P2. The agent sees it on the stopping pose, gives up on that parcel, tells a person, and the other two are delivered in 102 s. Left alone, the supervisor spends seven to nine minutes on the same mission.*
 
 ### How recovery works
 
 ```mermaid
-flowchart LR
-    T[ROS topics] --> M[Live monitor]
-    M -->|evidence every 2 s| A[Recovery agent]
-    A -->|diagnosis + proposed actions| G[Gate]
-    G -->|permitted actions| R[Recovery tools]
-    G -->|pause / resume / defer| S[Mission supervisor]
+flowchart TD
+    T[Live ROS topics] --> M[Monitor: evidence every 2 s]
+    M --> A[Recovery agent: pause, diagnose, decide]
+    A -->|proposed actions| G{Gate: does the evidence back it?}
+    G -->|no| X[Refused, and the reason recorded]
+    G -->|robot actions| R[Recovery tools: restart, restore, relocalize]
+    G -->|mission commands| S[Mission supervisor: checks again]
     R --> N[Nav2 and the robot]
-    S -->|validates again, journals| J[(Journal)]
+    S --> J[(Journal, replayed by an independent checker)]
 ```
 
 1. **Watch.** A monitor turns the live ROS topics into evidence: heartbeats, scan rate, commanded against measured speed, pose jumps, parameter changes, new obstacles.
@@ -78,12 +80,27 @@ flowchart LR
 4. **Gate.** Each action runs only if the evidence backs it, whoever proposed it. The model can choose which action and which target; it cannot choose a value.
 5. **Act and resume.** The supervisor checks every mission command again and journals it, and an independent checker replays the journal afterwards.
 
-| What a recovery costs | Diagnosing a recording |
-| --- | --- |
-| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/figures/batch-time-dark.png"><img src="docs/figures/batch-time-light.png" width="430" alt="Median and range of mission time for the missions that ended as they should, by scenario and decision-maker. Recovered missions take 127 to 160 seconds against 123 for a fault-free one."></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/figures/diagnosis-scoreboard-dark.png"><img src="docs/figures/diagnosis-scoreboard-light.png" width="430" alt="Recordings diagnosed with the right fault category, out of 12: fixed rules 12, qwen3.5:9b with the tools 12, qwen3.5:4b with the tools 11, either model without the tools 4."></picture> |
-| A recovered mission takes 4 to 25 s longer than a fault-free one with the playbook, 13 to 36 s with a model ([evaluation](docs/evaluation.md#what-a-recovery-costs)). | With the checks as tools, the models name the fault in 11 and 12 of 12 recordings; from the mission report alone, 4 of 12 ([diagnosis](docs/diagnosis.md)). |
+### What a recovery costs
 
-| | |
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/batch-time-dark.png">
+  <img src="docs/figures/batch-time-light.png" alt="Median and range of mission time for the missions that ended as they should, by scenario and decision-maker. Recovered missions take 127 to 160 seconds against 123 for a fault-free one; the playbook is the fastest in every recovered scenario.">
+</picture>
+
+A recovered mission takes 4 to 25 s longer than a fault-free one with the playbook, and 13 to 36 s with a model. The long tails are restarts that needed a second attempt. More in the [evaluation](docs/evaluation.md#what-a-recovery-costs).
+
+### Diagnosing a recording
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/diagnosis-scoreboard-dark.png">
+  <img src="docs/figures/diagnosis-scoreboard-light.png" alt="Recordings diagnosed with the right fault category, out of 12: fixed rules 12, qwen3.5:9b with the tools 12, qwen3.5:4b with the tools 11, either model from the mission report alone 4.">
+</picture>
+
+The same checks work on a finished recording. With them as tools, the local models name the fault in 11 and 12 of 12 recordings; from the mission report alone, 4 of 12. More in [diagnosis](docs/diagnosis.md).
+
+### Guides and commands
+
+| Guide | What is in it |
 | --- | --- |
 | [Fault-injection scenarios](docs/scenarios.md) | The thirteen scenarios, how faults are injected, how deliveries are checked against the true pose, and what the supervisor does alone |
 | [Diagnosis](docs/diagnosis.md) | Read-only checks over recorded evidence, a model that uses them as tools, and a scoreboard |
@@ -92,12 +109,15 @@ flowchart LR
 | [MCP server](docs/mcp.md) | The same checks as read-only tools for any Model Context Protocol client |
 
 ```bash
-python3 -B -m warehouse_agent scenario scenarios/controller_crash.json                    # the fault, supervisor alone
-python3 -B -m warehouse_agent scenario scenarios/controller_crash.json --recover rules    # with the playbook
+# One fault, three ways: the supervisor alone, with the playbook, with a local model deciding
+python3 -B -m warehouse_agent scenario scenarios/controller_crash.json
+python3 -B -m warehouse_agent scenario scenarios/controller_crash.json --recover rules
 python3 -B -m warehouse_agent scenario scenarios/controller_crash.json --recover qwen3.5:9b
-python3 -B -m warehouse_agent diagnose docs/evidence/scenarios/*/* --rules                # needs no ROS or model
-python3 -B -m warehouse_agent batch-report docs/evidence/batch                            # the table above, from the results
-python3 -B -m warehouse_agent.mcp_server docs/evidence/scenarios                          # the checks, over MCP
+
+# These need no ROS, GPU or model: diagnose the committed recordings, rebuild the table above, serve the checks
+python3 -B -m warehouse_agent diagnose docs/evidence/scenarios/*/* --rules
+python3 -B -m warehouse_agent batch-report docs/evidence/batch
+python3 -B -m warehouse_agent.mcp_server docs/evidence/scenarios
 ```
 
 ## What it does
@@ -285,6 +305,7 @@ The unit and property-based tests run in CI on every pull request, together with
 | [warehouse_agent/cli.py](warehouse_agent/cli.py) | Operator loop and direct controls |
 | [warehouse_agent/scenario.py](warehouse_agent/scenario.py), [faults.py](warehouse_agent/faults.py) | Fault-injection scenario runner and the five fault injectors |
 | [warehouse_agent/ground_truth.py](warehouse_agent/ground_truth.py) | The robot's true pose from the simulator, and the check of every transfer against it |
+| [warehouse_agent/camera.py](warehouse_agent/camera.py) | A camera placed in the headless simulator, for footage of a run (`scenario --film`) |
 | [warehouse_agent/batch.py](warehouse_agent/batch.py) | Repeated runs of every scenario against each decision-maker, judged and summarized |
 | [warehouse_agent/evidence.py](warehouse_agent/evidence.py), [monitor.py](warehouse_agent/monitor.py) | Evidence from a recording, and the same evidence live from the topics |
 | [warehouse_agent/diagnosis.py](warehouse_agent/diagnosis.py) | Read-only checks, the model that uses them as tools, the rule baseline, and scoring |

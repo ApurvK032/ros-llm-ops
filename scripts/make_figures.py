@@ -5,11 +5,13 @@
     python3 scripts/make_figures.py batch      # only the charts of the repeated runs
     python3 scripts/make_figures.py replays    # only the animated replays (needs ffmpeg)
     python3 scripts/make_figures.py belief     # only the replay of believed against true pose
+    python3 scripts/make_figures.py footage RUN [RUN ...]   # labelled footage of runs filmed with "scenario --film"
 
 Nothing here is typed in by hand: every number is read from a result.json, a journal or an evidence file, so the
 figures change only when the evidence does. Needs matplotlib; the replays also need ffmpeg.
 """
 
+import bisect
 import json
 import math
 import os
@@ -456,13 +458,13 @@ def draw_map(ax, theme):
                 path_effects=[patheffects.withStroke(linewidth=2.2, foreground=theme["surface"])])
 
 
-def encode(scratch, target, fps):
+def encode(scratch, target, fps, width=900, colours=48):
     """Frames in a scratch directory to one looping GIF with a shared palette; the scratch directory is removed."""
     FIGURES.mkdir(parents=True, exist_ok=True)
     palette = scratch / "palette.png"
-    scale = "scale=900:-1:flags=lanczos"
+    scale = f"scale={width}:-1:flags=lanczos"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(fps), "-i", str(scratch / "%04d.png"), "-vf",
-                    f"{scale},palettegen=max_colors=48:stats_mode=diff", str(palette)], check=True)
+                    f"{scale},palettegen=max_colors={colours}:stats_mode=diff", str(palette)], check=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(fps), "-i", str(scratch / "%04d.png"), "-i",
                     str(palette), "-lavfi", f"{scale}[x];[x][1:v]paletteuse=dither=none:diff_mode=rectangle",
                     "-loop", "0", str(target)], check=True)
@@ -597,7 +599,139 @@ def replay(scenario, theme_name, step, fps=10):
     return encode(scratch, FIGURES / f"replay-{scenario}-{theme_name}.gif", fps)
 
 
+# --- footage: frames from the simulator's own camera, labelled from the journal and the true pose ------------------
+
+PARCEL_COLOURS = {"waiting": (224, 160, 48), "onboard": (42, 120, 214), "delivered": (27, 175, 122),
+                  "given up": (137, 135, 129)}
+TITLES = {"controller_crash": "The navigation controller crashes mid-mission",
+          "blocked_station": "A box is left where the robot has to stop",
+          "lidar_frozen": "The lidar gets stuck on one scan"}
+
+
+def rgb(code):
+    return tuple(int(code.lstrip("#")[i:i+2], 16) for i in (0, 2, 4))
+
+
+def footage(run, fps=10, every=2, width=1000):
+    """A labelled GIF of one filmed run. The frames stay out of the repository; the labels come from its data."""
+    from matplotlib import font_manager
+    from PIL import Image, ImageDraw, ImageFont
+
+    from warehouse_agent.camera import OVERVIEW, project
+    run = Path(run)
+    result = load(run / "result.json")
+    name = result["scenario"]["name"]
+    events = [json.loads(line) for line in (run / "journal.jsonl").read_text().splitlines() if line.strip()]
+    origin = next(e["monotonic"] for e in events if e["type"] == "instruction_applied")
+    truth = [json.loads(line) for line in (run / "truth.jsonl").read_text().splitlines() if line.strip()]
+    told = story(run, [])
+    incidents = (result.get("recovery") or {}).get("incidents", [])
+    held = [(i["detected_at_s"], i["detected_at_s"] + i["seconds"]) for i in incidents]
+    changes = {parcel: [(-math.inf, "waiting")] for parcel in CONFIG["parcels"]}
+    for event in events:
+        t = event["monotonic"] - origin
+        if event["type"] == "cargo_pickup":
+            changes[event["parcel"]].append((t, "onboard"))
+        elif event["type"] == "cargo_drop":
+            changes[event["parcel"]].append((t, "delivered"))
+        elif event["type"] == "parcel_deferred":
+            changes[event["parcel"]].append((t, "given up"))
+        elif event["type"] == "instruction_applied" and event["intent"]["operation"] in ("defer", "retry"):
+            for parcel in event["intent"]["parcels"]:
+                changes[parcel].append((t, "given up" if event["intent"]["operation"] == "defer" else "waiting"))
+
+    def font(size, weight="regular"):
+        found = font_manager.findfont(font_manager.FontProperties(family=FONT, weight=weight))
+        return ImageFont.truetype(found, size)
+
+    small, label, strong, big = font(21), font(24), font(24, "bold"), font(31, "bold")
+    stills = sorted((float(path.stem) - origin, path) for path in (run / "frames").glob("*.jpg"))
+    after = [still for still in stills if still[0] >= told["end"]][:1]      # the first frame with the mission over
+    stills = [(t, path) for t, path in stills if -1.0 <= t < told["end"]][::every] + after
+    stills += [stills[-1]]*int(3*fps)
+    crash = None
+    if told["fault"]["type"] == "node_crash" and told["fault_at"] is not None:
+        k = min(bisect.bisect_left(truth, [origin + told["fault_at"]]), len(truth) - 1)
+        crash = project((truth[k][1], truth[k][2], 0.02), OVERVIEW)
+    scratch = Path(tempfile.mkdtemp(prefix="footage-"))
+    for index, (t, path) in enumerate(stills):
+        frame = Image.open(path).convert("RGBA")
+        wide, high = frame.size
+        layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(layer)
+
+        def text(at, words, face, fill=(255, 255, 255, 255), anchor="la", halo=3, draw=draw):
+            draw.text(at, words, font=face, fill=fill, anchor=anchor, stroke_width=halo, stroke_fill=(20, 20, 19, 255))
+
+        for waypoint, (x, y, _) in CONFIG["waypoints"].items():
+            column, row = project((x, y, 0.0), OVERVIEW)
+            text((column, row + 24), waypoint.replace("_", " ").title(), small, anchor="ma")
+        fault = told["fault"]
+        if fault["type"] == "blocked_path" and told["fault_at"] is not None and t >= told["fault_at"]:
+            bx, by = fault["details"]["position"]
+            column, row = project((bx, by, fault["details"]["size"][2]), OVERVIEW)
+            text((column, row - 34), "box", label, anchor="ma")
+        k = min(bisect.bisect_left(truth, [origin + t]), len(truth) - 1)
+        _, rx, ry, _ = truth[k]
+        column, row = project((rx, ry, 0.15), OVERVIEW)
+        stopped = any(a <= t <= b for a, b in held)
+        # Where the robot has just been, on the floor, so its motion reads at this size.
+        tail = [project((x, y, 0.02), OVERVIEW) for at, x, y, _ in truth[max(0, k - 250):k + 1:5]
+                if at >= origin + t - 25 and at >= origin]
+        if len(tail) > 1:
+            draw.line(tail, fill=(*rgb(THEMES["light"]["after"]), 200), width=6, joint="curve")
+        if crash and t >= told["fault_at"]:
+            reach = 13
+            for dx in (-1, 1):
+                draw.line([crash[0] - reach, crash[1] - dx*reach, crash[0] + reach, crash[1] + dx*reach],
+                          fill=(*rgb(THEMES["light"]["critical"]), 255), width=6)
+            text((crash[0], crash[1] + 22), "controller crashed here", small, anchor="ma")
+        # Status colour on the ring while the mission is held; the label says the same in words.
+        ring = (*rgb(THEMES["light"]["critical" if stopped else "after"]), 255)
+        draw.ellipse([column - 30, row - 30, column + 30, row + 30], outline=(255, 255, 255, 255), width=8)
+        draw.ellipse([column - 27, row - 27, column + 27, row + 27], outline=ring, width=5)
+        text((column, row - 62), "robot, held by the agent" if stopped else "robot", label, anchor="ma")
+        riding = 0
+        for parcel, history in changes.items():
+            state = [s for at, s in history if at <= t][-1]
+            station = CONFIG["parcels"][parcel]["drop" if state == "delivered" else "pickup"]
+            px, py, pz = CONFIG["stations"][station]["parcel_position"]
+            if state == "onboard":
+                at = (column + 46 + riding*46, row - 14)
+                riding += 1
+            else:
+                at = project((px, py, pz + 0.2), OVERVIEW)
+            draw.rounded_rectangle([at[0] - 19, at[1] - 19, at[0] + 19, at[1] + 19], radius=6,
+                                   fill=(*PARCEL_COLOURS[state], 255), outline=(255, 255, 255, 255), width=3)
+            text(at, parcel, small, anchor="mm", halo=2)
+        draw.rectangle([0, 0, wide, 78], fill=(20, 20, 19, 215))
+        draw.rectangle([0, high - 74, wide, high], fill=(20, 20, 19, 215))
+        text((30, 39), TITLES.get(name, name), big, anchor="lm", halo=0)
+        done = sum(1 for d in told["delivered"] if d <= t)
+        text((wide - 30, 39), f"{max(t, 0):3.0f} s    {done} of 3 delivered", strong, anchor="rm", halo=0)
+        said = [c for c in told["captions"] if c[0] <= max(t, 0)][-1]
+        left = 30
+        if said[2]:
+            draw.rectangle([left, high - 49, left + 24, high - 25], fill=(*rgb(THEMES["light"]["critical"]), 255))
+            left += 40
+        text((left, high - 37), said[1], label, anchor="lm", halo=0)
+        x = wide - 30
+        for state in reversed(PARCEL_COLOURS):
+            words = state
+            x -= draw.textlength(words, font=small)
+            text((x, high - 37), words, small, fill=(225, 224, 217, 255), anchor="lm", halo=0)
+            x -= 34
+            draw.rounded_rectangle([x, high - 49, x + 24, high - 25], radius=5, fill=(*PARCEL_COLOURS[state], 255))
+            x -= 26
+        Image.alpha_composite(frame, layer).convert("RGB").save(scratch / f"{index:04d}.png")
+    return encode(scratch, FIGURES / f"footage-{name}.gif", fps, width=width, colours=128)
+
+
 def main():
+    if sys.argv[1:2] == ["footage"]:
+        for run in sys.argv[2:]:
+            print(footage(run).relative_to(ROOT))
+        return 0
     what = set(sys.argv[1:]) or {"charts", "replays"}
     for theme_name in THEMES:
         if "charts" in what:

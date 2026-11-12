@@ -285,12 +285,13 @@ def start_simulation(log_path, attempts=3):
 
 
 def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b", settle_s=10.0, recover=None,
-                 watch=None):
+                 watch=None, film=False):
     """Run one scenario end to end and write result.json into the output directory. Returns the result.
 
     recover attaches the recovery agent: "rules" for the fixed playbook, or the name of a local model. The
     supervisor then holds on faults and accepts direct commands, and a live monitor feeds the agent. watch
-    starts that monitor without an agent, so a run that is not recorded still leaves its evidence behind.
+    starts that monitor without an agent, so a run that is not recorded still leaves its evidence behind. film
+    puts a camera in the world and saves its frames, for footage of the run.
 
     The recording continues for settle_s after the supervisor exits: the system's reaction to a fault (a
     lifecycle manager noticing a dead node, a sensor staying silent) often arrives after the mission has ended.
@@ -304,7 +305,7 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
     planned = [{"fault": scenario.fault, "trigger": scenario.trigger}, *scenario.additional] \
         if inject and scenario.fault else []
     injections = [{"injected": False} for _ in planned] or [{"injected": False}]
-    sim = bag = agent = model_server = monitor = recovery = truth = None
+    sim = bag = agent = model_server = monitor = recovery = truth = camera = None
     timed_out = False
     try:
         with open(output / "model.log", "w", encoding="utf-8") as model_log:
@@ -324,6 +325,14 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
              f"exec python3 -B -m warehouse_agent.ground_truth {shlex.quote(str(output))}"],
             cwd=ROOT, env=ros_env(), stdout=open(output / "truth.log", "w"),  # noqa: SIM115
             stderr=subprocess.STDOUT, start_new_session=True)
+        if film:
+            from .camera import spawn
+            spawn()
+            camera = subprocess.Popen(
+                ["bash", "-c", "source /opt/ros/jazzy/setup.bash && "
+                 f"exec python3 -B -m warehouse_agent.camera {shlex.quote(str(output))}"],
+                cwd=ROOT, env=ros_env(), stdout=open(output / "camera.log", "w"),  # noqa: SIM115
+                stderr=subprocess.STDOUT, start_new_session=True)
         if recover or watch:
             monitor = subprocess.Popen(
                 ["bash", "-c", "source /opt/ros/jazzy/setup.bash && source ros_ws/install/setup.bash && "
@@ -375,6 +384,7 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
         _stop(agent, grace=20)
         _stop(monitor, grace=5)
         _stop(truth, grace=3)
+        _stop(camera, grace=3)
         _stop(bag, grace=10)
         # Stopping the simulation kills processes too; anything logged after this point is teardown, not the run.
         sim_log = output / "simulation.log"
@@ -415,7 +425,8 @@ def run_scenario(scenario, output, inject=True, record=True, model="qwen3.5:4b",
                                                 "warnings": report["warnings"]},
         "artifacts": {"journal": "journal.jsonl", "bag": "bag" if record else None,
                       "simulation_log": "simulation.log", "supervisor_log": "agent.log",
-                      "true_pose": "truth.jsonl", "live_evidence": "live_evidence.json" if monitor else None},
+                      "true_pose": "truth.jsonl", "live_evidence": "live_evidence.json" if monitor else None,
+                      "frames": "frames" if film else None},
     }
     (output / "result.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return result
