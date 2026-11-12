@@ -1,0 +1,182 @@
+{
+  "scenario": {
+    "name": "nominal",
+    "description": "Control run: deliver all three parcels with no fault.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": null,
+    "trigger": null,
+    "ground_truth": null,
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": []
+    }
+  },
+  "run": {
+    "started": "2026-11-11T07:48:13.350421+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 50595,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": false
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 123.1,
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1361,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.062,
+        "true_pose": [
+          -6.305,
+          -1.483,
+          0.105
+        ],
+        "position_error": 0.018,
+        "heading_error": 0.105,
+        "facing_error": 0.122,
+        "parcel_clearance": 0.559,
+        "estimate_off_by": 0.078,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.012,
+        "true_pose": [
+          1.57,
+          -0.896,
+          1.507
+        ],
+        "position_error": 0.07,
+        "heading_error": 0.064,
+        "facing_error": 0.134,
+        "parcel_clearance": 0.553,
+        "estimate_off_by": 0.068,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.066,
+        "true_pose": [
+          7.243,
+          -0.006,
+          0.051
+        ],
+        "position_error": 0.143,
+        "heading_error": 0.051,
+        "facing_error": 0.044,
+        "parcel_clearance": 0.411,
+        "estimate_off_by": 0.093,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.067,
+        "true_pose": [
+          5.85,
+          1.992,
+          3.052
+        ],
+        "position_error": 0.051,
+        "heading_error": 0.089,
+        "facing_error": 0.081,
+        "parcel_clearance": 0.604,
+        "estimate_off_by": 0.108,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.038,
+        "true_pose": [
+          7.181,
+          4.848,
+          0.107
+        ],
+        "position_error": 0.094,
+        "heading_error": 0.107,
+        "facing_error": 0.159,
+        "parcel_clearance": 0.474,
+        "estimate_off_by": 0.077,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.027,
+        "true_pose": [
+          7.141,
+          -4.773,
+          -0.073
+        ],
+        "position_error": 0.049,
+        "heading_error": 0.073,
+        "facing_error": 0.045,
+        "parcel_clearance": 0.513,
+        "estimate_off_by": 0.023,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.143,
+    "worst_estimate_error": 0.108
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 30,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "scenario": {
+    "name": "controller_crash",
+    "description": "The Nav2 controller server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "controller_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "nav2",
+      "node": "controller_server",
+      "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "controller_server"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:30:10.705696+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 44853,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:30:44.885739+00:00",
+    "monotonic": 371114.923041466,
+    "type": "node_crash",
+    "seconds_late": 0.0,
+    "details": {
+      "node": "controller_server",
+      "pid": 1163923,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.4
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 7.979 m, heading error 3.098 rad, facing error 1.935 rad, parcel clearance 7.791 m",
+      "P1": "Navigation failed; approach error 13.602 m, heading error 1.602 rad, facing error 1.450 rad, parcel clearance 14.143 m",
+      "P3": "Navigation failed; approach error 12.995 m, heading error 1.552 rad, facing error 1.988 rad, parcel clearance 11.621 m"
+    },
+    "mission_seconds": 20.1,
+    "seconds_to_first_abnormal_event": 0.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 352,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.02,
+        "true_pose": [
+          -6.329,
+          -1.47,
+          0.11
+        ],
+        "position_error": 0.041,
+        "heading_error": 0.11,
+        "facing_error": 0.139,
+        "parcel_clearance": 0.583,
+        "estimate_off_by": 0.061,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.041,
+    "worst_estimate_error": 0.061
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

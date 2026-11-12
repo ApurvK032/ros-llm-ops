@@ -85,6 +85,9 @@ One run per cell, on 10 November 2026 (RTX 4070, Ubuntu 24.04), all with the sam
 supervisor alone ([scenarios](scenarios.md)); a mission with no fault takes 123 s. Each cell is parcels delivered
 and mission time; the second table is the time from the fault being in place to the mission resuming.
 
+The same agent run five times per cell, on these faults and on eight other situations, is in the
+[evaluation](evaluation.md); the numbers there supersede these as rates.
+
 | Fault | Supervisor alone | Playbook | qwen3.5:9b decides | qwen3.5:4b decides |
 | --- | --- | --- | --- | --- |
 | `bad_parameter` | 0 of 3, timeout at 720 s | [3 of 3, 127.8 s](evidence/recovery/rules/bad_parameter/result.json) | [3 of 3, 134.2 s](evidence/recovery/qwen3_5_9b/bad_parameter/result.json) | [3 of 3, 142.5 s](evidence/recovery/qwen3_5_4b/bad_parameter/result.json) |
@@ -160,16 +163,20 @@ that the estimate moved, and the agent waits for scans and heartbeats to be heal
 
 ## Limitations
 
-- **One run per cell.** The times are examples, not averages, and one success is not a recovery rate.
-- **These are the five faults the tools and the playbook were written for.** Nothing here was held out. The
-  playbook matching the models is expected on such a set and says nothing about faults or combinations that no
-  rule covers, which is where a model would have to earn its place.
-- **Recovery is not verified against ground truth.** After relocalizing, the supervisor's arrival checks still
-  use the pose estimate, so "delivered" means delivered according to localization. Comparing with Gazebo's true
-  pose is not done yet.
+What the agent gets wrong when it is run repeatedly and on situations it was not built for is measured in the
+[evaluation](evaluation.md): 36 failed missions of 195, three causes. In brief:
+
+- **It can look too early and then forget.** A lidar that has just died is not yet countable when the
+  supervisor's hold calls the agent; the agent finds nothing, resumes, and treats that moment as dealt with.
+- **A restarted localization node comes back at its start-up pose**, and the jump that would justify restoring
+  the pose happens while the agent is busy restarting it.
+- **A pose that has drifted cannot be restored**, because the gate asks for a jump.
+- **Every runtime parameter change is put back**, including one made on purpose.
+
+And what the evaluation does not cover:
+
 - **The lidar fault is simulated by a relay**, and restarting the "driver" is restarting that relay. A real dead
   sensor may not come back.
-- **The gate checks that an action is justified, not that it is wise.** It would permit restoring a parameter
-  someone changed on purpose.
+- **The gate checks that an action is justified, not that it is wise.**
 - Escalation only records a message; nobody is told.
-- The agent only ever sees one mission, one robot and one fault at a time.
+- The agent sees one mission and one robot, in simulation.

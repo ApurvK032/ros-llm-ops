@@ -1,0 +1,147 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T07:31:33.120631+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 96258,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T07:32:09.209050+00:00",
+    "monotonic": 363999.24635224,
+    "type": "localization_jump",
+    "seconds_late": 2.8,
+    "details": {
+      "estimate_before": [
+        -6.222,
+        -3.533,
+        -1.185
+      ],
+      "estimate_after": [
+        -4.722,
+        -3.533,
+        -0.585
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ],
+      "correction_before": [
+        -7.173,
+        -5.587,
+        -0.003
+      ],
+      "correction_after": [
+        -4.282,
+        -5.761,
+        0.637
+      ]
+    },
+    "seconds_after_mission_start": 22.3
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "no_route",
+    "delivered": [],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "cancelled": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 2.599 m, heading error 3.121 rad, facing error 1.510 rad, parcel clearance 1.873 m"
+    },
+    "mission_seconds": 466.4,
+    "seconds_to_first_abnormal_event": 232.3,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4712,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.018,
+        "true_pose": [
+          -6.333,
+          -1.469,
+          0.114
+        ],
+        "position_error": 0.045,
+        "heading_error": 0.114,
+        "facing_error": 0.144,
+        "parcel_clearance": 0.587,
+        "estimate_off_by": 0.063,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.045,
+    "worst_estimate_error": 0.063
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 18,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

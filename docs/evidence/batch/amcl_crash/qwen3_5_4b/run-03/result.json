@@ -1,0 +1,326 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T08:34:54.302670+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 116444,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T08:35:32.174718+00:00",
+    "monotonic": 367802.212020731,
+    "type": "node_crash",
+    "seconds_late": 0.5,
+    "details": {
+      "node": "amcl",
+      "pid": 1141122,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 20.0
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 3,
+      "cancelled": 2
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.096 m, heading error 3.126 rad, facing error 1.926 rad, parcel clearance 7.958 m"
+    },
+    "mission_seconds": 416.6,
+    "seconds_to_first_abnormal_event": 1.0,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4234,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.015,
+        "true_pose": [
+          -6.327,
+          -1.461,
+          0.096
+        ],
+        "position_error": 0.048,
+        "heading_error": 0.096,
+        "facing_error": 0.134,
+        "parcel_clearance": 0.581,
+        "estimate_off_by": 0.059,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.048,
+    "worst_estimate_error": 0.059
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 21.5,
+        "monotonic_detected": 367804.214782225,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "amcl process died at about 19.6 s (exit code -9)",
+          "amcl heartbeat stopped at 19.9 s; recording ends at 21.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "error": "error: amcl was restarted but lifecycle_manager_localization did not become active: {\"process\": \"amcl\", \"was_running\": false, \"old_pid\": 1141122, \"new_pid\": 1142050, \"lifecycle_manager\": \"lifecycle_manager_localization\", \"manager_noticed_the_death\": true, \"manager_replaced\": true, \"states_found\": {\"map_server\": \"unreachable (service /map_server/get_state did not answer within 5.0 s)\", \"amcl\": \"unreachable (service /amcl/get_state did not answer within 5.0 s)\"}, \"active\": false}"
+          }
+        ],
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl process",
+          "root_cause": "AMCL localization process died at 19.6 s, causing loss of pose estimate which led to controller_server errors and navigation failure for goal P2",
+          "evidence": [
+            "amcl process died at about 19.6 s (exit code -9)",
+            "amcl heartbeat stopped at 19.9 s",
+            "controller_server ERROR from 20.9 s: Unable to transform goal pose into costmap frame",
+            "goal P2 failed after 6.5 s (ended ~21.0 s)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "mission_summary"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "The diagnosis indicates the AMCL process died, causing loss of localization. Restarting the amcl process is the direct fix for this root cause. Once it recovers, the controller_server should be able to transform poses again, allowing navigation to resume."
+        },
+        "monotonic_done": 367880.06972232,
+        "seconds": 75.9
+      },
+      {
+        "detected_at_s": 97.5,
+        "monotonic_detected": 367880.57051059,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "amcl process died at about 19.6 s (exit code -9)",
+          "amcl heartbeat stopped at 19.9 s; recording ends at 97.5 s",
+          "map_server heartbeat stopped at 38.5 s; recording ends at 97.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": true,
+              "old_pid": 1142050,
+              "new_pid": 1142358,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "map_server": "active",
+                "amcl": "unconfigured"
+              },
+              "active": true
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl",
+          "root_cause": "AMCL localization process died at 19.6 s, causing loss of pose estimate which prevented the robot from reaching PICK_B",
+          "evidence": [
+            "amcl process died at about 19.6 s (exit code -9)",
+            "amcl heartbeat stopped at 19.9 s",
+            "controller_server ERROR: Unable to transform goal pose into costmap frame starting at 20.9 s",
+            "lifecycle_manager_localization ERROR: SERVER amcl IS DOWN after not receiving a heartbeat for 4000 ms at 24.0 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "The diagnosis indicates the AMCL localization process died, causing loss of pose estimate. Restarting the amcl process is required to restore localization. No other actions are needed as the root cause is the dead process itself."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "retry": {
+          "operation": "retry",
+          "parcels": [
+            "P2"
+          ],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 367914.810986635,
+        "seconds": 34.2
+      },
+      {
+        "detected_at_s": 373.6,
+        "monotonic_detected": 368156.219691116,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation cancelled on the way to PICK_B; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": false,
+            "why": "no jump in the pose estimate was observed"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl",
+          "root_cause": "The robot's pose estimate drifted significantly (jumps over 0.3m at 140.3s and 298.7s), causing the planner to fail repeatedly as it could not find a valid path from the erroneous estimated positions to the goals. The wall-sized structures appearing where the map is free further indicate that sensor scans are no longer aligning with the known map, confirming loss of localization.",
+          "evidence": [
+            "jumps_over_0.3m at 140.3s and 298.7s",
+            "planner failed to find a path 3 times",
+            "wall-sized structures appeared where the map is free",
+            "controller_server ERROR: Failed to make progress"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles",
+          "localization_status",
+          "planning_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates lost localization due to pose drift and misaligned sensor scans. The first step is to relocalize the robot using AMCL with corrected odometry. Following this, the costmaps must be cleared because they contain erroneous obstacles (wall-sized structures) resulting from the previous incorrect pose estimates."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 368169.647672001,
+        "seconds": 13.4
+      }
+    ],
+    "actions_proposed": 4,
+    "actions_refused": 1,
+    "actions_failed": 1,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": null
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

@@ -1,0 +1,300 @@
+{
+  "scenario": {
+    "name": "planner_crash",
+    "description": "The Nav2 planner server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "planner_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "planner_server",
+      "node": "planner_server",
+      "summary": "The planner_server process was killed; no new path can be computed."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "planner_server"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T15:09:38.334232+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 69689,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T15:10:20.530627+00:00",
+    "monotonic": 391490.567928888,
+    "type": "node_crash",
+    "seconds_late": 0.0,
+    "details": {
+      "node": "planner_server",
+      "pid": 1331253,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.4
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 150.3,
+    "seconds_to_first_abnormal_event": 0.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1624,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.033,
+        "true_pose": [
+          -6.338,
+          -1.491,
+          0.112
+        ],
+        "position_error": 0.039,
+        "heading_error": 0.112,
+        "facing_error": 0.121,
+        "parcel_clearance": 0.592,
+        "estimate_off_by": 0.067,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.037,
+        "true_pose": [
+          1.53,
+          -0.9,
+          1.506
+        ],
+        "position_error": 0.03,
+        "heading_error": 0.065,
+        "facing_error": 0.095,
+        "parcel_clearance": 0.554,
+        "estimate_off_by": 0.067,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.04,
+        "true_pose": [
+          7.213,
+          0.014,
+          0.057
+        ],
+        "position_error": 0.114,
+        "heading_error": 0.057,
+        "facing_error": 0.073,
+        "parcel_clearance": 0.441,
+        "estimate_off_by": 0.089,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.054,
+        "true_pose": [
+          5.846,
+          1.997,
+          3.059
+        ],
+        "position_error": 0.047,
+        "heading_error": 0.083,
+        "facing_error": 0.08,
+        "parcel_clearance": 0.6,
+        "estimate_off_by": 0.093,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.054,
+        "true_pose": [
+          7.176,
+          4.837,
+          0.093
+        ],
+        "position_error": 0.084,
+        "heading_error": 0.093,
+        "facing_error": 0.133,
+        "parcel_clearance": 0.479,
+        "estimate_off_by": 0.072,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.006,
+        "true_pose": [
+          7.134,
+          -4.783,
+          -0.08
+        ],
+        "position_error": 0.038,
+        "heading_error": 0.08,
+        "facing_error": 0.063,
+        "parcel_clearance": 0.52,
+        "estimate_off_by": 0.032,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.114,
+    "worst_estimate_error": 0.093
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 19.4,
+        "monotonic_detected": 391491.06894724,
+        "alerts": [
+          "planner_server process died at about 18.5 s (exit code -9)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "planner_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "planner_server",
+              "was_running": false,
+              "old_pid": 1331253,
+              "new_pid": 1332207,
+              "lifecycle_manager": "lifecycle_manager_navigation",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "controller_server": "active",
+                "smoother_server": "active",
+                "planner_server": "unconfigured",
+                "route_server": "inactive",
+                "behavior_server": "inactive",
+                "velocity_smoother": "inactive",
+                "collision_monitor": "inactive",
+                "bt_navigator": "inactive",
+                "waypoint_follower": "inactive",
+                "docking_server": "inactive"
+              },
+              "active": true
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "planner_server",
+          "root_cause": "The planner_server process died at approximately 18.5 seconds with exit code -9, preventing the robot from planning a path to PICK_B and causing the mission to fail.",
+          "evidence": [
+            "planner_server process died at about 18.5 s (exit code -9)",
+            "pickup P2 at PICK_B failed after 5.2 s (started at 14.4 s, ended around 19.6 s)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "planning_status",
+          "node_health"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "planner_server"
+            }
+          ],
+          "note": "The diagnosis indicates the planner_server process died (exit code -9), which is preventing path planning. Restarting this specific process is the direct fix for a node_crash in the planner component."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 391518.223483297,
+        "seconds": 27.2
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 0.5,
+    "seconds_fault_to_resume": 27.7
+  },
+  "checker": {
+    "ok": true,
+    "events": 37,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

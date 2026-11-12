@@ -1,0 +1,374 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T13:32:07.377008+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 85214,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T13:32:50.102937+00:00",
+    "monotonic": 385640.140239351,
+    "type": "node_crash",
+    "seconds_late": 0.5,
+    "details": {
+      "node": "amcl",
+      "pid": 1281066,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.9
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 4,
+      "cancelled": 1
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 7.129 m, heading error 3.140 rad, facing error 2.038 rad, parcel clearance 7.075 m"
+    },
+    "mission_seconds": 416.4,
+    "seconds_to_first_abnormal_event": 1.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4237,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.022,
+        "true_pose": [
+          -6.325,
+          -1.469,
+          0.116
+        ],
+        "position_error": 0.039,
+        "heading_error": 0.116,
+        "facing_error": 0.146,
+        "parcel_clearance": 0.579,
+        "estimate_off_by": 0.06,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.039,
+    "worst_estimate_error": 0.06
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 21.0,
+        "monotonic_detected": 385641.64226981,
+        "alerts": [
+          "amcl process died at about 19.7 s (exit code -9)",
+          "amcl heartbeat stopped at 19.9 s; recording ends at 21.0 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": false,
+              "old_pid": 1281066,
+              "new_pid": 1282035,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "map_server": "active",
+                "amcl": "unconfigured"
+              },
+              "active": true
+            }
+          },
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": false,
+            "why": "no jump in the pose estimate was observed"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "amcl process",
+          "root_cause": "The AMCL localization process died at approximately 19.7 s, causing the robot to lose its pose estimate before completing the mission.",
+          "evidence": [
+            "AMCL process exit code -9 at 19.7 s",
+            "AMCL heartbeat stopped at 19.9 s",
+            "Mission ended at 21.0 s with no goals completed"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            },
+            {
+              "action": "relocalize",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates the AMCL process crashed, causing loss of pose. Restarting the process and then relocalizing are the required steps to recover. No parcels need deferral as the root cause is software failure, not a physical blockage."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 385671.245668057,
+        "seconds": 29.6
+      },
+      {
+        "detected_at_s": 99.0,
+        "monotonic_detected": 385719.336058715,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "escalate",
+            "target": "remove wall-sized structure at PICK_B",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "blocked_path",
+          "component": "obstacle_at_PICK_B",
+          "root_cause": "A wall-sized structure appeared at PICK_B where the map is free, causing the planner to fail repeatedly and preventing the robot from reaching the goal.",
+          "evidence": [
+            "planner failed 40 times starting at 62.2 s",
+            "wall-sized structure of 4.4 m appeared at 55.4 s where map is free",
+            "robot commanded speeds but measured speeds were very low (0.01-0.17 m/s)",
+            "goal failures at PICK_B and DROP_A"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "obstacles",
+          "planning_status",
+          "motion_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "escalate",
+              "target": "remove wall-sized structure at PICK_B"
+            }
+          ],
+          "note": "The diagnosis indicates a physical obstacle (wall-sized structure) appeared where the map is free, causing the robot to be blocked. Since this is a 'blocked_station' scenario involving an external object preventing movement, the robot cannot remove it itself. The parcel P2 is awaiting pickup at PICK_B and must go there next; therefore, we defer P2 and escalate for human intervention to clear the obstacle."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 385734.514051239,
+        "seconds": 15.2
+      },
+      {
+        "detected_at_s": 125.0,
+        "monotonic_detected": 385745.545184786,
+        "alerts": [
+          "the pose estimate jumped 2.79 m and 1.27 rad at 123.9 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 123.9 s",
+            "result": {
+              "pose_set": [
+                -5.526,
+                -4.571,
+                -2.01
+              ],
+              "estimate_was": [
+                -3.962,
+                -3.879,
+                -0.673
+              ],
+              "estimate_now": [
+                -5.51,
+                -4.467,
+                -1.925
+              ],
+              "moved_m": 1.66,
+              "from_correction": [
+                -5.528,
+                -5.505,
+                1.765
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "localization",
+          "root_cause": "The pose estimate jumped 2.79 m and 1.27 rad at 123.9 s, coinciding with the appearance of unmappped obstacles (a 1.6 m object and wall-sized structures) between 43.4 s and 123.4 s. This indicates the robot's localization drifted significantly while it was attempting to navigate through areas not present in its map, causing subsequent navigation failures.",
+          "evidence": [
+            "pose estimate jumped 2.79 m and 1.27 rad at 123.9 s",
+            "a 1.6 m obstacle not in the map appeared 1.34 m from HOME, seen from 43.4 s to 123.4 s",
+            "1 wall-sized structure(s) of 4.4 m appeared where the map is free"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates a localization drift caused by navigating unmapped areas. The standard recovery for 'localization_lost' is to relocalize the robot using its last good pose and odometry, followed by clearing the costmaps to remove false obstacles generated during the drift."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "retry": {
+          "operation": "retry",
+          "parcels": [
+            "P2"
+          ],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D6",
+          "message": "applied"
+        },
+        "monotonic_done": 385767.540944043,
+        "seconds": 22.0
+      }
+    ],
+    "actions_proposed": 5,
+    "actions_refused": 1,
+    "actions_failed": 0,
+    "actions_carried_out": 4,
+    "seconds_fault_to_detection": 1.5,
+    "seconds_fault_to_resume": 31.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 40,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

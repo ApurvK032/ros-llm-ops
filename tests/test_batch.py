@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from warehouse_agent.batch import collect, judge, normalize, plan, summarize, table
+from warehouse_agent.batch import collect, judge, normalize, plan, report, summarize, table
 
 
 def action(name, target="", permitted=True, error=None):
@@ -156,6 +156,22 @@ class Summary(unittest.TestCase):
                 if index < 2:
                     (run / "result.json").write_text(json.dumps(result(mode="rules")))
             self.assertEqual(len(collect(directory)), 2)
+
+    def test_the_report_is_saved_beside_the_runs_in_the_order_the_batch_was_asked_for(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for mode, folder in (("qwen3.5:4b", "qwen3_5_4b"), ("qwen3.5:9b", "qwen3_5_9b"), ("rules", "rules")):
+                run = root / "lidar_dropout" / folder / "run-01"
+                run.mkdir(parents=True)
+                (run / "result.json").write_text(json.dumps(result(mode=mode)))
+            self.assertIn("| Scenario | Playbook | qwen3.5:4b | qwen3.5:9b |", report(root))
+            (root / "batch.json").write_text(json.dumps({"deciders": ["none", "rules", "qwen3.5:9b", "qwen3.5:4b"]}))
+            text = report(root)
+            self.assertIn("| Scenario | Playbook | qwen3.5:9b | qwen3.5:4b |", text)
+            self.assertEqual((root / "summary.md").read_text(), text + "\n")
+            saved = json.loads((root / "summary.json").read_text())
+            self.assertEqual((len(saved["runs"]), len(saved["rows"])), (3, 3))
+            self.assertIn("| Scenario | qwen3.5:4b |", report(root, ["qwen3.5:4b"]))
 
     def test_the_plan_goes_round_by_round_and_baselines_stop_early(self):
         self.assertEqual(plan(["a", "b"], ["none", "rules"], 2), [

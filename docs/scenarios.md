@@ -1,8 +1,8 @@
 # Fault-injection scenarios
 
-A scenario runs one headless delivery mission, injects one fault at a set point in the mission, records the run,
-and scores how it ended. It is the test bench for diagnosing and recovering from faults: every run has a known
-root cause and a measured outcome.
+A scenario runs one headless delivery mission, injects one or more faults at set points in the mission, records
+the run, and scores how it ended. It is the test bench for diagnosing and recovering from faults: every run has
+a known root cause and a measured outcome.
 
 ```bash
 python3 -B -m warehouse_agent scenario scenarios/blocked_station.json
@@ -17,6 +17,7 @@ under `artifacts/scenarios/<name>/<time>/`:
 | `result.json` | The scenario, what the fault actually changed and when, the outcome, and the checker's verdict |
 | `journal.jsonl` | The supervisor's journal, as for any mission |
 | `bag/` | MCAP recording: TF, raw and relayed lidar, odometry, plans, costmaps, Nav2 health, `/rosout`, mission status. It runs on for 10 s after the mission ends, to catch the system's reaction |
+| `truth.jsonl` | The robot's true pose from the simulator, ten times a second, used to check every pickup and delivery |
 | `simulation.log`, `agent.log` | Console output of the simulator and the supervisor |
 
 Requirements are the same as the demo (ROS 2 Jazzy, Gazebo Harmonic, Ollama with `qwen3.5:4b`); no display is
@@ -34,6 +35,44 @@ wall-clock time:
 means five seconds after the first pickup. `where` can narrow the match on dotted journal keys, for example
 `{"stop.parcel": "P2"}`. Injectors take two to four seconds to act; `result.json` records when the fault was
 actually in place (`fault.monotonic`) and how late that was (`fault.seconds_late`).
+
+A scenario can carry further faults in `additional`, each with its own trigger. They are injected the same way
+and recorded in `result.json` under `additional_faults`:
+
+```json
+"trigger": {"event": "cargo_pickup", "count": 2, "delay_s": 5.0},
+"fault": {"type": "sensor_dropout", "sensor": "lidar", "mode": "drop"},
+"additional": [
+  {"trigger": {"event": "cargo_pickup", "count": 1, "delay_s": 3.0},
+   "fault": {"type": "bad_parameter", "node": "/velocity_smoother", "name": "max_velocity", "value": [0.3, 0.0, 2.0]}}
+]
+```
+
+## What a correct response looks like
+
+Each scenario states what a correct response achieves, in `expected`. It is used only to judge runs afterwards;
+nothing that makes decisions during a mission reads it.
+
+```json
+"expected": {"delivered": 3, "actions": [["restart_process", "amcl"]], "acceptable": [["relocalize", ""]]}
+```
+
+`delivered` is the number of parcels that can be delivered at all (two when a station is blocked). `actions` are
+the recovery actions the fault needs, and `acceptable` those that may reasonably accompany them. Any other action
+that is carried out counts as unneeded, apart from clearing the costmaps and asking for a person, which change
+nothing about the robot's configuration or the mission plan.
+
+## Checking deliveries against the true pose
+
+The supervisor accepts a pickup or a delivery when the robot's estimated pose passes the arrival check. After a
+localization or lidar fault that estimate is exactly what cannot be trusted. Every scenario run therefore records
+the robot's true pose from Gazebo (`truth.jsonl`), and `result.json` repeats the same arrival check on the true
+pose at the moment of each transfer (`pose_check`). A parcel counts as delivered only if the robot really was at
+its pickup station and at its drop station; `outcome.delivered_verified` lists those parcels.
+
+That this matters is not hypothetical: with the lidar stuck on one scan and nothing responding, the supervisor
+reported deliveries in two of three runs while the robot was 9 to 20 m from the stations
+([evaluation](evaluation.md)).
 
 ## Faults
 
@@ -84,12 +123,51 @@ onboard, were identical both times in all six scenarios. Mission times matched w
 
 What an agent that responds to these faults achieves is in [recovery](recovery.md).
 
+## The thirteen scenarios
+
+The six above are what the diagnosis and recovery tools were developed on. Seven more were written afterwards to
+find out where they stop working, and were not used to change the agent before being measured
+([evaluation](evaluation.md)). Every fault lands about 20 s into the mission unless stated.
+
+| Scenario | What happens | What a correct response is |
+| --- | --- | --- |
+| **Developed on** | | |
+| `bad_parameter` | The speed limit is set to zero | Restore the parameter |
+| `controller_crash` | The controller server is killed | Restart it |
+| `lidar_dropout` | No scans reach Nav2 | Restart the lidar driver |
+| `localization_lost` | The pose estimate is shifted 1.5 m and 0.6 rad | Relocalize |
+| `blocked_station` | A box stands on the PICK_B stopping pose | Give up on P2, deliver the other two, tell a person |
+| **Written afterwards** | | |
+| `planner_crash` | The planner server is killed | Restart it |
+| `amcl_crash` | The localization node is killed; restarted, it starts from its configured initial pose | Restart it, then restore the pose |
+| `lidar_frozen` | The lidar keeps sending its last scan with fresh timestamps | Restart the lidar driver |
+| `double_fault` | The speed limit is set to zero and the lidar stops, one to three seconds apart | Restore the parameter and restart the lidar driver |
+| `distractor_lidar` | The speed limit is lowered to 0.3 m/s, which is harmless; fifty seconds later the lidar stops | Restart the lidar driver, leave the speed limit alone |
+| **Nothing to fix** | | |
+| `nominal` | Nothing | Nothing |
+| `speed_limit` | The speed limit is lowered from 0.5 to 0.3 m/s on purpose | Nothing: the mission is slower and completes |
+| `blocked_aisle` | A crate closes the passage south of the centre shelf; another aisle leads to the same place | Nothing: Nav2 takes the other route |
+
+With nothing responding, three runs each on 10 and 11 November 2026 (the same machine), deliveries counted only
+when the true pose confirms them:
+
+| Scenario | Delivered | Mission time | What happened |
+| --- | --- | --- | --- |
+| `planner_crash` | 0 of 3, three times | 20 s | Every goal failed at once; all parcels deferred within a second, P1 onboard |
+| `amcl_crash` | 0 of 3, three times | 21 s | The same, about a second after the crash |
+| `lidar_frozen` | 0 of 3, three times | 32 to 229 s | Once the supervisor held with no route. Twice it drove on and reported 2 and 3 parcels delivered; the true pose confirms none of them |
+| `double_fault` | 0 of 3, three times | 25 s | All parcels deferred within two seconds of the lidar stopping |
+| `distractor_lidar` | 0 of 3, three times | 73 to 76 s | Unaffected by the speed limit; all parcels deferred a second after the lidar stopped, P1 and P2 onboard |
+| `speed_limit` | 3 of 3, three times | 159 to 160 s | Completed, 36 s slower than at full speed |
+| `blocked_aisle` | 3 of 3, three times | 145 to 147 s | Completed by the other aisle, about 23 s longer |
+
 ## Limitations
 
-- One fault per run, one robot, one warehouse layout.
+- One robot, one warehouse layout, at most two faults in a run.
 - Faults are injected in simulation; the lidar relay stands in for a sensor or driver fault.
-- A localization fault can let the supervisor accept a pickup or drop at the wrong physical place, because
-  arrival checks use the localization estimate. The harness does not yet compare transfers with Gazebo's
-  ground-truth pose.
+- The true-pose check compares the pose recorded nearest in time to each journal event (within a second, ten
+  poses a second); it is not a synchronized trace of the physics.
+- The scenarios were written by the same person as the agent they test. The seven later ones were fixed before
+  the agent was run on them, but they are not an independent test set.
 - Recordings are not committed (5 to 160 MB per run). Each run's result, journal and extracted evidence are,
-  under [`docs/evidence/scenarios/`](evidence/scenarios/).
+  under [`docs/evidence/`](evidence/).

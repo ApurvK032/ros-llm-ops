@@ -1,0 +1,354 @@
+{
+  "scenario": {
+    "name": "distractor_lidar",
+    "description": "An operator lowers the speed limit, which is harmless; later, on the way to the third stop, the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 2,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2. The earlier speed-limit change is unrelated and harmless."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 3.0
+        },
+        "fault": {
+          "type": "bad_parameter",
+          "node": "/velocity_smoother",
+          "name": "max_velocity",
+          "value": [
+            0.3,
+            0.0,
+            2.0
+          ]
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T04:08:06.090439+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 92604,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T04:09:51.751419+00:00",
+    "monotonic": 351861.788720877,
+    "type": "sensor_dropout",
+    "seconds_late": 1.3,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 87.5
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T04:08:44.765872+00:00",
+      "monotonic": 351794.803178318,
+      "type": "bad_parameter",
+      "seconds_late": 3.0,
+      "details": {
+        "node": "/velocity_smoother",
+        "name": "max_velocity",
+        "old": [
+          0.5,
+          0.0,
+          2.0
+        ],
+        "new": [
+          0.3,
+          0.0,
+          2.0
+        ]
+      },
+      "seconds_after_mission_start": 20.5
+    }
+  ],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1",
+      "P2"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 2,
+      "cancelled": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 5.036 m, heading error 0.705 rad, facing error 0.965 rad, parcel clearance 5.550 m",
+      "P1": "Navigation failed; approach error 5.794 m, heading error 0.705 rad, facing error 0.193 rad, parcel clearance 6.199 m",
+      "P3": "Navigation failed; approach error 4.977 m, heading error 2.437 rad, facing error 1.663 rad, parcel clearance 3.888 m"
+    },
+    "mission_seconds": 207.9,
+    "seconds_to_first_abnormal_event": 0.9,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 2188,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.035,
+        "true_pose": [
+          -6.322,
+          -1.478,
+          0.11
+        ],
+        "position_error": 0.031,
+        "heading_error": 0.11,
+        "facing_error": 0.132,
+        "parcel_clearance": 0.576,
+        "estimate_off_by": 0.066,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.08,
+        "true_pose": [
+          1.434,
+          -0.901,
+          1.504
+        ],
+        "position_error": 0.066,
+        "heading_error": 0.067,
+        "facing_error": 0.001,
+        "parcel_clearance": 0.557,
+        "estimate_off_by": 0.016,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.066,
+    "worst_estimate_error": 0.066
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 21.5,
+        "monotonic_detected": 351795.805199213,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.3, 0.0, 2.0] at 20.4 s"
+        ],
+        "actions": [],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "none",
+          "root_cause": "The mission did not finish because the second goal (pickup P2 at PICK_B) was still under way after 7.0 seconds, but all diagnostic tools show normal operation: localization is stable, planning has no failures, motion commands are being executed correctly, and no obstacles or sensor issues were detected. The parameter change to max_velocity occurred after the mission ended and cannot be the cause of the failure.",
+          "evidence": [
+            "localization_status shows no jumps or AMCL spread issues",
+            "planning_status shows 0 planner/controller failures",
+            "motion_status shows commanded speed matched measured speed (0.3 m/s)",
+            "obstacles shows no new obstacles detected",
+            "nav2_warnings shows no messages",
+            "parameter change occurred at 20.4 s, after mission end at 21.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "planning_status",
+          "motion_status",
+          "obstacles",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis category is 'no_fault'. All diagnostic tools show normal operation, and the parameter change occurred after the mission ended. No recovery actions are required."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 351813.845526195,
+        "seconds": 18.0
+      },
+      {
+        "detected_at_s": 89.5,
+        "monotonic_detected": 351863.794029065,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_B; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": false,
+            "why": "lidar_driver shows no sign of being dead or silent"
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering reliable data (rate dropped from 5.0 Hz to 2.7 Hz at 85s), causing the controller_server to fail with 'Exception in transformPose: Lookup would require extrapolation into the future' at 88.4s. Without valid pose estimates, the robot could not transform the goal pose into the costmap frame, leading to navigation failure.",
+          "evidence": [
+            "lidar_status shows rate drop from 5.0 Hz to 2.7 Hz at 85s",
+            "controller_server ERROR at 88.4s: 'Exception in transformPose: Lookup would require extrapolation into the future'",
+            "controller_server ERROR at 88.4s: 'Unable to transform goal pose into costmap frame'",
+            "bt_navigator ERROR at 88.4s: 'Goal failed'"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "nav2_warnings",
+          "lidar_status",
+          "localization_status",
+          "motion_status",
+          "planning_status",
+          "obstacles",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "The diagnosis indicates a sensor dropout in the lidar causing navigation failures. The root cause is the loss of reliable data leading to pose estimation errors. Restarting the lidar_driver should restore data flow and allow the controller_server to recover valid pose estimates."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 351877.471175862,
+        "seconds": 13.7
+      },
+      {
+        "detected_at_s": 107.5,
+        "monotonic_detected": 351881.981292011,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": false,
+            "why": "lidar_driver shows no sign of being dead or silent"
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering data at 90 seconds (rate dropped to 0 Hz), which coincided with the failed navigation attempts at DROP_B and DROP_A around 103 seconds. Although localization remained stable, the lack of sensor data likely prevented successful path planning or execution for the final waypoints.",
+          "evidence": [
+            "lidar_status shows rate_hz_by_interval dropping from 5.0 to 0.0 starting at 90.0 s",
+            "failed drop goals at DROP_B (103.1s) and DROP_A (103.2s) occurred after lidar dropout",
+            "planner and controller showed no failures, suggesting the issue was sensor data loss rather than planning logic"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "mission_summary",
+          "planning_status",
+          "nav2_warnings",
+          "node_health",
+          "lidar_status",
+          "localization_status",
+          "motion_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "The diagnosis indicates a sensor dropout caused by the lidar stopping data delivery. Restarting the lidar driver is the direct recovery action to restore sensor data and enable path planning for the failed waypoints."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 351891.941050429,
+        "seconds": 10.0
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 2,
+    "actions_failed": 0,
+    "actions_carried_out": 0,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": 15.7
+  },
+  "checker": {
+    "ok": true,
+    "events": 50,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

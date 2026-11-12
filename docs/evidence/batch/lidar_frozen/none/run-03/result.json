@@ -1,0 +1,210 @@
+{
+  "scenario": {
+    "name": "lidar_frozen",
+    "description": "The lidar driver gets stuck and keeps sending its last scan with fresh timestamps while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "freeze"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "Scans keep arriving at the normal rate but never change, so localization and the costmaps work from stale data."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T10:08:51.638339+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 64565,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T10:09:26.992130+00:00",
+    "monotonic": 373437.029432639,
+    "type": "sensor_dropout",
+    "seconds_late": 1.1,
+    "details": {
+      "sensor": "lidar",
+      "mode": "freeze",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.5
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 205.9,
+    "seconds_to_first_abnormal_event": 10.0,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 2169,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.032,
+        "true_pose": [
+          -6.328,
+          -1.46,
+          0.113
+        ],
+        "position_error": 0.049,
+        "heading_error": 0.113,
+        "facing_error": 0.152,
+        "parcel_clearance": 0.582,
+        "estimate_off_by": 0.079,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.109,
+        "true_pose": [
+          -5.642,
+          -6.281,
+          -1.358
+        ],
+        "position_error": 8.943,
+        "heading_error": 2.929,
+        "facing_error": 2.087,
+        "parcel_clearance": 9.131,
+        "estimate_off_by": 8.919,
+        "verified": false
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.113,
+        "true_pose": [
+          -8.0,
+          -3.366,
+          1.849
+        ],
+        "position_error": 15.47,
+        "heading_error": 1.849,
+        "facing_error": 1.643,
+        "parcel_clearance": 16.002,
+        "estimate_off_by": 15.384,
+        "verified": false
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.095,
+        "true_pose": [
+          -7.942,
+          -3.984,
+          -1.384
+        ],
+        "position_error": 14.989,
+        "heading_error": 1.758,
+        "facing_error": 1.823,
+        "parcel_clearance": 13.631,
+        "estimate_off_by": 14.973,
+        "verified": false
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.157,
+        "true_pose": [
+          -8.852,
+          -3.975,
+          -3.131
+        ],
+        "position_error": 18.206,
+        "heading_error": 3.131,
+        "facing_error": 2.674,
+        "parcel_clearance": 18.642,
+        "estimate_off_by": 18.067,
+        "verified": false
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.043,
+        "true_pose": [
+          -8.628,
+          5.457,
+          -2.956
+        ],
+        "position_error": 18.776,
+        "heading_error": 2.956,
+        "facing_error": 2.406,
+        "parcel_clearance": 19.175,
+        "estimate_off_by": 18.784,
+        "verified": false
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 18.776,
+    "worst_estimate_error": 18.784
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

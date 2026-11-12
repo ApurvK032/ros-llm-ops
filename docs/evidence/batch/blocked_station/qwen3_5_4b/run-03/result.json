@@ -1,0 +1,275 @@
+{
+  "scenario": {
+    "name": "blocked_station",
+    "description": "A box is left on the PICK_B approach pose just after the robot collects P1, so the robot cannot reach the pose it must stop at to collect P2.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "blocked_path",
+      "at": "PICK_B",
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 2.0
+    },
+    "ground_truth": {
+      "category": "blocked_station",
+      "component": "environment",
+      "location": "PICK_B",
+      "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 2,
+      "actions": [
+        [
+          "defer_parcel",
+          "P2"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:27:45.648817+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 48396,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:28:22.821352+00:00",
+    "monotonic": 370972.858654782,
+    "type": "blocked_path",
+    "seconds_late": 2.8,
+    "details": {
+      "entity": "fault_obstacle",
+      "position": [
+        1.5,
+        -0.9
+      ],
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ],
+      "at": "PICK_B"
+    },
+    "seconds_after_mission_start": 19.0
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P1",
+      "P3"
+    ],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 4,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 115.3,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null,
+    "delivered_verified": [
+      "P1",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1279,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.034,
+        "true_pose": [
+          -6.326,
+          -1.482,
+          0.101
+        ],
+        "position_error": 0.032,
+        "heading_error": 0.101,
+        "facing_error": 0.119,
+        "parcel_clearance": 0.58,
+        "estimate_off_by": 0.065,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.057,
+        "true_pose": [
+          7.191,
+          -4.743,
+          -0.081
+        ],
+        "position_error": 0.108,
+        "heading_error": 0.081,
+        "facing_error": 0.018,
+        "parcel_clearance": 0.464,
+        "estimate_off_by": 0.052,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.042,
+        "true_pose": [
+          5.862,
+          2.014,
+          3.061
+        ],
+        "position_error": 0.063,
+        "heading_error": 0.081,
+        "facing_error": 0.094,
+        "parcel_clearance": 0.615,
+        "estimate_off_by": 0.104,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.044,
+        "true_pose": [
+          7.188,
+          4.847,
+          0.1
+        ],
+        "position_error": 0.099,
+        "heading_error": 0.1,
+        "facing_error": 0.151,
+        "parcel_clearance": 0.467,
+        "estimate_off_by": 0.091,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.108,
+    "worst_estimate_error": 0.104
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 51.5,
+        "monotonic_detected": 371005.405746633,
+        "alerts": [
+          "a 0.8 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 45.6 s to 49.6 s"
+        ],
+        "actions": [
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": true,
+            "why": "an obstacle was seen on the PICK_B stopping pose",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P2"
+              ],
+              "accepted": true,
+              "request_id": "D2",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "remove obstacle at (1.42, -1.25)",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "blocked_station",
+          "component": "PICK_B stopping pose",
+          "root_cause": "A 0.8 m obstacle appeared on the PICK_B waypoint's stopping pose between 45.6 s and 49.6 s, preventing the robot from reaching that goal.",
+          "evidence": [
+            "Obstacle detected at (1.42, -1.25) with extent 0.8 m",
+            "Obstacle first seen at 45.6 s, last seen at 49.6 s",
+            "Distance to PICK_B waypoint: 0.36 m",
+            "Mission failed to complete pickup P2 at PICK_B"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            },
+            {
+              "action": "escalate",
+              "target": "remove obstacle at (1.42, -1.25)"
+            }
+          ],
+          "note": "The diagnosis category is blocked_station with a high-confidence root cause of an obstacle appearing on the PICK_B stopping pose. Per instructions, I must defer the parcel destined for that waypoint (P2) and escalate to remove the obstacle."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 371020.402682714,
+        "seconds": 15.0
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 32.5,
+    "seconds_fault_to_resume": 47.5
+  },
+  "checker": {
+    "ok": true,
+    "events": 29,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

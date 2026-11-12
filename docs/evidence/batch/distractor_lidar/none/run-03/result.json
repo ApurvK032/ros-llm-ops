@@ -1,0 +1,184 @@
+{
+  "scenario": {
+    "name": "distractor_lidar",
+    "description": "An operator lowers the speed limit, which is harmless; later, on the way to the third stop, the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 2,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2. The earlier speed-limit change is unrelated and harmless."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 3.0
+        },
+        "fault": {
+          "type": "bad_parameter",
+          "node": "/velocity_smoother",
+          "name": "max_velocity",
+          "value": [
+            0.3,
+            0.0,
+            2.0
+          ]
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:41:39.273029+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 56615,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:43:05.594749+00:00",
+    "monotonic": 371855.63205102,
+    "type": "sensor_dropout",
+    "seconds_late": 1.1,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 71.7
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T09:42:14.463311+00:00",
+      "monotonic": 371804.500615584,
+      "type": "bad_parameter",
+      "seconds_late": 3.4,
+      "details": {
+        "node": "/velocity_smoother",
+        "name": "max_velocity",
+        "old": [
+          0.5,
+          0.0,
+          2.0
+        ],
+        "new": [
+          0.3,
+          0.0,
+          2.0
+        ]
+      },
+      "seconds_after_mission_start": 20.6
+    }
+  ],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1",
+      "P2"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 2,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 5.044 m, heading error 0.665 rad, facing error 0.919 rad, parcel clearance 5.560 m",
+      "P1": "Navigation failed; approach error 5.831 m, heading error 0.665 rad, facing error 0.150 rad, parcel clearance 6.234 m",
+      "P3": "Navigation failed; approach error 4.965 m, heading error 2.476 rad, facing error 1.615 rad, parcel clearance 3.869 m"
+    },
+    "mission_seconds": 73.3,
+    "seconds_to_first_abnormal_event": 1.0,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 867,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.04,
+        "true_pose": [
+          -6.312,
+          -1.477,
+          0.11
+        ],
+        "position_error": 0.026,
+        "heading_error": 0.11,
+        "facing_error": 0.133,
+        "parcel_clearance": 0.566,
+        "estimate_off_by": 0.065,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.078,
+        "true_pose": [
+          1.458,
+          -0.892,
+          1.508
+        ],
+        "position_error": 0.043,
+        "heading_error": 0.063,
+        "facing_error": 0.02,
+        "parcel_clearance": 0.547,
+        "estimate_off_by": 0.036,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.043,
+    "worst_estimate_error": 0.065
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 38,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

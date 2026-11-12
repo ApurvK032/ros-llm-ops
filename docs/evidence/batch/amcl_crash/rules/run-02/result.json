@@ -1,0 +1,322 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T05:26:50.348524+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 90690,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T05:27:21.388738+00:00",
+    "monotonic": 356511.426040443,
+    "type": "node_crash",
+    "seconds_late": 0.2,
+    "details": {
+      "node": "amcl",
+      "pid": 1057019,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.6
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 1,
+      "cancelled": 3
+    },
+    "retries": 2,
+    "deferral_reasons": {},
+    "mission_seconds": 419.6,
+    "seconds_to_first_abnormal_event": 1.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4234,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.021,
+        "true_pose": [
+          -6.338,
+          -1.476,
+          0.101
+        ],
+        "position_error": 0.045,
+        "heading_error": 0.101,
+        "facing_error": 0.125,
+        "parcel_clearance": 0.592,
+        "estimate_off_by": 0.066,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.045,
+    "worst_estimate_error": 0.066
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 20.1,
+        "monotonic_detected": 356512.427582922,
+        "alerts": [
+          "amcl process died at about 19.6 s (exit code -9)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": false,
+              "old_pid": 1057019,
+              "new_pid": 1057704,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": false,
+              "active": true
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "amcl",
+          "root_cause": "amcl process died at about 19.6 s (exit code -9)",
+          "evidence": [
+            "amcl process died at about 19.6 s (exit code -9)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "Diagnosed node_crash."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "error": "error: service warehouse/command did not answer within 10.0 s",
+        "monotonic_done": 356532.215521746,
+        "seconds": 19.8
+      },
+      {
+        "detected_at_s": 40.1,
+        "monotonic_detected": 356532.716863312,
+        "alerts": [
+          "amcl process died at about 19.6 s (exit code -9)",
+          "the pose estimate jumped 2.67 m and 1.54 rad at 25.1 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": true,
+              "old_pid": 1057704,
+              "new_pid": 1057884,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": false,
+              "active": true
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "amcl",
+          "root_cause": "amcl process died at about 19.6 s (exit code -9)",
+          "evidence": [
+            "amcl process died at about 19.6 s (exit code -9)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "Diagnosed node_crash."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 356546.382376259,
+        "seconds": 13.7
+      },
+      {
+        "detected_at_s": 138.1,
+        "monotonic_detected": 356630.079714266,
+        "alerts": [
+          "a 0.8 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 133.5 s to 137.5 s"
+        ],
+        "actions": [
+          {
+            "action": "defer_parcel",
+            "target": "P2",
+            "permitted": true,
+            "why": "an obstacle was seen on the PICK_B stopping pose",
+            "result": {
+              "operation": "defer",
+              "parcels": [
+                "P2"
+              ],
+              "accepted": true,
+              "request_id": "D6",
+              "message": "applied"
+            }
+          },
+          {
+            "action": "escalate",
+            "target": "Remove the obstacle on the PICK_B stopping pose",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "blocked_station",
+          "component": "PICK_B",
+          "root_cause": "a 0.8 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 133.5 s to 137.5 s",
+          "evidence": [
+            "a 0.8 m obstacle not in the map appeared on the PICK_B stopping pose (a goal to that waypoint failed), seen from 133.5 s to 137.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "defer_parcel",
+              "target": "P2"
+            },
+            {
+              "action": "escalate",
+              "target": "Remove the obstacle on the PICK_B stopping pose"
+            }
+          ],
+          "note": "Diagnosed blocked_station."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D7",
+          "message": "applied"
+        },
+        "monotonic_done": 356637.387786656,
+        "seconds": 7.3
+      }
+    ],
+    "actions_proposed": 4,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 4,
+    "seconds_fault_to_detection": 1.0,
+    "seconds_fault_to_resume": null
+  },
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

@@ -1,0 +1,291 @@
+{
+  "scenario": {
+    "name": "controller_crash",
+    "description": "The Nav2 controller server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "controller_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "nav2",
+      "node": "controller_server",
+      "summary": "controller_server died; the lifecycle manager lost its heartbeat and shut down the navigation stack."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "controller_server"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T06:37:16.243836+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 72792,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T06:37:47.284824+00:00",
+    "monotonic": 360737.322127142,
+    "type": "node_crash",
+    "seconds_late": 0.3,
+    "details": {
+      "node": "controller_server",
+      "pid": 1085821,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.6
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 145.5,
+    "seconds_to_first_abnormal_event": 0.9,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1546,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.026,
+        "true_pose": [
+          -6.328,
+          -1.49,
+          0.12
+        ],
+        "position_error": 0.03,
+        "heading_error": 0.12,
+        "facing_error": 0.13,
+        "parcel_clearance": 0.582,
+        "estimate_off_by": 0.056,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.019,
+        "true_pose": [
+          1.545,
+          -0.915,
+          1.5
+        ],
+        "position_error": 0.047,
+        "heading_error": 0.071,
+        "facing_error": 0.115,
+        "parcel_clearance": 0.57,
+        "estimate_off_by": 0.065,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.074,
+        "true_pose": [
+          7.248,
+          -0.001,
+          0.063
+        ],
+        "position_error": 0.149,
+        "heading_error": 0.063,
+        "facing_error": 0.062,
+        "parcel_clearance": 0.405,
+        "estimate_off_by": 0.11,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.055,
+        "true_pose": [
+          5.855,
+          2.023,
+          3.057
+        ],
+        "position_error": 0.06,
+        "heading_error": 0.085,
+        "facing_error": 0.106,
+        "parcel_clearance": 0.609,
+        "estimate_off_by": 0.112,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.033,
+        "true_pose": [
+          7.187,
+          4.858,
+          0.105
+        ],
+        "position_error": 0.104,
+        "heading_error": 0.105,
+        "facing_error": 0.168,
+        "parcel_clearance": 0.469,
+        "estimate_off_by": 0.088,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.022,
+        "true_pose": [
+          7.124,
+          -4.777,
+          -0.09
+        ],
+        "position_error": 0.033,
+        "heading_error": 0.09,
+        "facing_error": 0.067,
+        "parcel_clearance": 0.53,
+        "estimate_off_by": 0.013,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.149,
+    "worst_estimate_error": 0.112
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 20.6,
+        "monotonic_detected": 360738.824201801,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "controller_server process died at about 19.4 s (exit code -9)",
+          "controller_server heartbeat stopped at 19.5 s; recording ends at 20.6 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "controller_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "controller_server",
+              "was_running": false,
+              "old_pid": 1085821,
+              "new_pid": 1086490,
+              "lifecycle_manager": "lifecycle_manager_navigation",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "controller_server": "active",
+                "smoother_server": "active",
+                "planner_server": "active",
+                "route_server": "active",
+                "behavior_server": "active",
+                "velocity_smoother": "active",
+                "collision_monitor": "inactive",
+                "bt_navigator": "inactive",
+                "waypoint_follower": "inactive",
+                "docking_server": "inactive"
+              },
+              "active": true
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "controller_server",
+          "root_cause": "controller_server process died at about 19.4 s (exit code -9)",
+          "evidence": [
+            "controller_server process died at about 19.4 s (exit code -9)",
+            "controller_server heartbeat stopped at 19.5 s; recording ends at 20.6 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "controller_server"
+            }
+          ],
+          "note": "Diagnosed node_crash."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "monotonic_done": 360760.447898325,
+        "seconds": 21.6
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 1.5,
+    "seconds_fault_to_resume": 23.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

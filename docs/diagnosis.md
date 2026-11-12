@@ -20,9 +20,10 @@ python3 -B -m warehouse_agent diagnose docs/evidence/scenarios/*/* --model qwen3
 ## How it works
 
 1. **Evidence.** `warehouse_agent.evidence` reads the run's MCAP bag once (this step needs ROS) and writes a compact
-   `evidence.json`: Nav2 heartbeats, lidar message rate, commanded and measured speed, pose-estimate jumps and
-   resets, runtime parameter changes, obstacles that appeared in the global costmap, planner and controller
-   failures, and warnings. Times are seconds from the start of the mission, so they line up with the journal.
+   `evidence.json`: Nav2 heartbeats, lidar message rate and scans that repeat exactly, commanded and measured
+   speed, pose-estimate jumps and resets, runtime parameter changes, obstacles that appeared in the global
+   costmap, planner and controller failures, and warnings. Times are seconds from the start of the mission, so
+   they line up with the journal.
 2. **Checks.** Eight read-only checks turn that evidence into observations with times, for example
    "scans stopped arriving at about 20.0 s and never resumed". They report what was seen, not what it means.
    `health_report` runs all of them and lists anything unusual.

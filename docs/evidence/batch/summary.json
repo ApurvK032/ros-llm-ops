@@ -1,0 +1,8147 @@
+{
+ "rows": [
+  {
+   "scenario": "amcl_crash",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 13,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 5,
+   "actions_failed": 1,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 5,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 12,
+   "unneeded_actions": 1,
+   "runs_with_unneeded_actions": 1,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 138.6,
+   "median_fault_to_resume": 15.8,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 136.3,
+   "median_fault_to_resume": 12.9,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 127.4,
+   "median_fault_to_resume": 4.1,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 146.4,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 146.6,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 146.1,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 146.1,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    2,
+    2,
+    2
+   ],
+   "median_mission_seconds": 498.4,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "median_mission_seconds": 115.3,
+   "median_fault_to_resume": 47.5,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "median_mission_seconds": 111.4,
+   "median_fault_to_resume": 43.6,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "median_mission_seconds": 104.4,
+   "median_fault_to_resume": 36.4,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 148.4,
+   "median_fault_to_resume": 25.7,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 149.0,
+   "median_fault_to_resume": 25.6,
+   "interruptions": 6,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 1,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 145.5,
+   "median_fault_to_resume": 21.4,
+   "interruptions": 7,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 2,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 2,
+   "delivered": [
+    0,
+    0,
+    3,
+    3,
+    0
+   ],
+   "median_mission_seconds": 158.1,
+   "median_fault_to_resume": 26.3,
+   "interruptions": 13,
+   "unneeded_actions": 4,
+   "runs_with_unneeded_actions": 4,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 5,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 146.5,
+   "median_fault_to_resume": 19.9,
+   "interruptions": 10,
+   "unneeded_actions": 5,
+   "runs_with_unneeded_actions": 5,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 140.9,
+   "median_fault_to_resume": 11.8,
+   "interruptions": 10,
+   "unneeded_actions": 5,
+   "runs_with_unneeded_actions": 5,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 15,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 5,
+   "actions_refused": 1,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 15,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 5,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 2,
+   "delivered": [
+    0,
+    0,
+    3,
+    3,
+    0
+   ],
+   "median_mission_seconds": 148.6,
+   "median_fault_to_resume": 7.4,
+   "interruptions": 15,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 144.5,
+   "median_fault_to_resume": 21.1,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 140.0,
+   "median_fault_to_resume": 17.4,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    3,
+    3,
+    3,
+    0,
+    0
+   ],
+   "median_mission_seconds": 133.2,
+   "median_fault_to_resume": 10.1,
+   "interruptions": 9,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 2,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    3,
+    0,
+    3,
+    0,
+    3
+   ],
+   "median_mission_seconds": 159.1,
+   "median_fault_to_resume": 22.0,
+   "interruptions": 9,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 3,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 4,
+   "delivered": [
+    3,
+    3,
+    0,
+    3,
+    3
+   ],
+   "median_mission_seconds": 149.9,
+   "median_fault_to_resume": 21.3,
+   "interruptions": 7,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 1,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 138.3,
+   "median_fault_to_resume": 12.9,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 147.4,
+   "median_fault_to_resume": 24.9,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 147.4,
+   "median_fault_to_resume": 24.9,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 140.4,
+   "median_fault_to_resume": 17.9,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 123.1,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 123.4,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 123.3,
+   "median_fault_to_resume": null,
+   "interruptions": 1,
+   "unneeded_actions": 1,
+   "runs_with_unneeded_actions": 1,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 123.2,
+   "median_fault_to_resume": null,
+   "interruptions": 1,
+   "unneeded_actions": 1,
+   "runs_with_unneeded_actions": 1,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 0,
+   "delivered": [
+    0,
+    0,
+    0
+   ],
+   "median_mission_seconds": null,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 3,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 150.3,
+   "median_fault_to_resume": 27.7,
+   "interruptions": 5,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 151.8,
+   "median_fault_to_resume": 28.3,
+   "interruptions": 6,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 1,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 143.9,
+   "median_fault_to_resume": 20.8,
+   "interruptions": 7,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 1,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "none",
+   "runs": 3,
+   "invalid": 0,
+   "successes": 3,
+   "delivered": [
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 159.2,
+   "median_fault_to_resume": null,
+   "interruptions": 0,
+   "unneeded_actions": 0,
+   "runs_with_unneeded_actions": 0,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 140.4,
+   "median_fault_to_resume": 18.8,
+   "interruptions": 5,
+   "unneeded_actions": 5,
+   "runs_with_unneeded_actions": 5,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 136.2,
+   "median_fault_to_resume": 13.4,
+   "interruptions": 5,
+   "unneeded_actions": 5,
+   "runs_with_unneeded_actions": 5,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "runs": 5,
+   "invalid": 0,
+   "successes": 5,
+   "delivered": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "median_mission_seconds": 126.7,
+   "median_fault_to_resume": 4.3,
+   "interruptions": 5,
+   "unneeded_actions": 5,
+   "runs_with_unneeded_actions": 5,
+   "runs_missing_a_needed_action": 0,
+   "actions_refused": 0,
+   "actions_failed": 0,
+   "violations": 0,
+   "not_pose_checked": 0
+  }
+ ],
+ "runs": [
+  {
+   "scenario": "amcl_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 21.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "amcl"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 21.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "amcl"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 21.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "amcl"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.6,
+   "fault_to_resume": 26.2,
+   "held_seconds": 25.7,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.6,
+   "fault_to_resume": 32.1,
+   "held_seconds": 72.8,
+   "incidents": 3,
+   "diagnoses": [
+    "localization_lost",
+    "localization_lost",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.6,
+   "fault_to_resume": null,
+   "held_seconds": 123.5,
+   "incidents": 3,
+   "diagnoses": [
+    "localization_lost",
+    "localization_lost",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.4,
+   "fault_to_resume": 26.0,
+   "held_seconds": 60.6,
+   "incidents": 3,
+   "diagnoses": [
+    "localization_lost",
+    "localization_lost",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 2,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.4,
+   "fault_to_resume": 31.1,
+   "held_seconds": 66.8,
+   "incidents": 3,
+   "diagnoses": [
+    "node_crash",
+    "blocked_path",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.6,
+   "fault_to_resume": 23.8,
+   "held_seconds": 22.3,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.6,
+   "fault_to_resume": 30.0,
+   "held_seconds": 28.5,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.6,
+   "fault_to_resume": 29.0,
+   "held_seconds": 28.0,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.7,
+   "fault_to_resume": 29.9,
+   "held_seconds": 28.4,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.7,
+   "fault_to_resume": 32.0,
+   "held_seconds": 31.0,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.5,
+   "fault_to_resume": 20.2,
+   "held_seconds": 20.1,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "blocked_path"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.6,
+   "fault_to_resume": null,
+   "held_seconds": 40.8,
+   "incidents": 3,
+   "diagnoses": [
+    "node_crash",
+    "node_crash",
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [
+    [
+     "defer_parcel",
+     "P2"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.5,
+   "fault_to_resume": 11.3,
+   "held_seconds": 9.8,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.1,
+   "fault_to_resume": 10.3,
+   "held_seconds": 43.2,
+   "incidents": 3,
+   "diagnoses": [
+    "node_crash",
+    "localization_lost",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "amcl_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.2,
+   "fault_to_resume": 13.4,
+   "held_seconds": 42.1,
+   "incidents": 3,
+   "diagnoses": [
+    "node_crash",
+    "localization_lost",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "amcl"
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ],
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 717.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 717.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 716.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.6,
+   "fault_to_resume": 15.8,
+   "held_seconds": 14.8,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 137.0,
+   "fault_to_resume": 13.1,
+   "held_seconds": 12.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.4,
+   "fault_to_resume": 13.4,
+   "held_seconds": 13.4,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 139.0,
+   "fault_to_resume": 16.1,
+   "held_seconds": 15.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 142.5,
+   "fault_to_resume": 19.0,
+   "held_seconds": 18.5,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.1,
+   "fault_to_resume": 13.2,
+   "held_seconds": 13.2,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 133.6,
+   "fault_to_resume": 9.8,
+   "held_seconds": 9.8,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 137.1,
+   "fault_to_resume": 12.9,
+   "held_seconds": 12.9,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.3,
+   "fault_to_resume": 12.9,
+   "held_seconds": 11.4,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.4,
+   "fault_to_resume": 12.9,
+   "held_seconds": 12.9,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 127.3,
+   "fault_to_resume": 4.1,
+   "held_seconds": 4.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 127.2,
+   "fault_to_resume": 4.1,
+   "held_seconds": 4.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 127.4,
+   "fault_to_resume": 4.3,
+   "held_seconds": 3.8,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 127.7,
+   "fault_to_resume": 4.1,
+   "held_seconds": 3.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "bad_parameter",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 132.9,
+   "fault_to_resume": 7.4,
+   "held_seconds": 6.4,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.8,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.7,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.7,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.7,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_aisle",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 429.8,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "defer_parcel",
+     "P2"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 498.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "defer_parcel",
+     "P2"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 526.7,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "defer_parcel",
+     "P2"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 112.6,
+   "fault_to_resume": 44.9,
+   "held_seconds": 12.3,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 118.0,
+   "fault_to_resume": 48.0,
+   "held_seconds": 15.4,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 115.3,
+   "fault_to_resume": 47.5,
+   "held_seconds": 15.0,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 117.1,
+   "fault_to_resume": 48.6,
+   "held_seconds": 15.6,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 114.0,
+   "fault_to_resume": 45.1,
+   "held_seconds": 13.6,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 113.3,
+   "fault_to_resume": 44.6,
+   "held_seconds": 13.6,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 111.4,
+   "fault_to_resume": 43.6,
+   "held_seconds": 10.5,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 110.6,
+   "fault_to_resume": 42.6,
+   "held_seconds": 11.1,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 110.9,
+   "fault_to_resume": 42.8,
+   "held_seconds": 13.2,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 115.0,
+   "fault_to_resume": 47.4,
+   "held_seconds": 14.3,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 107.1,
+   "fault_to_resume": 38.6,
+   "held_seconds": 5.0,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 104.7,
+   "fault_to_resume": 36.4,
+   "held_seconds": 2.9,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 104.4,
+   "fault_to_resume": 36.6,
+   "held_seconds": 5.0,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 103.0,
+   "fault_to_resume": 35.9,
+   "held_seconds": 2.8,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "blocked_station",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 2,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 103.7,
+   "fault_to_resume": 35.6,
+   "held_seconds": 4.0,
+   "incidents": 1,
+   "diagnoses": [
+    "blocked_station"
+   ],
+   "carried_out": [
+    [
+     "defer_parcel",
+     "P2"
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 150.8,
+   "fault_to_resume": 28.8,
+   "held_seconds": 26.8,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.4,
+   "fault_to_resume": 25.7,
+   "held_seconds": 23.7,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.4,
+   "fault_to_resume": 24.4,
+   "held_seconds": 23.9,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.3,
+   "fault_to_resume": 26.7,
+   "held_seconds": 25.2,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.3,
+   "fault_to_resume": 24.0,
+   "held_seconds": 23.5,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 151.0,
+   "fault_to_resume": 28.2,
+   "held_seconds": 27.7,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.7,
+   "fault_to_resume": 24.6,
+   "held_seconds": 23.1,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.5,
+   "fault_to_resume": 24.3,
+   "held_seconds": 23.3,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.0,
+   "fault_to_resume": 26.5,
+   "held_seconds": 25.0,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 244.2,
+   "fault_to_resume": null,
+   "held_seconds": 142.8,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.4,
+   "fault_to_resume": 21.4,
+   "held_seconds": 20.4,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.5,
+   "fault_to_resume": 23.1,
+   "held_seconds": 21.6,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 259.3,
+   "fault_to_resume": null,
+   "held_seconds": 135.6,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.5,
+   "fault_to_resume": 20.9,
+   "held_seconds": 19.4,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "controller_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 239.0,
+   "fault_to_resume": null,
+   "held_seconds": 128.2,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "controller_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 76.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 76.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 73.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 207.9,
+   "fault_to_resume": 15.7,
+   "held_seconds": 41.7,
+   "incidents": 3,
+   "diagnoses": [
+    "no_fault",
+    "sensor_dropout",
+    "sensor_dropout"
+   ],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 2,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 187.8,
+   "fault_to_resume": 13.6,
+   "held_seconds": 31.0,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 170.7,
+   "fault_to_resume": 33.8,
+   "held_seconds": 48.1,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.5,
+   "fault_to_resume": 18.8,
+   "held_seconds": 30.9,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 189.7,
+   "fault_to_resume": 14.2,
+   "held_seconds": 35.6,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 2,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.6,
+   "fault_to_resume": 19.9,
+   "held_seconds": 29.8,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 158.4,
+   "fault_to_resume": 23.2,
+   "held_seconds": 34.0,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 153.2,
+   "fault_to_resume": 17.8,
+   "held_seconds": 27.6,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.5,
+   "fault_to_resume": 21.8,
+   "held_seconds": 31.9,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.9,
+   "fault_to_resume": 19.8,
+   "held_seconds": 29.7,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.1,
+   "fault_to_resume": 11.8,
+   "held_seconds": 18.1,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.0,
+   "fault_to_resume": 11.8,
+   "held_seconds": 14.4,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 141.3,
+   "fault_to_resume": 11.0,
+   "held_seconds": 17.6,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.9,
+   "fault_to_resume": 13.5,
+   "held_seconds": 16.8,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "distractor_lidar",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 137.3,
+   "fault_to_resume": 10.6,
+   "held_seconds": 10.8,
+   "incidents": 2,
+   "diagnoses": [
+    "bad_parameter",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 25.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 25.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 25.7,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 57.6,
+   "fault_to_resume": 16.1,
+   "held_seconds": 28.8,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 151.1,
+   "fault_to_resume": 16.0,
+   "held_seconds": 27.5,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 63.3,
+   "fault_to_resume": 16.1,
+   "held_seconds": 32.8,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 145.6,
+   "fault_to_resume": 13.8,
+   "held_seconds": 24.0,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 70.7,
+   "fault_to_resume": 25.0,
+   "held_seconds": 37.5,
+   "incidents": 3,
+   "diagnoses": [
+    "unknown",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 157.4,
+   "fault_to_resume": 15.9,
+   "held_seconds": 38.0,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 160.7,
+   "fault_to_resume": 16.4,
+   "held_seconds": 39.8,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 78.6,
+   "fault_to_resume": 16.8,
+   "held_seconds": 48.2,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 85.4,
+   "fault_to_resume": 19.1,
+   "held_seconds": 53.9,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 75.8,
+   "fault_to_resume": 15.9,
+   "held_seconds": 45.6,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "no_fault",
+    "no_fault"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 39.8,
+   "fault_to_resume": 7.1,
+   "held_seconds": 8.2,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "unknown"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 42.4,
+   "fault_to_resume": 9.4,
+   "held_seconds": 11.5,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "unknown"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.3,
+   "fault_to_resume": 7.4,
+   "held_seconds": 14.0,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.9,
+   "fault_to_resume": 7.4,
+   "held_seconds": 15.0,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "double_fault",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 132.6,
+   "fault_to_resume": 7.2,
+   "held_seconds": 10.1,
+   "incidents": 3,
+   "diagnoses": [
+    "bad_parameter",
+    "unknown",
+    "unknown"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 21.9,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 22.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 21.8,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.1,
+   "fault_to_resume": 22.3,
+   "held_seconds": 21.3,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.5,
+   "fault_to_resume": 21.9,
+   "held_seconds": 20.9,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 142.0,
+   "fault_to_resume": 19.0,
+   "held_seconds": 18.0,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.5,
+   "fault_to_resume": 21.1,
+   "held_seconds": 19.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.3,
+   "fault_to_resume": 15.6,
+   "held_seconds": 14.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.0,
+   "fault_to_resume": 17.4,
+   "held_seconds": 15.4,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.9,
+   "fault_to_resume": 16.6,
+   "held_seconds": 15.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.2,
+   "fault_to_resume": 20.5,
+   "held_seconds": 19.0,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 139.7,
+   "fault_to_resume": 17.3,
+   "held_seconds": 15.3,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 141.5,
+   "fault_to_resume": 18.9,
+   "held_seconds": 16.9,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 133.2,
+   "fault_to_resume": 9.8,
+   "held_seconds": 7.8,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 132.4,
+   "fault_to_resume": 10.1,
+   "held_seconds": 8.1,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 134.7,
+   "fault_to_resume": 12.6,
+   "held_seconds": 10.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 34.5,
+   "fault_to_resume": 2.8,
+   "held_seconds": 2.5,
+   "incidents": 3,
+   "diagnoses": [
+    "unknown",
+    "unknown",
+    "unknown"
+   ],
+   "carried_out": [
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_dropout",
+   "decider": "rules",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 38.6,
+   "fault_to_resume": 4.1,
+   "held_seconds": 5.0,
+   "incidents": 3,
+   "diagnoses": [
+    "unknown",
+    "unknown",
+    "unknown"
+   ],
+   "carried_out": [
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "no_route",
+   "mission_seconds": 32.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 2,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 228.5,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 205.9,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.9,
+   "fault_to_resume": 21.0,
+   "held_seconds": 17.5,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.5,
+   "fault_to_resume": 25.9,
+   "held_seconds": 47.5,
+   "incidents": 3,
+   "diagnoses": [
+    "sensor_dropout",
+    "unknown",
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 159.1,
+   "fault_to_resume": 22.0,
+   "held_seconds": 15.0,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 416.6,
+   "fault_to_resume": 28.0,
+   "held_seconds": 45.9,
+   "incidents": 3,
+   "diagnoses": [
+    "sensor_dropout",
+    "unknown",
+    "blocked_path"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 2,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 161.9,
+   "fault_to_resume": 24.9,
+   "held_seconds": 17.9,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 156.1,
+   "fault_to_resume": 20.2,
+   "held_seconds": 15.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 147.2,
+   "fault_to_resume": 22.4,
+   "held_seconds": 17.9,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "timeout",
+   "mission_seconds": 419.6,
+   "fault_to_resume": 23.1,
+   "held_seconds": 67.5,
+   "incidents": 3,
+   "diagnoses": [
+    "sensor_dropout",
+    "blocked_path",
+    "blocked_path"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ],
+    [
+     "escalate",
+     ""
+    ],
+    [
+     "escalate",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 1,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 145.6,
+   "fault_to_resume": 19.2,
+   "held_seconds": 13.2,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 152.6,
+   "fault_to_resume": 24.6,
+   "held_seconds": 19.1,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.3,
+   "fault_to_resume": 13.4,
+   "held_seconds": 7.4,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.3,
+   "fault_to_resume": 11.9,
+   "held_seconds": 6.9,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 132.2,
+   "fault_to_resume": 11.8,
+   "held_seconds": 9.3,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.8,
+   "fault_to_resume": 13.2,
+   "held_seconds": 8.7,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "lidar_frozen",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 133.3,
+   "fault_to_resume": 12.9,
+   "held_seconds": 10.4,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "no_route",
+   "mission_seconds": 381.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "relocalize",
+     ""
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "no_route",
+   "mission_seconds": 466.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "relocalize",
+     ""
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "no_route",
+   "mission_seconds": 488.6,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "relocalize",
+     ""
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.0,
+   "fault_to_resume": 26.8,
+   "held_seconds": 25.3,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.1,
+   "fault_to_resume": 24.9,
+   "held_seconds": 22.9,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 147.4,
+   "fault_to_resume": 24.8,
+   "held_seconds": 22.8,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 144.1,
+   "fault_to_resume": 21.9,
+   "held_seconds": 21.9,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.9,
+   "fault_to_resume": 27.3,
+   "held_seconds": 26.8,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 151.2,
+   "fault_to_resume": 26.7,
+   "held_seconds": 26.2,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 147.4,
+   "fault_to_resume": 24.8,
+   "held_seconds": 23.8,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.3,
+   "fault_to_resume": 27.1,
+   "held_seconds": 26.1,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.1,
+   "fault_to_resume": 24.9,
+   "held_seconds": 23.9,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 146.8,
+   "fault_to_resume": 23.5,
+   "held_seconds": 23.0,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.5,
+   "fault_to_resume": 18.1,
+   "held_seconds": 17.1,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 138.1,
+   "fault_to_resume": 15.7,
+   "held_seconds": 14.7,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.4,
+   "fault_to_resume": 18.0,
+   "held_seconds": 17.0,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.9,
+   "fault_to_resume": 17.9,
+   "held_seconds": 16.4,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "localization_lost",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.1,
+   "fault_to_resume": 15.7,
+   "held_seconds": 14.7,
+   "incidents": 1,
+   "diagnoses": [
+    "localization_lost"
+   ],
+   "carried_out": [
+    [
+     "relocalize",
+     ""
+    ],
+    [
+     "clear_costmaps",
+     ""
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.5,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 135.5,
+   "fault_to_resume": null,
+   "held_seconds": 12.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.3,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.4,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 131.8,
+   "fault_to_resume": null,
+   "held_seconds": 10.6,
+   "incidents": 1,
+   "diagnoses": [
+    "sensor_dropout"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restart_process",
+     "lidar_driver"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "nominal",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 123.5,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "none",
+   "valid": true,
+   "success": false,
+   "delivered": 0,
+   "delivered_claimed": 0,
+   "pose_checked": true,
+   "result": "partial",
+   "mission_seconds": 20.0,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 149.7,
+   "fault_to_resume": 27.3,
+   "held_seconds": 26.8,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 152.3,
+   "fault_to_resume": 29.1,
+   "held_seconds": 28.6,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 148.5,
+   "fault_to_resume": 25.8,
+   "held_seconds": 25.3,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 152.6,
+   "fault_to_resume": 29.1,
+   "held_seconds": 27.1,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 150.3,
+   "fault_to_resume": 27.7,
+   "held_seconds": 27.2,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 271.9,
+   "fault_to_resume": null,
+   "held_seconds": 147.3,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 150.9,
+   "fault_to_resume": 28.0,
+   "held_seconds": 26.5,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 151.8,
+   "fault_to_resume": 28.6,
+   "held_seconds": 27.6,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 147.8,
+   "fault_to_resume": 25.4,
+   "held_seconds": 24.4,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 152.1,
+   "fault_to_resume": 30.3,
+   "held_seconds": 28.8,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 154.0,
+   "fault_to_resume": null,
+   "held_seconds": 29.4,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.9,
+   "fault_to_resume": 21.6,
+   "held_seconds": 20.6,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.4,
+   "fault_to_resume": 20.8,
+   "held_seconds": 19.8,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 143.3,
+   "fault_to_resume": 20.8,
+   "held_seconds": 19.3,
+   "incidents": 1,
+   "diagnoses": [
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "planner_crash",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 204.0,
+   "fault_to_resume": null,
+   "held_seconds": 78.9,
+   "incidents": 2,
+   "diagnoses": [
+    "node_crash",
+    "node_crash"
+   ],
+   "carried_out": [
+    [
+     "restart_process",
+     "planner_server"
+    ]
+   ],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 1,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 160.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 159.1,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "none",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 159.2,
+   "fault_to_resume": null,
+   "held_seconds": 0,
+   "incidents": 0,
+   "diagnoses": [],
+   "carried_out": [],
+   "unneeded": [],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 142.8,
+   "fault_to_resume": 22.1,
+   "held_seconds": 21.6,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 141.9,
+   "fault_to_resume": 19.1,
+   "held_seconds": 19.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 135.7,
+   "fault_to_resume": 13.4,
+   "held_seconds": 12.9,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 140.4,
+   "fault_to_resume": 18.8,
+   "held_seconds": 18.3,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:4b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.7,
+   "fault_to_resume": 15.9,
+   "held_seconds": 15.4,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 135.4,
+   "fault_to_resume": 13.0,
+   "held_seconds": 13.0,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 135.4,
+   "fault_to_resume": 12.9,
+   "held_seconds": 12.9,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 137.6,
+   "fault_to_resume": 15.8,
+   "held_seconds": 15.3,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 137.3,
+   "fault_to_resume": 15.6,
+   "held_seconds": 14.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "qwen3.5:9b",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 136.2,
+   "fault_to_resume": 13.4,
+   "held_seconds": 13.4,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 126.7,
+   "fault_to_resume": 4.3,
+   "held_seconds": 4.3,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 126.6,
+   "fault_to_resume": 3.8,
+   "held_seconds": 3.8,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 130.5,
+   "fault_to_resume": 9.3,
+   "held_seconds": 8.3,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 126.6,
+   "fault_to_resume": 4.1,
+   "held_seconds": 4.1,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  },
+  {
+   "scenario": "speed_limit",
+   "decider": "rules",
+   "valid": true,
+   "success": true,
+   "delivered": 3,
+   "delivered_claimed": 3,
+   "pose_checked": true,
+   "result": "complete",
+   "mission_seconds": 128.1,
+   "fault_to_resume": 6.8,
+   "held_seconds": 5.3,
+   "incidents": 1,
+   "diagnoses": [
+    "bad_parameter"
+   ],
+   "carried_out": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "unneeded": [
+    [
+     "restore_parameter",
+     "/velocity_smoother max_velocity"
+    ]
+   ],
+   "missing": [],
+   "refused": 0,
+   "failed": 0,
+   "violations": 0
+  }
+ ]
+}

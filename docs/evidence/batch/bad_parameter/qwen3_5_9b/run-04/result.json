@@ -1,0 +1,306 @@
+{
+  "scenario": {
+    "name": "bad_parameter",
+    "description": "A configuration change sets the velocity smoother's speed limit to zero while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "summary": "velocity_smoother.max_velocity is zero, so every velocity command is clamped to zero and the robot cannot move."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restore_parameter",
+          "/velocity_smoother max_velocity"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T11:38:50.611402+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 51525,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T11:39:24.574044+00:00",
+    "monotonic": 378834.611346971,
+    "type": "bad_parameter",
+    "seconds_late": 1.4,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 20.6
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 136.3,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null,
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1461,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.049,
+        "true_pose": [
+          -6.319,
+          -1.49,
+          0.106
+        ],
+        "position_error": 0.021,
+        "heading_error": 0.106,
+        "facing_error": 0.116,
+        "parcel_clearance": 0.573,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.024,
+        "true_pose": [
+          1.556,
+          -0.912,
+          1.496
+        ],
+        "position_error": 0.057,
+        "heading_error": 0.075,
+        "facing_error": 0.13,
+        "parcel_clearance": 0.568,
+        "estimate_off_by": 0.08,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.079,
+        "true_pose": [
+          7.249,
+          -0.014,
+          0.047
+        ],
+        "position_error": 0.15,
+        "heading_error": 0.047,
+        "facing_error": 0.031,
+        "parcel_clearance": 0.405,
+        "estimate_off_by": 0.1,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.07,
+        "true_pose": [
+          5.835,
+          2.015,
+          3.037
+        ],
+        "position_error": 0.038,
+        "heading_error": 0.105,
+        "facing_error": 0.12,
+        "parcel_clearance": 0.589,
+        "estimate_off_by": 0.108,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.043,
+        "true_pose": [
+          7.169,
+          4.849,
+          0.108
+        ],
+        "position_error": 0.085,
+        "heading_error": 0.108,
+        "facing_error": 0.161,
+        "parcel_clearance": 0.486,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.009,
+        "true_pose": [
+          7.141,
+          -4.778,
+          -0.085
+        ],
+        "position_error": 0.046,
+        "heading_error": 0.085,
+        "facing_error": 0.062,
+        "parcel_clearance": 0.513,
+        "estimate_off_by": 0.043,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.15,
+    "worst_estimate_error": 0.108
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.1,
+        "monotonic_detected": 378836.113531248,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother node parameter max_velocity",
+          "root_cause": "The parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s, which stopped the robot from moving while it was still trying to reach PICK_B (started at 14.2 s).",
+          "evidence": [
+            "Mission ended at 22.1 s with pickup P2 still under way.",
+            "Health report shows motion_status as 'nothing unusual' but parameter_changes explicitly lists the velocity set to zero.",
+            "The timing aligns: robot started moving towards PICK_B at 14.2 s, then stopped at 20.5 s due to the parameter change, causing the mission to fail before completion."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "The diagnosis identifies a bad parameter (`max_velocity` set to zero) as the root cause. Restoring this parameter is the only action required to remove that specific cause. No process restarts, relocalization, or parcel deferrals are needed based on the provided evidence."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 378847.559652105,
+        "seconds": 11.4
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 1.5,
+    "seconds_fault_to_resume": 12.9
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

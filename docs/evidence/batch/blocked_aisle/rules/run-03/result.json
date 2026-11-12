@@ -1,0 +1,228 @@
+{
+  "scenario": {
+    "name": "blocked_aisle",
+    "description": "A crate is left in the narrow passage south of the centre shelf just after the robot collects P1. Every stopping pose is free and another aisle leads to the same place.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "blocked_path",
+      "position": [
+        -1.0,
+        -6.5
+      ],
+      "size": [
+        0.5,
+        0.8,
+        0.8
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 2.0
+    },
+    "ground_truth": {
+      "category": "blocked_path",
+      "component": "environment",
+      "summary": "A static obstacle closes one passage; the robot can reach every stop by another route."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": []
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:05:38.228791+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 53010,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:06:08.830238+00:00",
+    "monotonic": 369638.867540368,
+    "type": "blocked_path",
+    "seconds_late": 2.7,
+    "details": {
+      "entity": "fault_obstacle",
+      "position": [
+        -1.0,
+        -6.5
+      ],
+      "size": [
+        0.5,
+        0.8,
+        0.8
+      ],
+      "at": null
+    },
+    "seconds_after_mission_start": 19.1
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 146.7,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null,
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1560,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.02,
+        "true_pose": [
+          -6.31,
+          -1.479,
+          0.096
+        ],
+        "position_error": 0.024,
+        "heading_error": 0.096,
+        "facing_error": 0.117,
+        "parcel_clearance": 0.564,
+        "estimate_off_by": 0.042,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.079,
+        "true_pose": [
+          1.57,
+          -0.981,
+          1.748
+        ],
+        "position_error": 0.108,
+        "heading_error": 0.177,
+        "facing_error": 0.112,
+        "parcel_clearance": 0.637,
+        "estimate_off_by": 0.155,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.035,
+        "true_pose": [
+          7.22,
+          0.022,
+          0.046
+        ],
+        "position_error": 0.122,
+        "heading_error": 0.046,
+        "facing_error": 0.071,
+        "parcel_clearance": 0.434,
+        "estimate_off_by": 0.096,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.042,
+        "true_pose": [
+          5.855,
+          2.031,
+          3.067
+        ],
+        "position_error": 0.064,
+        "heading_error": 0.075,
+        "facing_error": 0.105,
+        "parcel_clearance": 0.609,
+        "estimate_off_by": 0.105,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.016,
+        "true_pose": [
+          7.153,
+          4.874,
+          0.099
+        ],
+        "position_error": 0.091,
+        "heading_error": 0.099,
+        "facing_error": 0.178,
+        "parcel_clearance": 0.504,
+        "estimate_off_by": 0.08,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.023,
+        "true_pose": [
+          7.135,
+          -4.776,
+          -0.084
+        ],
+        "position_error": 0.042,
+        "heading_error": 0.084,
+        "facing_error": 0.06,
+        "parcel_clearance": 0.519,
+        "estimate_off_by": 0.025,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.122,
+    "worst_estimate_error": 0.155
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [],
+    "actions_proposed": 0,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 0
+  },
+  "checker": {
+    "ok": true,
+    "events": 30,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

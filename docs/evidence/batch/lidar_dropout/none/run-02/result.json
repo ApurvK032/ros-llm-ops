@@ -1,0 +1,125 @@
+{
+  "scenario": {
+    "name": "lidar_dropout",
+    "description": "The lidar stops delivering scans while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2; costmaps and localization stop updating and the collision monitor has no data."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T07:05:18.030082+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 50953,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T07:05:53.477700+00:00",
+    "monotonic": 362423.515008366,
+    "type": "sensor_dropout",
+    "seconds_late": 1.2,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.6
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.142 m, heading error 2.920 rad, facing error 1.767 rad, parcel clearance 8.050 m",
+      "P1": "Navigation failed; approach error 13.445 m, heading error 1.350 rad, facing error 1.249 rad, parcel clearance 13.993 m",
+      "P3": "Navigation failed; approach error 13.197 m, heading error 1.792 rad, facing error 1.800 rad, parcel clearance 11.843 m"
+    },
+    "mission_seconds": 22.1,
+    "seconds_to_first_abnormal_event": 0.9,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 372,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.025,
+        "true_pose": [
+          -6.337,
+          -1.472,
+          0.114
+        ],
+        "position_error": 0.046,
+        "heading_error": 0.114,
+        "facing_error": 0.141,
+        "parcel_clearance": 0.591,
+        "estimate_off_by": 0.071,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.046,
+    "worst_estimate_error": 0.071
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

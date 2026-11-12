@@ -1,0 +1,248 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T02:42:40.123695+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 66460,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T02:43:11.163107+00:00",
+    "monotonic": 346661.200409379,
+    "type": "node_crash",
+    "seconds_late": 0.0,
+    "details": {
+      "node": "amcl",
+      "pid": 979332,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.5
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 4
+    },
+    "retries": 2,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 7.100 m, heading error 2.970 rad, facing error 2.208 rad, parcel clearance 7.046 m",
+      "P1": "Navigation failed; approach error 12.562 m, heading error 1.403 rad, facing error 1.269 rad, parcel clearance 13.106 m"
+    },
+    "mission_seconds": 419.5,
+    "seconds_to_first_abnormal_event": 1.1,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4236,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.032,
+        "true_pose": [
+          -6.327,
+          -1.472,
+          0.111
+        ],
+        "position_error": 0.038,
+        "heading_error": 0.111,
+        "facing_error": 0.138,
+        "parcel_clearance": 0.581,
+        "estimate_off_by": 0.07,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.038,
+    "worst_estimate_error": 0.07
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 20.1,
+        "monotonic_detected": 346662.201821334,
+        "alerts": [
+          "amcl process died at about 18.7 s (exit code -9)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": false,
+              "old_pid": 979332,
+              "new_pid": 980051,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "map_server": "active",
+                "amcl": "unconfigured"
+              },
+              "active": true
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "amcl",
+          "root_cause": "amcl process died at about 18.7 s (exit code -9)",
+          "evidence": [
+            "amcl process died at about 18.7 s (exit code -9)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "Diagnosed node_crash."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 346681.440222914,
+        "seconds": 19.2
+      },
+      {
+        "detected_at_s": 88.1,
+        "monotonic_detected": 346730.027478459,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "escalate",
+            "target": "An obstacle is in an aisle; the robot is routing around it",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "blocked_path",
+          "component": "route",
+          "root_cause": "a 1.8 m obstacle not in the map appeared 1.14 m from HOME, seen from 32.6 s to 48.6 s",
+          "evidence": [
+            "a 1.8 m obstacle not in the map appeared 1.14 m from HOME, seen from 32.6 s to 48.6 s",
+            "1 wall-sized structure(s) of 4.3 m appeared where the map is free, which usually means scans are not lining up with the map"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "escalate",
+              "target": "An obstacle is in an aisle; the robot is routing around it"
+            }
+          ],
+          "note": "Diagnosed blocked_path."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 346730.879055694,
+        "seconds": 0.9
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 1.0,
+    "seconds_fault_to_resume": 20.2
+  },
+  "checker": {
+    "ok": true,
+    "events": 31,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

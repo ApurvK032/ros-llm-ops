@@ -1,0 +1,193 @@
+{
+  "scenario": {
+    "name": "blocked_station",
+    "description": "A box is left on the PICK_B approach pose just after the robot collects P1, so the robot cannot reach the pose it must stop at to collect P2.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "blocked_path",
+      "at": "PICK_B",
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 2.0
+    },
+    "ground_truth": {
+      "category": "blocked_station",
+      "component": "environment",
+      "location": "PICK_B",
+      "summary": "A static obstacle occupies the PICK_B approach pose; the goal pose itself is unreachable."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 2,
+      "actions": [
+        [
+          "defer_parcel",
+          "P2"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:14:13.539579+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 106252,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:14:44.071138+00:00",
+    "monotonic": 370154.108441634,
+    "type": "blocked_path",
+    "seconds_late": 2.6,
+    "details": {
+      "entity": "fault_obstacle",
+      "position": [
+        1.5,
+        -0.9
+      ],
+      "size": [
+        0.6,
+        0.6,
+        0.8
+      ],
+      "at": "PICK_B"
+    },
+    "seconds_after_mission_start": 19.0
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "partial",
+    "delivered": [
+      "P1",
+      "P3"
+    ],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 4,
+      "cancelled": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 0.816 m, heading error 2.174 rad, facing error 2.819 rad, parcel clearance 0.904 m"
+    },
+    "mission_seconds": 526.7,
+    "seconds_to_first_abnormal_event": 235.4,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 5285,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.052,
+        "true_pose": [
+          -6.31,
+          -1.496,
+          0.106
+        ],
+        "position_error": 0.01,
+        "heading_error": 0.106,
+        "facing_error": 0.11,
+        "parcel_clearance": 0.563,
+        "estimate_off_by": 0.062,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.07,
+        "true_pose": [
+          7.201,
+          -4.742,
+          -0.077
+        ],
+        "position_error": 0.117,
+        "heading_error": 0.077,
+        "facing_error": 0.013,
+        "parcel_clearance": 0.454,
+        "estimate_off_by": 0.047,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.013,
+        "true_pose": [
+          5.898,
+          2.057,
+          3.05
+        ],
+        "position_error": 0.113,
+        "heading_error": 0.092,
+        "facing_error": 0.143,
+        "parcel_clearance": 0.653,
+        "estimate_off_by": 0.126,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.019,
+        "true_pose": [
+          7.159,
+          4.87,
+          0.112
+        ],
+        "position_error": 0.092,
+        "heading_error": 0.112,
+        "facing_error": 0.187,
+        "parcel_clearance": 0.497,
+        "estimate_off_by": 0.089,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.117,
+    "worst_estimate_error": 0.126
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 30,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

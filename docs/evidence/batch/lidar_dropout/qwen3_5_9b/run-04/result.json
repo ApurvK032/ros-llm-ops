@@ -1,0 +1,279 @@
+{
+  "scenario": {
+    "name": "lidar_dropout",
+    "description": "The lidar stops delivering scans while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2; costmaps and localization stop updating and the collision monitor has no data."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T12:25:52.118051+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 57213,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T12:26:25.799378+00:00",
+    "monotonic": 381655.836678777,
+    "type": "sensor_dropout",
+    "seconds_late": 1.0,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.4
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 139.7,
+    "seconds_to_first_abnormal_event": 1.1,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1491,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.034,
+        "true_pose": [
+          -6.33,
+          -1.481,
+          0.117
+        ],
+        "position_error": 0.036,
+        "heading_error": 0.117,
+        "facing_error": 0.135,
+        "parcel_clearance": 0.584,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.029,
+        "true_pose": [
+          1.58,
+          -0.905,
+          1.498
+        ],
+        "position_error": 0.08,
+        "heading_error": 0.073,
+        "facing_error": 0.152,
+        "parcel_clearance": 0.562,
+        "estimate_off_by": 0.102,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.069,
+        "true_pose": [
+          7.237,
+          -0.007,
+          0.056
+        ],
+        "position_error": 0.137,
+        "heading_error": 0.056,
+        "facing_error": 0.049,
+        "parcel_clearance": 0.417,
+        "estimate_off_by": 0.081,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.086,
+        "true_pose": [
+          5.84,
+          1.987,
+          3.044
+        ],
+        "position_error": 0.042,
+        "heading_error": 0.097,
+        "facing_error": 0.085,
+        "parcel_clearance": 0.594,
+        "estimate_off_by": 0.109,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.023,
+        "true_pose": [
+          7.147,
+          4.856,
+          0.109
+        ],
+        "position_error": 0.073,
+        "heading_error": 0.109,
+        "facing_error": 0.168,
+        "parcel_clearance": 0.509,
+        "estimate_off_by": 0.061,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.023,
+        "true_pose": [
+          7.133,
+          -4.765,
+          -0.075
+        ],
+        "position_error": 0.048,
+        "heading_error": 0.075,
+        "facing_error": 0.04,
+        "parcel_clearance": 0.522,
+        "estimate_off_by": 0.027,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.137,
+    "worst_estimate_error": 0.109
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.1,
+        "monotonic_detected": 381657.839746637,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "scans stopped arriving at about 20.0 s and never resumed (normal rate 5.0 Hz)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 1250464,
+              "new_pid": 1251168
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering data at 20.0 s, causing the collision monitor to lose valid sensor input and subsequent navigation failures.",
+          "evidence": [
+            "Lidar rate dropped from 5.0 Hz to 1.0 Hz starting at 20.0 s",
+            "Collision monitor warnings about invalid source starting at 21.3 s",
+            "Controller server errors regarding transformPose and costmap frame starting at 21.4 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "lidar_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "The diagnosis indicates a sensor dropout where the lidar stopped delivering data. The only action that directly addresses this root cause from the provided list is restarting the lidar driver process. No parameters need restoration, no relocalization is required yet (as the issue is hardware/software communication, not pose drift), and parcels are not blocked by static obstacles but by the lack of sensor data."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 5 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "monotonic_done": 381673.163835501,
+        "seconds": 15.3
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": 17.3
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

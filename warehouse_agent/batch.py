@@ -213,6 +213,10 @@ def run_batch(files, deciders, repeats, output, baseline_repeats=1, model="qwen3
     scenarios = {s.name: s for s in (load_scenario(path, waypoints) for path in files)}
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
+    # What was asked for, kept with the results: the report reads the column order from here.
+    (output / "batch.json").write_text(json.dumps({
+        "scenarios": list(scenarios), "deciders": list(deciders), "repeats": repeats,
+        "baseline_repeats": baseline_repeats, "model": model}, indent=1) + "\n", encoding="utf-8")
     todo = plan(list(scenarios), deciders, repeats, baseline_repeats)
     for attempt in range(1, passes+1):
         for repeat, name, decider in todo:
@@ -242,8 +246,14 @@ def run_batch(files, deciders, repeats, output, baseline_repeats=1, model="qwen3
 
 
 def report(directory, deciders=None):
-    """Summary of a batch directory as Markdown, also saved beside the runs with the per-run judgements."""
+    """Summary of a batch directory as Markdown, also saved beside the runs with the per-run judgements.
+
+    Columns follow the order the batch was asked for, unless another is given.
+    """
     directory = Path(directory)
+    asked = directory / "batch.json"
+    if deciders is None and asked.exists():
+        deciders = json.loads(asked.read_text(encoding="utf-8"))["deciders"]
     judged = collect(directory)
     rows = summarize(judged)
     order = [d for d in (deciders or ["none", "rules"]) if any(r["decider"] == d for r in rows)]

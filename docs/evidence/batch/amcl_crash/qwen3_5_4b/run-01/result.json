@@ -1,0 +1,220 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T02:57:26.752909+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 93491,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T02:58:04.365384+00:00",
+    "monotonic": 347554.40268478,
+    "type": "node_crash",
+    "seconds_late": 0.0,
+    "details": {
+      "node": "amcl",
+      "pid": 984571,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.5
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 1,
+      "cancelled": 2
+    },
+    "retries": 1,
+    "deferral_reasons": {
+      "P2": "Navigation cancelled; approach error 5.542 m, heading error 2.901 rad, facing error 2.221 rad, parcel clearance 5.838 m"
+    },
+    "mission_seconds": 416.6,
+    "seconds_to_first_abnormal_event": 1.1,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4234,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.033,
+        "true_pose": [
+          -6.329,
+          -1.475,
+          0.096
+        ],
+        "position_error": 0.038,
+        "heading_error": 0.096,
+        "facing_error": 0.121,
+        "parcel_clearance": 0.583,
+        "estimate_off_by": 0.071,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.038,
+    "worst_estimate_error": 0.071
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 19.5,
+        "monotonic_detected": 347554.903640676,
+        "alerts": [
+          "amcl process died at about 18.6 s (exit code -9)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": false,
+              "old_pid": 984571,
+              "new_pid": 985522,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "map_server": "active",
+                "amcl": "unconfigured"
+              },
+              "active": true
+            }
+          },
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": false,
+            "why": "no jump in the pose estimate was observed"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl",
+          "root_cause": "The AMCL localization process died at 18.6 s (exit code -9), causing the robot to lose its pose estimate and preventing it from completing navigation goals.",
+          "evidence": [
+            "amcl process died at about 18.6 s (exit code -9)",
+            "pickup P2 to PICK_B started at 14.5 s: still under way after 5.0 s",
+            "mission ended as: did not finish at 19.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "node_health",
+          "localization_status",
+          "mission_summary"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            },
+            {
+              "action": "relocalize",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates the AMCL process died, causing loss of localization. Restarting the process and then relocalizing are the required steps to recover pose estimation. No costmap clearing is needed as this is a fresh restart rather than a correction of an existing wrong map state, and no parcels were deferred due to blocked stations."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 347580.581762472,
+        "seconds": 25.7
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 1,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 0.5,
+    "seconds_fault_to_resume": 26.2
+  },
+  "checker": {
+    "ok": true,
+    "events": 24,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

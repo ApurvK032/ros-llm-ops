@@ -1,0 +1,131 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T08:19:09.968428+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 46193,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T08:19:44.145539+00:00",
+    "monotonic": 366854.182841363,
+    "type": "node_crash",
+    "seconds_late": 0.0,
+    "details": {
+      "node": "amcl",
+      "pid": 1136004,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.3
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.078 m, heading error 3.138 rad, facing error 1.937 rad, parcel clearance 7.933 m",
+      "P1": "Navigation failed; approach error 13.569 m, heading error 1.574 rad, facing error 1.442 rad, parcel clearance 14.114 m",
+      "P3": "Navigation failed; approach error 13.076 m, heading error 1.568 rad, facing error 1.987 rad, parcel clearance 11.708 m"
+    },
+    "mission_seconds": 21.1,
+    "seconds_to_first_abnormal_event": 1.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 357,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.045,
+        "true_pose": [
+          -6.31,
+          -1.499,
+          0.105
+        ],
+        "position_error": 0.01,
+        "heading_error": 0.105,
+        "facing_error": 0.105,
+        "parcel_clearance": 0.564,
+        "estimate_off_by": 0.054,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.01,
+    "worst_estimate_error": 0.054
+  },
+  "recovery": null,
+  "checker": {
+    "ok": true,
+    "events": 34,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

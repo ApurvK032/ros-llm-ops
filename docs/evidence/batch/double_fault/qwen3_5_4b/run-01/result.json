@@ -1,0 +1,331 @@
+{
+  "scenario": {
+    "name": "double_fault",
+    "description": "Two faults land together while the robot drives to its second stop: the speed limit is set to zero and the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "also": "sensor_dropout",
+      "summary": "velocity_smoother.max_velocity is zero and no lidar scans reach Nav2; either alone stops the mission."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 5.0
+        },
+        "fault": {
+          "type": "sensor_dropout",
+          "sensor": "lidar",
+          "mode": "drop"
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restore_parameter",
+          "/velocity_smoother max_velocity"
+        ],
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T04:17:19.264680+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 58213,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T04:17:57.959755+00:00",
+    "monotonic": 352347.99705716,
+    "type": "bad_parameter",
+    "seconds_late": 1.3,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 20.5
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T04:17:58.776747+00:00",
+      "monotonic": 352348.814049128,
+      "type": "sensor_dropout",
+      "seconds_late": 2.1,
+      "details": {
+        "sensor": "lidar",
+        "mode": "drop",
+        "previous_mode": "pass"
+      },
+      "seconds_after_mission_start": 21.3
+    }
+  ],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.096 m, heading error 3.132 rad, facing error 1.942 rad, parcel clearance 7.967 m",
+      "P1": "Navigation failed; approach error 13.530 m, heading error 1.561 rad, facing error 1.439 rad, parcel clearance 14.075 m",
+      "P3": "Navigation failed; approach error 13.113 m, heading error 1.580 rad, facing error 1.986 rad, parcel clearance 11.749 m"
+    },
+    "mission_seconds": 57.6,
+    "seconds_to_first_abnormal_event": 1.8,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 715,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.044,
+        "true_pose": [
+          -6.326,
+          -1.491,
+          0.121
+        ],
+        "position_error": 0.027,
+        "heading_error": 0.121,
+        "facing_error": 0.13,
+        "parcel_clearance": 0.579,
+        "estimate_off_by": 0.069,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.027,
+    "worst_estimate_error": 0.069
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 21.4,
+        "monotonic_detected": 352349.31522152,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.4 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother",
+          "root_cause": "The max_velocity parameter was set to [0.0, 0.0, 0.0] at 20.4 s, preventing the robot from moving despite receiving velocity commands.",
+          "evidence": [
+            "Mission failed to complete: pickup P2 still under way after 7.1 s",
+            "Parameter change detected: /velocity_smoother max_velocity set to [0.0, 0.0, 0.0] at 20.4 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "The diagnosis indicates the robot is stuck due to a parameter change setting max_velocity to zero. Restoring this parameter to its configured value should allow movement. No other actions are required as no processes have died and no obstacles are blocking."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 352364.071039272,
+        "seconds": 14.8
+      },
+      {
+        "detected_at_s": 39.4,
+        "monotonic_detected": 352367.075279328,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [],
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "none",
+          "root_cause": "The mission failed to complete because the robot could not reach PICK_B or DROP_A within the allotted time, but all systems (planner, controller, sensors, localization, parameters) reported no unusual conditions. The failures appear to be due to timing constraints rather than a system fault.",
+          "evidence": [
+            "health_report: node_health, lidar_status, motion_status, localization_status, parameter_changes, obstacles, planning_status, nav2_warnings all report 'nothing unusual'",
+            "planning_status: 0 planner/controller failures, no recoveries started",
+            "nav2_warnings: 0 messages"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "mission_summary",
+          "planning_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis reports 'no_fault' with high confidence. All systems are healthy, and the failure is attributed to timing constraints rather than a system fault. No recovery actions are required."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 352373.341743559,
+        "seconds": 6.3
+      },
+      {
+        "detected_at_s": 49.4,
+        "monotonic_detected": 352377.348082416,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_C; holding for recovery before the retry"
+        ],
+        "actions": [],
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "none",
+          "root_cause": "The mission failed to complete, but all diagnostic tools (node health, lidar, motion, localization, parameters, obstacles) reported no unusual conditions. The failures occurred after very short durations (0.1s), suggesting the robot reached the waypoints but could not execute the task (e.g., pick/drop) due to operational constraints rather than navigation faults like blocking or sensor loss.",
+          "evidence": [
+            "All health reports show 'nothing unusual'",
+            "Motion status shows commanded speed was 0.0 m/s at the time of failure, indicating the robot stopped before executing the pickup/drop action",
+            "No obstacles were detected on the path or at waypoints",
+            "Localization and sensor data remained stable throughout the run"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "mission_summary",
+          "node_health",
+          "lidar_status",
+          "motion_status",
+          "localization_status",
+          "parameter_changes",
+          "obstacles"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis reports 'no_fault' with high confidence. The robot stopped due to operational constraints (commanded speed 0.0 m/s) rather than navigation faults like blocked paths or sensor loss. No parameters, processes, or localization states need fixing. Parcels P1 and P2 are already deferred, but the cause is not a physical obstacle blocking the stopping pose; they remain in their current state without requiring further action per the instructions."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 352385.078975159,
+        "seconds": 7.7
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 1.3,
+    "seconds_fault_to_resume": 16.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 41,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

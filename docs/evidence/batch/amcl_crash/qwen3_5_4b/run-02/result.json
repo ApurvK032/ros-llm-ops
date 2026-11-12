@@ -1,0 +1,404 @@
+{
+  "scenario": {
+    "name": "amcl_crash",
+    "description": "The localization node (AMCL) is killed while the robot drives to its second stop. A restarted AMCL starts from its configured initial pose, which is no longer where the robot is.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "amcl"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "amcl",
+      "node": "amcl",
+      "summary": "The amcl process was killed; the map-to-odometry correction stops being published."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "amcl"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T05:41:36.759478+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 87301,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T05:42:14.377533+00:00",
+    "monotonic": 357404.414835615,
+    "type": "node_crash",
+    "seconds_late": 0.2,
+    "details": {
+      "node": "amcl",
+      "pid": 1062092,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.5
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [
+      "P2"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 3,
+      "cancelled": 3
+    },
+    "retries": 2,
+    "deferral_reasons": {
+      "P2": "Navigation cancelled; approach error 5.086 m, heading error 2.755 rad, facing error 2.455 rad, parcel clearance 5.041 m"
+    },
+    "mission_seconds": 416.6,
+    "seconds_to_first_abnormal_event": 1.2,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4239,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.048,
+        "true_pose": [
+          -6.311,
+          -1.489,
+          0.115
+        ],
+        "position_error": 0.016,
+        "heading_error": 0.115,
+        "facing_error": 0.125,
+        "parcel_clearance": 0.565,
+        "estimate_off_by": 0.064,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.016,
+    "worst_estimate_error": 0.064
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 21.0,
+        "monotonic_detected": 357406.417673095,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "amcl process died at about 19.5 s (exit code -9)",
+          "amcl heartbeat stopped at 19.4 s; recording ends at 21.0 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "amcl",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "amcl",
+              "was_running": false,
+              "old_pid": 1062092,
+              "new_pid": 1063016,
+              "lifecycle_manager": "lifecycle_manager_localization",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "map_server": "active",
+                "amcl": "unconfigured"
+              },
+              "active": true
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "amcl",
+          "root_cause": "The AMCL localization process died at approximately 19.5 seconds, causing the robot to lose its pose estimate. This is evidenced by the 'amcl process died' and 'amcl heartbeat stopped' messages in node_health. The subsequent controller_server errors about transformPose failures (requiring extrapolation into the future) confirm that navigation could no longer compute valid poses without localization data. Although the detailed localization_status tool reported no unusual events, this is likely because the AMCL process had already terminated before the detailed check was performed, and the 'unusual' list in that tool reflects runtime behavior rather than post-mortem state analysis.",
+          "evidence": [
+            "amcl process died at about 19.5 s (exit code -9)",
+            "amcl heartbeat stopped at 19.4 s",
+            "controller_server ERROR from 20.5 s: Exception in transformPose: Lookup would require extrapolation into the future",
+            "controller_server ERROR from 20.5 s: Unable to transform goal pose into costmap frame",
+            "bt_navigator ERROR from 20.7 s: Goal failed"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "amcl"
+            }
+          ],
+          "note": "The diagnosis indicates the AMCL process died, causing loss of pose estimate and subsequent navigation failures. Restarting the AMCL server is the required recovery action to restore localization."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "monotonic_done": 357436.491604245,
+        "seconds": 30.1
+      },
+      {
+        "detected_at_s": 63.0,
+        "monotonic_detected": 357448.009045154,
+        "alerts": [
+          "the pose estimate jumped 1.64 m and 0.67 rad at 62.6 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 62.6 s",
+            "result": {
+              "pose_set": [
+                -4.863,
+                -3.454,
+                0.613
+              ],
+              "estimate_was": [
+                -3.109,
+                -4.71,
+                -0.345
+              ],
+              "estimate_now": [
+                -4.613,
+                -3.454,
+                0.505
+              ],
+              "moved_m": 1.96,
+              "from_correction": [
+                -5.145,
+                -6.92,
+                1.402
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "AMCL localization node",
+          "root_cause": "The robot's pose estimate experienced large jumps (1.64 m and 2.08 m) at 62.6 s and 63.0 s, coinciding with the appearance of wall-sized structures in areas where the map is free. This indicates that LiDAR scans were no longer aligning with the map, causing the localization filter to lose track of the robot's true position. Consequently, Nav2 could not plan a valid path to PICK_B.",
+          "evidence": [
+            "pose estimate jumped 1.64 m and 0.67 rad at 62.6 s",
+            "pose estimate jumped 2.08 m and 1.47 rad at 63.0 s",
+            "2 wall-sized structures appeared where the map is free, indicating scans do not line up with the map",
+            "mission failed to reach PICK_B due to inability to localize correctly"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "obstacles"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates lost localization due to misaligned LiDAR scans creating false obstacles. The standard recovery for 'localization_lost' caused by scan mismatches is to relocalize the robot using its last known good pose and odometry, followed by clearing the costmaps to remove the erroneous obstacles that were generated during the failed localization."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "retry": {
+          "operation": "retry",
+          "parcels": [
+            "P2"
+          ],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 357472.541493067,
+        "seconds": 24.5
+      },
+      {
+        "detected_at_s": 111.1,
+        "monotonic_detected": 357496.091616567,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "the pose estimate jumped 1.88 m and 1.3 rad at 109.9 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 109.9 s",
+            "result": {
+              "pose_set": [
+                -4.696,
+                -4.008,
+                -3.11
+              ],
+              "estimate_was": [
+                -2.497,
+                -3.72,
+                1.819
+              ],
+              "estimate_now": [
+                -4.571,
+                -3.788,
+                2.937
+              ],
+              "moved_m": 2.07,
+              "from_correction": [
+                -2.52,
+                -4.033,
+                3.031
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "localization",
+          "root_cause": "The robot's pose estimate jumped significantly at 109.9 s, and new obstacles appeared where the map was free, indicating the sensor data no longer matched the map. This caused Nav2 to lose valid waypoints (plan has 0 poses) and fail repeatedly.",
+          "evidence": [
+            "pose estimate jumped 1.88 m and 1.3 rad at 109.9 s",
+            "6 further corrections of 0.3 m or more from 90.9 s",
+            "2 wall-sized structures appeared where map is free (scans not lining up)",
+            "controller_server ERROR: Resulting plan has 0 poses in it",
+            "mission failed to reach PICK_B after localization issues began at ~90-110 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates a localization loss caused by sensor data mismatch (scans not lining up), resulting in incorrect obstacle placement and lost waypoints. The standard recovery sequence is to first relocalize the robot using its last good pose correction, then clear the costmaps to remove the erroneous obstacles that appeared due to the bad pose."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "monotonic_done": 357514.312054528,
+        "seconds": 18.2
+      }
+    ],
+    "actions_proposed": 5,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 5,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": 32.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 40,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

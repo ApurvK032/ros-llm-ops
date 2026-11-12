@@ -1,0 +1,379 @@
+{
+  "scenario": {
+    "name": "distractor_lidar",
+    "description": "An operator lowers the speed limit, which is harmless; later, on the way to the third stop, the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "drop"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 2,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "No lidar scans reach Nav2. The earlier speed-limit change is unrelated and harmless."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 3.0
+        },
+        "fault": {
+          "type": "bad_parameter",
+          "node": "/velocity_smoother",
+          "name": "max_velocity",
+          "value": [
+            0.3,
+            0.0,
+            2.0
+          ]
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T09:43:18.623464+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 57403,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T09:44:34.705762+00:00",
+    "monotonic": 371944.743064646,
+    "type": "sensor_dropout",
+    "seconds_late": 0.9,
+    "details": {
+      "sensor": "lidar",
+      "mode": "drop",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 64.6
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T09:43:50.736001+00:00",
+      "monotonic": 371900.773304409,
+      "type": "bad_parameter",
+      "seconds_late": 3.0,
+      "details": {
+        "node": "/velocity_smoother",
+        "name": "max_velocity",
+        "old": [
+          0.5,
+          0.0,
+          2.0
+        ],
+        "new": [
+          0.3,
+          0.0,
+          2.0
+        ]
+      },
+      "seconds_after_mission_start": 20.6
+    }
+  ],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 141.3,
+    "seconds_to_first_abnormal_event": 0.8,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1510,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.02,
+        "true_pose": [
+          -6.344,
+          -1.466,
+          0.1
+        ],
+        "position_error": 0.055,
+        "heading_error": 0.1,
+        "facing_error": 0.132,
+        "parcel_clearance": 0.598,
+        "estimate_off_by": 0.074,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.037,
+        "true_pose": [
+          1.531,
+          -0.91,
+          1.495
+        ],
+        "position_error": 0.032,
+        "heading_error": 0.076,
+        "facing_error": 0.107,
+        "parcel_clearance": 0.564,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.058,
+        "true_pose": [
+          7.232,
+          0.005,
+          0.055
+        ],
+        "position_error": 0.132,
+        "heading_error": 0.055,
+        "facing_error": 0.062,
+        "parcel_clearance": 0.422,
+        "estimate_off_by": 0.092,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.057,
+        "true_pose": [
+          5.858,
+          2.018,
+          3.047
+        ],
+        "position_error": 0.06,
+        "heading_error": 0.094,
+        "facing_error": 0.112,
+        "parcel_clearance": 0.611,
+        "estimate_off_by": 0.116,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.025,
+        "true_pose": [
+          7.163,
+          4.856,
+          0.106
+        ],
+        "position_error": 0.085,
+        "heading_error": 0.106,
+        "facing_error": 0.166,
+        "parcel_clearance": 0.492,
+        "estimate_off_by": 0.082,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.032,
+        "true_pose": [
+          7.139,
+          -4.768,
+          -0.085
+        ],
+        "position_error": 0.05,
+        "heading_error": 0.084,
+        "facing_error": 0.051,
+        "parcel_clearance": 0.516,
+        "estimate_off_by": 0.023,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.132,
+    "worst_estimate_error": 0.116
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 22.0,
+        "monotonic_detected": 371902.27610806,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.3, 0.0, 2.0] at 20.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.3,
+                0.0,
+                2.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother max_velocity",
+          "root_cause": "/velocity_smoother parameter max_velocity was set to [0.3, 0.0, 2.0] at 20.5 s",
+          "evidence": [
+            "/velocity_smoother parameter max_velocity was set to [0.3, 0.0, 2.0] at 20.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "Diagnosed bad_parameter."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 371910.342435181,
+        "seconds": 8.1
+      },
+      {
+        "detected_at_s": 66.1,
+        "monotonic_detected": 371946.246657797,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_B; holding for recovery before the retry",
+          "scans stopped arriving at about 65.0 s and never resumed (normal rate 5.0 Hz)"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 1170689,
+              "new_pid": 1171649
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "scans stopped arriving at about 65.0 s and never resumed (normal rate 5.0 Hz)",
+          "evidence": [
+            "scans stopped arriving at about 65.0 s and never resumed (normal rate 5.0 Hz)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "Diagnosed sensor_dropout."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 6 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 371955.77458648,
+        "seconds": 9.5
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 1.5,
+    "seconds_fault_to_resume": 11.0
+  },
+  "checker": {
+    "ok": true,
+    "events": 42,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

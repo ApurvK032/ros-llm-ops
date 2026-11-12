@@ -30,6 +30,12 @@ jobs:
         run: python -m pip install "hypothesis==6.168.3"
       - name: Unit and property-based tests (no ROS, GPU or model required)
         run: python -B -m unittest discover -s tests -v
+      - name: Every committed journal still passes the independent checker
+        run: find docs/evidence -name journal.jsonl -print0 | sort -z | xargs -0 python -B -m warehouse_agent verify
+      - name: The published batch tables are what the committed results give
+        run: |
+          python -B -m warehouse_agent batch-report docs/evidence/batch
+          git diff --exit-code -- docs/evidence/batch
 
   ros:
     name: ROS 2 Jazzy workspace

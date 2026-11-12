@@ -1,0 +1,328 @@
+{
+  "scenario": {
+    "name": "double_fault",
+    "description": "Two faults land together while the robot drives to its second stop: the speed limit is set to zero and the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "also": "sensor_dropout",
+      "summary": "velocity_smoother.max_velocity is zero and no lidar scans reach Nav2; either alone stops the mission."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 5.0
+        },
+        "fault": {
+          "type": "sensor_dropout",
+          "sensor": "lidar",
+          "mode": "drop"
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restore_parameter",
+          "/velocity_smoother max_velocity"
+        ],
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T04:13:04.645779+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 62866,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T04:13:36.762000+00:00",
+    "monotonic": 352086.79930555,
+    "type": "bad_parameter",
+    "seconds_late": 1.3,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 20.6
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T04:13:39.843010+00:00",
+      "monotonic": 352089.880312429,
+      "type": "sensor_dropout",
+      "seconds_late": 4.4,
+      "details": {
+        "sensor": "lidar",
+        "mode": "drop",
+        "previous_mode": "pass"
+      },
+      "seconds_after_mission_start": 23.7
+    }
+  ],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.115 m, heading error 3.085 rad, facing error 1.903 rad, parcel clearance 7.995 m",
+      "P1": "Navigation failed; approach error 13.517 m, heading error 1.514 rad, facing error 1.397 rad, parcel clearance 14.063 m",
+      "P3": "Navigation failed; approach error 13.142 m, heading error 1.628 rad, facing error 1.945 rad, parcel clearance 11.780 m"
+    },
+    "mission_seconds": 39.8,
+    "seconds_to_first_abnormal_event": 4.1,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 510,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.022,
+        "true_pose": [
+          -6.335,
+          -1.469,
+          0.115
+        ],
+        "position_error": 0.047,
+        "heading_error": 0.115,
+        "facing_error": 0.145,
+        "parcel_clearance": 0.589,
+        "estimate_off_by": 0.069,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.047,
+    "worst_estimate_error": 0.069
+  },
+  "recovery": {
+    "mode": "rules",
+    "incidents": [
+      {
+        "detected_at_s": 22.6,
+        "monotonic_detected": 352089.880777429,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother max_velocity",
+          "root_cause": "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s",
+          "evidence": [
+            "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "Diagnosed bad_parameter."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 352093.948727292,
+        "seconds": 4.1
+      },
+      {
+        "detected_at_s": 30.6,
+        "monotonic_detected": 352096.953054447,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "escalate",
+            "target": "Unresolved fault (unknown); the mission will retry",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "unknown",
+          "component": "",
+          "root_cause": "",
+          "evidence": [],
+          "confidence": "low"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "escalate",
+              "target": "Unresolved fault (unknown); the mission will retry"
+            }
+          ],
+          "note": "Diagnosed unknown."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 352100.106057064,
+        "seconds": 3.2
+      },
+      {
+        "detected_at_s": 38.6,
+        "monotonic_detected": 352105.114644494,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_C; holding for recovery before the retry"
+        ],
+        "actions": [
+          {
+            "action": "escalate",
+            "target": "Unresolved fault (unknown); the mission will retry",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "diagnosis": {
+          "category": "unknown",
+          "component": "",
+          "root_cause": "",
+          "evidence": [],
+          "confidence": "low"
+        },
+        "diagnosis_tool_calls": [],
+        "decision": {
+          "actions": [
+            {
+              "action": "escalate",
+              "target": "Unresolved fault (unknown); the mission will retry"
+            }
+          ],
+          "note": "Diagnosed unknown."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 352105.975986027,
+        "seconds": 0.9
+      }
+    ],
+    "actions_proposed": 3,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 3,
+    "seconds_fault_to_detection": 3.1,
+    "seconds_fault_to_resume": 7.1
+  },
+  "checker": {
+    "ok": true,
+    "events": 41,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

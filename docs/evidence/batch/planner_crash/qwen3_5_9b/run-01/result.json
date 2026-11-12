@@ -1,0 +1,359 @@
+{
+  "scenario": {
+    "name": "planner_crash",
+    "description": "The Nav2 planner server is killed while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "node_crash",
+      "node": "planner_server"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "node_crash",
+      "component": "planner_server",
+      "node": "planner_server",
+      "summary": "The planner_server process was killed; no new path can be computed."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "planner_server"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T05:06:49.318324+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 70456,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T05:07:22.198220+00:00",
+    "monotonic": 355312.235523002,
+    "type": "node_crash",
+    "seconds_late": 0.2,
+    "details": {
+      "node": "planner_server",
+      "pid": 1047078,
+      "signal": "SIGKILL"
+    },
+    "seconds_after_mission_start": 19.6
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "failed": 1,
+      "rejected": 2
+    },
+    "retries": 2,
+    "deferral_reasons": {
+      "P2": "Navigation rejected; approach error 8.103 m, heading error 3.112 rad, facing error 1.929 rad, parcel clearance 7.983 m"
+    },
+    "mission_seconds": 271.9,
+    "seconds_to_first_abnormal_event": 1.0,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 2783,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.024,
+        "true_pose": [
+          -6.335,
+          -1.469,
+          0.108
+        ],
+        "position_error": 0.047,
+        "heading_error": 0.108,
+        "facing_error": 0.138,
+        "parcel_clearance": 0.589,
+        "estimate_off_by": 0.071,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.057,
+        "true_pose": [
+          1.534,
+          -0.913,
+          1.491
+        ],
+        "position_error": 0.037,
+        "heading_error": 0.08,
+        "facing_error": 0.114,
+        "parcel_clearance": 0.567,
+        "estimate_off_by": 0.092,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.054,
+        "true_pose": [
+          7.228,
+          0.007,
+          0.056
+        ],
+        "position_error": 0.128,
+        "heading_error": 0.056,
+        "facing_error": 0.063,
+        "parcel_clearance": 0.426,
+        "estimate_off_by": 0.094,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.056,
+        "true_pose": [
+          5.862,
+          2.025,
+          3.046
+        ],
+        "position_error": 0.067,
+        "heading_error": 0.095,
+        "facing_error": 0.119,
+        "parcel_clearance": 0.616,
+        "estimate_off_by": 0.12,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.043,
+        "true_pose": [
+          7.172,
+          4.84,
+          0.094
+        ],
+        "position_error": 0.082,
+        "heading_error": 0.094,
+        "facing_error": 0.137,
+        "parcel_clearance": 0.483,
+        "estimate_off_by": 0.073,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.02,
+        "true_pose": [
+          7.143,
+          -4.777,
+          -0.084
+        ],
+        "position_error": 0.048,
+        "heading_error": 0.084,
+        "facing_error": 0.06,
+        "parcel_clearance": 0.511,
+        "estimate_off_by": 0.029,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.128,
+    "worst_estimate_error": 0.12
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 20.7,
+        "monotonic_detected": 355313.737770325,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry",
+          "planner_server process died at about 19.5 s (exit code -9)",
+          "planner_server heartbeat stopped at 19.6 s; recording ends at 20.7 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "planner_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "error": "error: planner_server was restarted but lifecycle_manager_navigation did not become active: {\"process\": \"planner_server\", \"was_running\": false, \"old_pid\": 1047078, \"new_pid\": 1047743, \"lifecycle_manager\": \"lifecycle_manager_navigation\", \"manager_noticed_the_death\": true, \"manager_replaced\": true, \"states_found\": {\"controller_server\": \"unreachable (service /controller_server/get_state did not answer within 5.0 s)\", \"smoother_server\": \"unreachable (service /smoother_server/get_state did not answer within 5.0 s)\", \"planner_server\": \"unreachable (service /planner_server/get_state did not answer within 5.0 s)\", \"route_server\": \"unreachable (service /route_server/get_state did not answer within 5.0 s)\", \"behavior_server\": \"unreachable (service /behavior_server/get_state did not answer within 5.0 s)\", \"velocity_smoother\": \"unreachable (service /velocity_smoother/get_state did not answer within 5.0 s)\", \"collision_monitor\": \"unreachable (service /collision_monitor/get_state did not answer within 5.0 s)\", \"bt_navigator\": \"unreachable (service /bt_navigator/get_state did not answer within 5.0 s)\", \"waypoint_follower\": \"unreachable (service /waypoint_follower/get_state did not answer within 5.0 s)\", \"docking_server\": \"unreachable (service /docking_server/get_state did not answer within 5.0 s)\"}, \"active\": false}"
+          }
+        ],
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "planner_server",
+          "root_cause": "The planner_server process died at 19.5 s (exit code -9), causing the navigation stack to fail shortly after.",
+          "evidence": [
+            "planner_server process died at about 19.5 s (exit code -9)",
+            "planner_server heartbeat stopped at 19.6 s",
+            "bt_navigator ERROR: Failed to get result for follow_path in node halt!"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "node_health"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "planner_server"
+            }
+          ],
+          "note": "The diagnosis indicates the 'planner_server' process died (exit code -9). The recovery action is to restart this specific process. No parameters need restoring, no relocalization is required as the crash happened after a failure event, and parcels are not blocked by obstacles but by the crashed node itself."
+        },
+        "monotonic_done": 355425.123408559,
+        "seconds": 111.4
+      },
+      {
+        "detected_at_s": 132.7,
+        "monotonic_detected": 355425.624624696,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation rejected on the way to DROP_A; holding for recovery before the retry",
+          "planner_server process died at about 19.5 s (exit code -9)",
+          "planner_server heartbeat stopped at 19.6 s; recording ends at 132.7 s",
+          "docking_server heartbeat stopped at 23.6 s; recording ends at 132.7 s",
+          "waypoint_follower heartbeat stopped at 23.7 s; recording ends at 132.7 s",
+          "bt_navigator heartbeat stopped at 23.9 s; recording ends at 132.7 s",
+          "collision_monitor heartbeat stopped at 24.0 s; recording ends at 132.7 s",
+          "velocity_smoother heartbeat stopped at 24.1 s; recording ends at 132.7 s",
+          "behavior_server heartbeat stopped at 24.2 s; recording ends at 132.7 s",
+          "route_server heartbeat stopped at 24.3 s; recording ends at 132.7 s",
+          "controller_server heartbeat stopped at 32.4 s; recording ends at 132.7 s",
+          "smoother_server heartbeat stopped at 32.4 s; recording ends at 132.7 s"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "planner_server",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "planner_server",
+              "was_running": true,
+              "old_pid": 1047743,
+              "new_pid": 1048138,
+              "lifecycle_manager": "lifecycle_manager_navigation",
+              "manager_noticed_the_death": true,
+              "manager_replaced": true,
+              "states_found": {
+                "controller_server": "active",
+                "smoother_server": "active",
+                "planner_server": "unconfigured",
+                "route_server": "inactive",
+                "behavior_server": "inactive",
+                "velocity_smoother": "inactive",
+                "collision_monitor": "inactive",
+                "bt_navigator": "inactive",
+                "waypoint_follower": "inactive",
+                "docking_server": "inactive"
+              },
+              "active": true
+            }
+          }
+        ],
+        "diagnosis": {
+          "category": "node_crash",
+          "component": "planner_server",
+          "root_cause": "The planner_server process died at approximately 19.5 s (exit code -9) and stopped sending heartbeats, causing the entire navigation stack to fail shortly after.",
+          "evidence": [
+            "planner_server process died at about 19.5 s",
+            "planner_server heartbeat stopped at 19.6 s",
+            "Multiple downstream nodes (docking_server, waypoint_follower, bt_navigator, etc.) stopped heartbeats shortly after due to the server being down"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "planner_server"
+            }
+          ],
+          "note": "The diagnosis indicates the 'planner_server' process died (exit code -9). The only action required to remove this cause is restarting that specific process. No parameters were changed, no relocalization was needed, and no parcels are blocked by obstacles (the crash caused the failure, not a physical blockage)."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "retry": {
+          "operation": "retry",
+          "parcels": [
+            "P2"
+          ],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 355461.492587318,
+        "seconds": 35.9
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 1,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 1.5,
+    "seconds_fault_to_resume": null
+  },
+  "checker": {
+    "ok": true,
+    "events": 47,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

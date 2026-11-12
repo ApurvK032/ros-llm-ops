@@ -1,0 +1,334 @@
+{
+  "scenario": {
+    "name": "lidar_frozen",
+    "description": "The lidar driver gets stuck and keeps sending its last scan with fresh timestamps while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "freeze"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "Scans keep arriving at the normal rate but never change, so localization and the costmaps work from stale data."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T12:37:05.916504+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 81419,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T12:37:44.818099+00:00",
+    "monotonic": 382334.855400864,
+    "type": "sensor_dropout",
+    "seconds_late": 1.5,
+    "details": {
+      "sensor": "lidar",
+      "mode": "freeze",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.8
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "cancelled": 4,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 416.6,
+    "seconds_to_first_abnormal_event": 290.4,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4235,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.022,
+        "true_pose": [
+          -6.316,
+          -1.478,
+          0.098
+        ],
+        "position_error": 0.027,
+        "heading_error": 0.098,
+        "facing_error": 0.119,
+        "parcel_clearance": 0.569,
+        "estimate_off_by": 0.048,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.027,
+    "worst_estimate_error": 0.048
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 27.5,
+        "monotonic_detected": 382341.864690079,
+        "alerts": [
+          "from about 25.0 s every scan was identical to the one before it, in 1 interval(s) of 5 s; a working lidar never repeats a scan exactly"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 1256297,
+              "new_pid": 1257303
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering unique data starting at 25.0 s, repeating identical scans every 5 seconds. This caused the robot to lose valid environmental feedback needed for navigation after the first goal was completed.",
+          "evidence": [
+            "Mission ended at 27.5 s with no goals finished (P2 still under way).",
+            "Lidar status shows identical scans from 25.0 s onwards, which is impossible for a functioning sensor."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "The diagnosis indicates the lidar sensor is dropping unique data (repeating identical scans), which prevents valid navigation. The root cause is a faulty or unresponsive lidar driver process. Restarting this process should restore normal scan delivery. No other actions are required as no parameters were misconfigured, no pose jump occurred, and no obstacles blocked the path."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 7 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 382362.834430486,
+        "seconds": 21.0
+      },
+      {
+        "detected_at_s": 63.5,
+        "monotonic_detected": 382377.858528891,
+        "alerts": [
+          "from 52 s (goal: pickup P2) the robot stood still and received no non-zero velocity command for 10 s or more, although a goal was active"
+        ],
+        "actions": [
+          {
+            "action": "defer_parcel",
+            "target": "P1",
+            "permitted": false,
+            "why": "nothing was seen blocking DROP_A, where P1 has to go next"
+          },
+          {
+            "action": "escalate",
+            "target": "remove obstacle near PICK_A and DROP_A",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "unknown",
+          "component": "controller_server",
+          "root_cause": "The controller server failed to make progress at 58.7s, likely due to new obstacles detected by the sensor that were not in the map (a 1.3m obstacle near PICK_A and a 3.3m wall-sized structure). However, the evidence does not support any of the defined fault categories: localization was stable, no node crashed, parameters were unchanged, and the actuator received no commands but this is a consequence of the controller failure rather than an actuator fault itself.",
+          "evidence": [
+            "controller_server ERROR at 58.7s: Failed to make progress",
+            "New obstacles detected not in map (1.3m near PICK_A, 3.3m wall-sized structure)",
+            "Robot stood still from 52s with no velocity commands despite active goal",
+            "Localization and node health were normal"
+          ],
+          "confidence": "medium"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "motion_status",
+          "planning_status",
+          "nav2_warnings",
+          "localization_status",
+          "obstacles",
+          "lidar_status",
+          "node_health"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "defer_parcel",
+              "target": "P1"
+            },
+            {
+              "action": "escalate",
+              "target": "remove obstacle near PICK_A and DROP_A"
+            }
+          ],
+          "note": "The diagnosis indicates the robot is blocked by new obstacles (1.3m near PICK_A and a wall-sized structure) that are not in the map. Since the category is 'blocked_station' (implied by 'robot cannot move the obstacle'), the parcel destined for these waypoints (P1 going to DROP_A after PICK_A) must be deferred, and human escalation is required to clear the physical obstruction."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 382389.604643459,
+        "seconds": 11.7
+      },
+      {
+        "detected_at_s": 89.5,
+        "monotonic_detected": 382403.630569329,
+        "alerts": [
+          "from 79 s (goal: pickup P2) the robot stood still and received no non-zero velocity command for 10 s or more, although a goal was active"
+        ],
+        "actions": [
+          {
+            "action": "defer_parcel",
+            "target": "P1",
+            "permitted": false,
+            "why": "nothing was seen blocking DROP_A, where P1 has to go next"
+          },
+          {
+            "action": "escalate",
+            "target": "remove obstacle at (-6.33, -2.28)",
+            "permitted": true,
+            "why": "a message for a person; nothing on the robot changes"
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "blocked_path",
+          "component": "obstacle at (-6.33, -2.28)",
+          "root_cause": "A 1.3m obstacle appeared at 23.6s and persisted until 87.6s, located 0.78m from PICK_A. This obstacle blocked the path between waypoints (PICK_A to PICK_B), causing the controller to abort path following at 85.5s and the robot to stand still from 79s onwards while a goal was active.",
+          "evidence": [
+            "motion_status: robot stood still from 79s to 89s with no non-zero velocity command despite active goal",
+            "planning_status: controller aborted path following once",
+            "nav2_warnings: controller_server ERROR at 85.5s about failing to make progress",
+            "obstacles: 1.3m obstacle appeared at 23.6s and persisted until 87.6s, nearest_waypoint PICK_A, distance_to_it_m 0.78m",
+            "planner_failures: 0 (planner did not fail, controller failed due to physical obstruction)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles",
+          "planning_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "defer_parcel",
+              "target": "P1"
+            },
+            {
+              "action": "escalate",
+              "target": "remove obstacle at (-6.33, -2.28)"
+            }
+          ],
+          "note": "The diagnosis category is 'blocked_path' with a physical obstruction preventing movement to the next waypoint (PICK_A). Per instructions for this category: defer the parcel going to that waypoint (P1) and escalate for human intervention to remove the obstacle."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D6",
+          "message": "applied"
+        },
+        "monotonic_done": 382416.79850803,
+        "seconds": 13.2
+      }
+    ],
+    "actions_proposed": 5,
+    "actions_refused": 2,
+    "actions_failed": 0,
+    "actions_carried_out": 3,
+    "seconds_fault_to_detection": 7.0,
+    "seconds_fault_to_resume": 28.0
+  },
+  "checker": {
+    "ok": true,
+    "events": 37,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

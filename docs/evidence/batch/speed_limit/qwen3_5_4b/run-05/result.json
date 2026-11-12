@@ -1,0 +1,301 @@
+{
+  "scenario": {
+    "name": "speed_limit",
+    "description": "An operator lowers the speed limit from 0.5 to 0.3 m/s while the robot drives to its second stop. The robot is slower and nothing is wrong.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.3,
+        0.0,
+        2.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "no_fault",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "summary": "velocity_smoother.max_velocity was lowered on purpose; the mission is unaffected apart from taking longer."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": []
+    }
+  },
+  "run": {
+    "started": "2026-11-11T15:17:58.351467+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 51689,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T15:18:37.033741+00:00",
+    "monotonic": 391987.07104416,
+    "type": "bad_parameter",
+    "seconds_late": 1.2,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.3,
+        0.0,
+        2.0
+      ]
+    },
+    "seconds_after_mission_start": 20.5
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 136.7,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null,
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1495,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.039,
+        "true_pose": [
+          -6.325,
+          -1.474,
+          0.103
+        ],
+        "position_error": 0.036,
+        "heading_error": 0.103,
+        "facing_error": 0.128,
+        "parcel_clearance": 0.579,
+        "estimate_off_by": 0.075,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.035,
+        "true_pose": [
+          1.521,
+          -0.935,
+          1.51
+        ],
+        "position_error": 0.041,
+        "heading_error": 0.061,
+        "facing_error": 0.081,
+        "parcel_clearance": 0.589,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.021,
+        "true_pose": [
+          7.21,
+          0.029,
+          0.053
+        ],
+        "position_error": 0.114,
+        "heading_error": 0.053,
+        "facing_error": 0.086,
+        "parcel_clearance": 0.444,
+        "estimate_off_by": 0.095,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.04,
+        "true_pose": [
+          5.862,
+          2.048,
+          3.042
+        ],
+        "position_error": 0.079,
+        "heading_error": 0.1,
+        "facing_error": 0.145,
+        "parcel_clearance": 0.617,
+        "estimate_off_by": 0.118,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.022,
+        "true_pose": [
+          7.166,
+          4.855,
+          0.099
+        ],
+        "position_error": 0.086,
+        "heading_error": 0.099,
+        "facing_error": 0.157,
+        "parcel_clearance": 0.489,
+        "estimate_off_by": 0.071,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.012,
+        "true_pose": [
+          7.146,
+          -4.793,
+          -0.073
+        ],
+        "position_error": 0.047,
+        "heading_error": 0.073,
+        "facing_error": 0.065,
+        "parcel_clearance": 0.508,
+        "estimate_off_by": 0.039,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.114,
+    "worst_estimate_error": 0.118
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 20.9,
+        "monotonic_detected": 391987.572098782,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.3, 0.0, 2.0] at 20.4 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.3,
+                0.0,
+                2.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother",
+          "root_cause": "The max_velocity parameter was changed to [0.3, 0.0, 2.0] at 20.4 s, which likely caused the robot to be unable to reach the goal for PICK_B within the remaining time.",
+          "evidence": [
+            "Mission failed to complete second goal after 6.6 s",
+            "Parameter change occurred at 20.4 s (within the 6.6 s window)",
+            "All other health checks reported no unusual activity"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "The diagnosis indicates a high-confidence fault where the max_velocity parameter was incorrectly set to [0.3, 0.0, 2.0], preventing the robot from reaching the goal for PICK_B within time limits. The root cause is explicitly identified as this parameter change. No process restarts, relocalization, or obstacle clearing are required based on the evidence provided."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 392002.980527589,
+        "seconds": 15.4
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 0.5,
+    "seconds_fault_to_resume": 15.9
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

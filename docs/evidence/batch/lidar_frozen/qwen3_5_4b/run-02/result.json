@@ -1,0 +1,323 @@
+{
+  "scenario": {
+    "name": "lidar_frozen",
+    "description": "The lidar driver gets stuck and keeps sending its last scan with fresh timestamps while the robot drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "sensor_dropout",
+      "sensor": "lidar",
+      "mode": "freeze"
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "sensor_dropout",
+      "component": "lidar",
+      "summary": "Scans keep arriving at the normal rate but never change, so localization and the costmaps work from stale data."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ],
+      "acceptable": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T07:24:07.360487+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 80274,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T07:24:46.294769+00:00",
+    "monotonic": 363556.332072492,
+    "type": "sensor_dropout",
+    "seconds_late": 1.4,
+    "details": {
+      "sensor": "lidar",
+      "mode": "freeze",
+      "previous_mode": "pass"
+    },
+    "seconds_after_mission_start": 20.8
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "timeout",
+    "delivered": [],
+    "deferred": [],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "cancelled": 4,
+      "failed": 1
+    },
+    "retries": 1,
+    "deferral_reasons": {},
+    "mission_seconds": 416.5,
+    "seconds_to_first_abnormal_event": 290.3,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 4236,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.023,
+        "true_pose": [
+          -6.316,
+          -1.471,
+          0.106
+        ],
+        "position_error": 0.033,
+        "heading_error": 0.106,
+        "facing_error": 0.134,
+        "parcel_clearance": 0.57,
+        "estimate_off_by": 0.053,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.033,
+    "worst_estimate_error": 0.053
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 27.0,
+        "monotonic_detected": 363562.840883276,
+        "alerts": [
+          "from about 25.0 s every scan was identical to the one before it, in 1 interval(s) of 5 s; a working lidar never repeats a scan exactly"
+        ],
+        "actions": [
+          {
+            "action": "restart_process",
+            "target": "lidar_driver",
+            "permitted": true,
+            "why": "this process was seen dead or silent",
+            "result": {
+              "process": "scan_relay",
+              "was_running": true,
+              "old_pid": 1110558,
+              "new_pid": 1111568
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "sensor_dropout",
+          "component": "lidar",
+          "root_cause": "The lidar stopped delivering valid data starting at approximately 25.0 s, producing identical scans for the next 5 seconds. This sensor dropout likely caused Nav2 to lose accurate environmental awareness, preventing it from completing the second navigation goal (pickup P2) before the mission ended at 27.0 s.",
+          "evidence": [
+            "lidar_status: 'from about 25.0 s every scan was identical to the one before it'",
+            "mission ended at 27.0 s with only first goal completed",
+            "second goal still under way after 12.6 s (ended at ~27.0 s)"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "lidar_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restart_process",
+              "target": "lidar_driver"
+            }
+          ],
+          "note": "The diagnosis indicates a sensor dropout where the lidar produced identical scans for 5 seconds. This is a classic symptom of a driver process hanging or failing to communicate valid data. Restarting the 'lidar_driver' process will reinitialize the sensor and restore valid environmental awareness, allowing Nav2 to resume navigation."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 5 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 363582.240986907,
+        "seconds": 19.4
+      },
+      {
+        "detected_at_s": 61.0,
+        "monotonic_detected": 363596.763629321,
+        "alerts": [
+          "from 50 s (goal: pickup P2) the robot stood still and received no non-zero velocity command for 10 s or more, although a goal was active"
+        ],
+        "actions": [],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "unknown",
+          "component": "unknown",
+          "root_cause": "The robot stopped moving at 50s while a goal was active, but the evidence is ambiguous: a new obstacle appeared near PICK_A (not blocking the stopping pose), wall-sized structures appeared suggesting possible localization drift or map mismatch, and the controller failed to make progress. However, localization status shows no jumps or resets, and the robot's pose spread is small (median 0.095m). The root cause cannot be definitively determined from the available data.",
+          "evidence": [
+            "robot stood still for 10+ seconds despite active goal",
+            "new obstacle appeared near PICK_A but not at stopping pose",
+            "wall-sized structures appeared where map is free",
+            "controller aborted path following once",
+            "controller server reported 'Failed to make progress' at 56.7s",
+            "localization status shows no unusual jumps or resets",
+            "no parameter changes observed",
+            "no sensor dropout observed"
+          ],
+          "confidence": "low"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "obstacles",
+          "localization_status",
+          "planning_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis explicitly states that the root cause cannot be definitively determined due to ambiguous evidence (no parameter changes, no sensor dropout, no localization jumps). Since the specific faulty component or cause is unknown and no clear action target was observed as faulty, no recovery actions can be safely executed."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 363607.643530647,
+        "seconds": 10.9
+      },
+      {
+        "detected_at_s": 85.0,
+        "monotonic_detected": 363620.667540241,
+        "alerts": [
+          "from 75 s (goal: pickup P2) the robot stood still and received no non-zero velocity command for 10 s or more, although a goal was active"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": false,
+            "why": "no jump in the pose estimate was observed"
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D5",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "lidar_sensor",
+          "root_cause": "The lidar sensor detected a wall-sized structure (3.3m) where the map is free, appearing from 23.4s to 83.4s. This indicates the robot's scans are not lining up with the map, causing the controller to fail to make progress and eventually abort path following at 82.0s.",
+          "evidence": [
+            "lidar_status reported 'wall-sized structure(s) of 3.3 m appeared where the map is free'",
+            "controller_server ERROR at 82.0s: 'Failed to make progress'",
+            "motion_status showed robot stood still from 75s with no velocity commands despite active goal",
+            "planning_status showed controller aborted path following once"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status",
+          "motion_status",
+          "planning_status",
+          "nav2_warnings",
+          "obstacles"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates the robot lost localization due to a lidar sensor detecting a false wall. The standard recovery for 'localization_lost' is to relocalize using the last good pose and odometry, followed by clearing the costmaps to remove obstacles placed during the failed localization period."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D6",
+          "message": "applied"
+        },
+        "monotonic_done": 363637.893950402,
+        "seconds": 17.2
+      }
+    ],
+    "actions_proposed": 3,
+    "actions_refused": 1,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 6.5,
+    "seconds_fault_to_resume": 25.9
+  },
+  "checker": {
+    "ok": true,
+    "events": 37,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "scenario": {
+    "name": "localization_lost",
+    "description": "AMCL's pose estimate is shifted 1.5 m and 0.6 rad away from the robot's true pose while it drives to its second stop.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 720.0,
+    "fault": {
+      "type": "localization_jump",
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "localization_lost",
+      "component": "amcl",
+      "summary": "The pose estimate no longer matches the robot's true position, so plans start from the wrong place."
+    },
+    "additional": [],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "relocalize",
+          ""
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T07:45:17.282189+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 52470,
+    "supervisor_exit_code": 0
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T07:45:57.138485+00:00",
+    "monotonic": 364827.175787238,
+    "type": "localization_jump",
+    "seconds_late": 2.3,
+    "details": {
+      "estimate_before": [
+        -6.305,
+        -3.255,
+        -1.442
+      ],
+      "estimate_after": [
+        -4.805,
+        -3.255,
+        -0.842
+      ],
+      "offset": [
+        1.5,
+        0.0,
+        0.6
+      ],
+      "correction_before": [
+        -7.199,
+        -5.59,
+        -0.009
+      ],
+      "correction_after": [
+        -4.42,
+        -5.644,
+        0.552
+      ]
+    },
+    "seconds_after_mission_start": 21.8
+  },
+  "additional_faults": [],
+  "outcome": {
+    "result": "complete",
+    "delivered": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "deferred": [],
+    "stranded_onboard": [],
+    "navigation_outcomes": {
+      "succeeded": 6,
+      "cancelled": 1
+    },
+    "retries": 0,
+    "deferral_reasons": {},
+    "mission_seconds": 146.1,
+    "seconds_to_first_abnormal_event": null,
+    "first_abnormal_event": null,
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "pose_check": {
+    "samples": 1580,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.045,
+        "true_pose": [
+          -6.324,
+          -1.483,
+          0.108
+        ],
+        "position_error": 0.029,
+        "heading_error": 0.108,
+        "facing_error": 0.124,
+        "parcel_clearance": 0.578,
+        "estimate_off_by": 0.073,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "pickup",
+        "waypoint": "PICK_B",
+        "estimated_position_error": 0.015,
+        "true_pose": [
+          1.552,
+          -0.913,
+          1.504
+        ],
+        "position_error": 0.054,
+        "heading_error": 0.067,
+        "facing_error": 0.119,
+        "parcel_clearance": 0.568,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P2",
+        "kind": "drop",
+        "waypoint": "DROP_B",
+        "estimated_position_error": 0.054,
+        "true_pose": [
+          7.223,
+          -0.0,
+          0.051
+        ],
+        "position_error": 0.123,
+        "heading_error": 0.051,
+        "facing_error": 0.051,
+        "parcel_clearance": 0.431,
+        "estimate_off_by": 0.089,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "pickup",
+        "waypoint": "PICK_C",
+        "estimated_position_error": 0.056,
+        "true_pose": [
+          5.854,
+          2.019,
+          3.057
+        ],
+        "position_error": 0.058,
+        "heading_error": 0.084,
+        "facing_error": 0.103,
+        "parcel_clearance": 0.608,
+        "estimate_off_by": 0.11,
+        "verified": true
+      },
+      {
+        "parcel": "P3",
+        "kind": "drop",
+        "waypoint": "DROP_C",
+        "estimated_position_error": 0.031,
+        "true_pose": [
+          7.163,
+          4.844,
+          0.098
+        ],
+        "position_error": 0.077,
+        "heading_error": 0.098,
+        "facing_error": 0.144,
+        "parcel_clearance": 0.492,
+        "estimate_off_by": 0.069,
+        "verified": true
+      },
+      {
+        "parcel": "P1",
+        "kind": "drop",
+        "waypoint": "DROP_A",
+        "estimated_position_error": 0.018,
+        "true_pose": [
+          7.122,
+          -4.793,
+          -0.068
+        ],
+        "position_error": 0.023,
+        "heading_error": 0.068,
+        "facing_error": 0.062,
+        "parcel_clearance": 0.532,
+        "estimate_off_by": 0.03,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.123,
+    "worst_estimate_error": 0.11
+  },
+  "recovery": {
+    "mode": "qwen3.5:4b",
+    "incidents": [
+      {
+        "detected_at_s": 23.6,
+        "monotonic_detected": 364829.178807857,
+        "alerts": [
+          "the pose estimate jumped 2.78 m and 0.56 rad at 21.6 s"
+        ],
+        "actions": [
+          {
+            "action": "relocalize",
+            "target": "",
+            "permitted": true,
+            "why": "the pose estimate jumped at 21.6 s",
+            "result": {
+              "pose_set": [
+                -5.527,
+                -4.121,
+                -0.313
+              ],
+              "estimate_was": [
+                -3.914,
+                -3.102,
+                0.61
+              ],
+              "estimate_now": [
+                -5.454,
+                -4.061,
+                -0.311
+              ],
+              "moved_m": 1.81,
+              "from_correction": [
+                -7.199,
+                -5.59,
+                -0.009
+              ],
+              "publishes": 1
+            }
+          },
+          {
+            "action": "clear_costmaps",
+            "target": "",
+            "permitted": true,
+            "why": "harmless while the mission is held",
+            "result": {
+              "cleared": [
+                "global_costmap",
+                "local_costmap"
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "localization_lost",
+          "component": "localization system (AMCL)",
+          "root_cause": "The robot's pose estimate jumped significantly at 21.6 s (2.78 m and 0.56 rad) following an external pose reset at 21.4 s, indicating the localization filter lost track of the robot's actual position.",
+          "evidence": [
+            "External pose reset (/initialpose) set estimate to (-4.8, -3.25) at 21.4 s",
+            "Pose estimate jumped 2.78 m and 0.56 rad in one update at 21.6 s",
+            "Mission failed to complete with second goal still under way after 9.2 s"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "localization_status"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "relocalize",
+              "target": ""
+            },
+            {
+              "action": "clear_costmaps",
+              "target": ""
+            }
+          ],
+          "note": "The diagnosis indicates a localization loss due to an external pose reset causing a large jump in the AMCL estimate. The standard recovery for 'localization_lost' is to run relocalize to correct the pose using landmarks and odometry. Following this, clear_costmaps is required because the costmaps likely contain stale obstacle data from the incorrect previous pose."
+        },
+        "settled": "scans at 5.0 Hz and every heartbeat present, 4 s after the fix",
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 364852.032963186,
+        "seconds": 22.9
+      }
+    ],
+    "actions_proposed": 2,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 2,
+    "seconds_fault_to_detection": 2.0,
+    "seconds_fault_to_resume": 24.9
+  },
+  "checker": {
+    "ok": true,
+    "events": 36,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}

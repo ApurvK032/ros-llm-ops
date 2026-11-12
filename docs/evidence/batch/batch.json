@@ -1,0 +1,26 @@
+{
+ "scenarios": [
+  "amcl_crash",
+  "bad_parameter",
+  "blocked_aisle",
+  "blocked_station",
+  "controller_crash",
+  "distractor_lidar",
+  "double_fault",
+  "lidar_dropout",
+  "lidar_frozen",
+  "localization_lost",
+  "nominal",
+  "planner_crash",
+  "speed_limit"
+ ],
+ "deciders": [
+  "none",
+  "rules",
+  "qwen3.5:9b",
+  "qwen3.5:4b"
+ ],
+ "repeats": 5,
+ "baseline_repeats": 3,
+ "model": "qwen3.5:4b"
+}

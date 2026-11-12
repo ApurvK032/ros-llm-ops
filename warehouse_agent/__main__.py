@@ -48,6 +48,7 @@ def main() -> int:
     batch.add_argument("--model", default="qwen3.5:4b", help="The model that interprets the operator's request")
     summary = sub.add_parser("batch-report", help="Summarize a batch directory as rates and median times")
     summary.add_argument("directory", type=Path)
+    summary.add_argument("--deciders", nargs="+", metavar="WHO", help="Column order (default: as the batch ran)")
     args = parser.parse_args()
     try:
         if args.subcommand == "scoreboard":
@@ -58,7 +59,7 @@ def main() -> int:
             return run_batch_files(args)
         if args.subcommand == "batch-report":
             from .batch import report
-            print(report(args.directory))
+            print(report(args.directory, args.deciders))
             return 0
         if args.subcommand == "run":
             return run(args)

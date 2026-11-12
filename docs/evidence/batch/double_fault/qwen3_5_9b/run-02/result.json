@@ -1,0 +1,346 @@
+{
+  "scenario": {
+    "name": "double_fault",
+    "description": "Two faults land together while the robot drives to its second stop: the speed limit is set to zero and the lidar stops delivering scans.",
+    "command": "Deliver all three parcels",
+    "timeout_s": 420.0,
+    "fault": {
+      "type": "bad_parameter",
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "value": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "trigger": {
+      "event": "cargo_pickup",
+      "count": 1,
+      "delay_s": 5.0
+    },
+    "ground_truth": {
+      "category": "bad_parameter",
+      "component": "velocity_smoother",
+      "parameter": "max_velocity",
+      "also": "sensor_dropout",
+      "summary": "velocity_smoother.max_velocity is zero and no lidar scans reach Nav2; either alone stops the mission."
+    },
+    "additional": [
+      {
+        "trigger": {
+          "event": "cargo_pickup",
+          "count": 1,
+          "delay_s": 5.0
+        },
+        "fault": {
+          "type": "sensor_dropout",
+          "sensor": "lidar",
+          "mode": "drop"
+        }
+      }
+    ],
+    "expected": {
+      "delivered": 3,
+      "actions": [
+        [
+          "restore_parameter",
+          "/velocity_smoother max_velocity"
+        ],
+        [
+          "restart_process",
+          "lidar_driver"
+        ]
+      ]
+    }
+  },
+  "run": {
+    "started": "2026-11-11T06:59:11.653155+00:00",
+    "fault_requested": true,
+    "recorded": false,
+    "model": "qwen3.5:4b",
+    "commit": null,
+    "uncommitted_changes": null,
+    "settle_s": 10.0,
+    "simulation_log_bytes": 91823,
+    "supervisor_exit_code": 1
+  },
+  "fault": {
+    "injected": true,
+    "time": "2026-11-11T06:59:45.593566+00:00",
+    "monotonic": 362055.630869034,
+    "type": "bad_parameter",
+    "seconds_late": 1.4,
+    "details": {
+      "node": "/velocity_smoother",
+      "name": "max_velocity",
+      "old": [
+        0.5,
+        0.0,
+        2.0
+      ],
+      "new": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "seconds_after_mission_start": 20.6
+  },
+  "additional_faults": [
+    {
+      "injected": true,
+      "time": "2026-11-11T06:59:48.686527+00:00",
+      "monotonic": 362058.72383066,
+      "type": "sensor_dropout",
+      "seconds_late": 4.5,
+      "details": {
+        "sensor": "lidar",
+        "mode": "drop",
+        "previous_mode": "pass"
+      },
+      "seconds_after_mission_start": 23.7
+    }
+  ],
+  "outcome": {
+    "result": "partial",
+    "delivered": [],
+    "deferred": [
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "stranded_onboard": [
+      "P1"
+    ],
+    "navigation_outcomes": {
+      "succeeded": 1,
+      "cancelled": 1,
+      "failed": 6
+    },
+    "retries": 3,
+    "deferral_reasons": {
+      "P2": "Navigation failed; approach error 8.093 m, heading error 3.075 rad, facing error 1.892 rad, parcel clearance 7.972 m",
+      "P1": "Navigation failed; approach error 13.501 m, heading error 1.504 rad, facing error 1.386 rad, parcel clearance 14.047 m",
+      "P3": "Navigation failed; approach error 13.119 m, heading error 1.638 rad, facing error 1.934 rad, parcel clearance 11.757 m"
+    },
+    "mission_seconds": 160.7,
+    "seconds_to_first_abnormal_event": 16.4,
+    "first_abnormal_event": "navigation_finished",
+    "delivered_verified": []
+  },
+  "pose_check": {
+    "samples": 1695,
+    "transfers": [
+      {
+        "parcel": "P1",
+        "kind": "pickup",
+        "waypoint": "PICK_A",
+        "estimated_position_error": 0.018,
+        "true_pose": [
+          -6.335,
+          -1.486,
+          0.115
+        ],
+        "position_error": 0.037,
+        "heading_error": 0.115,
+        "facing_error": 0.128,
+        "parcel_clearance": 0.588,
+        "estimate_off_by": 0.055,
+        "verified": true
+      }
+    ],
+    "delivered_verified": [],
+    "delivered_not_checked": [],
+    "worst_position_error": 0.037,
+    "worst_estimate_error": 0.055
+  },
+  "recovery": {
+    "mode": "qwen3.5:9b",
+    "incidents": [
+      {
+        "detected_at_s": 22.6,
+        "monotonic_detected": 362058.724434121,
+        "alerts": [
+          "/velocity_smoother parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s"
+        ],
+        "actions": [
+          {
+            "action": "restore_parameter",
+            "target": "/velocity_smoother max_velocity",
+            "permitted": true,
+            "why": "this parameter changed at runtime",
+            "result": {
+              "node": "/velocity_smoother",
+              "name": "max_velocity",
+              "was": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "restored_to": [
+                0.5,
+                0.0,
+                2.0
+              ]
+            }
+          }
+        ],
+        "pause": {
+          "operation": "pause",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D1",
+          "message": "applied"
+        },
+        "diagnosis": {
+          "category": "bad_parameter",
+          "component": "/velocity_smoother node parameter max_velocity",
+          "root_cause": "The parameter max_velocity was set to [0.0, 0.0, 0.0] at 20.5 s, which stopped the robot from moving while it was still trying to reach PICK_B.",
+          "evidence": [
+            "Mission ended at 22.6 s with pickup P2 still under way.",
+            "Health report shows motion_status as 'nothing unusual' (likely due to zero velocity being a valid state for stopped motion), but parameter_changes explicitly lists the max_velocity change.",
+            "The change occurred at 20.5 s, after the robot started moving towards PICK_B at 14.3 s, causing it to stop before completion."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "parameter_changes"
+        ],
+        "decision": {
+          "actions": [
+            {
+              "action": "restore_parameter",
+              "target": "/velocity_smoother max_velocity"
+            }
+          ],
+          "note": "The diagnosis indicates a bad parameter change (max_velocity set to zero) caused the robot to stop. The recovery action is to restore this parameter to its configured value. No other actions are needed as there is no blocked station requiring parcel deferral or escalation."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D2",
+          "message": "applied"
+        },
+        "monotonic_done": 362072.042477084,
+        "seconds": 13.3
+      },
+      {
+        "detected_at_s": 40.6,
+        "monotonic_detected": 362076.047632195,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to PICK_B; holding for recovery before the retry"
+        ],
+        "actions": [],
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "mission",
+          "root_cause": "The mission ended because the robot failed to complete the requested task (delivering all parcels) within the allotted time or due to a cancellation of the second pickup, but no technical fault was detected in any node, sensor, parameter, or obstacle. The health report shows no unusual observations in navigation, localization, motion, lidar, or planning components. The failure is operational (mission not finished), not a system fault.",
+          "evidence": [
+            "health_report: all subsystems reported 'nothing unusual'",
+            "node_health: no processes died",
+            "lidar_status: sensor data rate dropped to 0 Hz after 25s but this is likely due to mission end or intentional stop, not a fault",
+            "motion_status: robot stopped moving at 40s with 'no commands'",
+            "localization_status: no pose jumps or resets",
+            "parameter_changes: none",
+            "obstacles: none detected",
+            "planning_status: no failures",
+            "nav2_warnings: none"
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "mission_summary",
+          "node_health",
+          "lidar_status",
+          "motion_status",
+          "localization_status",
+          "parameter_changes",
+          "obstacles",
+          "planning_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis explicitly states 'no_fault' and that the mission ended due to operational reasons (time limit or cancellation) rather than a technical fault. No recovery actions are required."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D3",
+          "message": "applied"
+        },
+        "monotonic_done": 362090.849913004,
+        "seconds": 14.8
+      },
+      {
+        "detected_at_s": 58.6,
+        "monotonic_detected": 362093.854446866,
+        "alerts": [
+          "the supervisor is holding after a failed goal: Navigation failed on the way to DROP_A; holding for recovery before the retry"
+        ],
+        "actions": [],
+        "diagnosis": {
+          "category": "no_fault",
+          "component": "none",
+          "root_cause": "The mission ended because the robot failed to complete its tasks (P2 pickup and P1 drop) within the allotted time or due to task cancellation, but all system health checks (nodes, sensors, localization, motion, parameters, obstacles, planning) reported 'nothing unusual' or 'no_fault'. The failures occurred after the first successful pickup, suggesting a timeout or policy-based cancellation rather than a hardware or software fault. Since no specific fault category like blocked_station, node_crash, sensor_dropout, etc., is supported by the evidence, and the system components are healthy, this falls under 'no_fault' as the mission did not finish due to an unexpected error but rather due to task completion failure after initial success.",
+          "evidence": [
+            "All health reports (node_health, lidar_status, motion_status, localization_status, parameter_changes, obstacles, planning_status, nav2_warnings) show 'nothing unusual' or empty lists.",
+            "The first goal (pickup P1) succeeded at 14.3 s.",
+            "Subsequent goals failed/cancelled after the initial success, but no underlying fault was detected in any component."
+          ],
+          "confidence": "high"
+        },
+        "diagnosis_tool_calls": [
+          "health_report",
+          "mission_summary",
+          "node_health",
+          "lidar_status",
+          "motion_status",
+          "localization_status",
+          "parameter_changes",
+          "obstacles",
+          "planning_status",
+          "nav2_warnings"
+        ],
+        "decision": {
+          "actions": [],
+          "note": "The diagnosis indicates 'no_fault' with all system components healthy. The mission ended due to task timeout or cancellation after initial success, not a recoverable hardware/software fault. No recovery actions are required."
+        },
+        "resume": {
+          "operation": "resume",
+          "parcels": [],
+          "accepted": true,
+          "request_id": "D4",
+          "message": "applied"
+        },
+        "monotonic_done": 362105.528157726,
+        "seconds": 11.7
+      }
+    ],
+    "actions_proposed": 1,
+    "actions_refused": 0,
+    "actions_failed": 0,
+    "actions_carried_out": 1,
+    "seconds_fault_to_detection": 3.1,
+    "seconds_fault_to_resume": 16.4
+  },
+  "checker": {
+    "ok": true,
+    "events": 46,
+    "violations": [],
+    "warnings": []
+  },
+  "artifacts": {
+    "journal": "journal.jsonl",
+    "bag": null,
+    "simulation_log": "simulation.log",
+    "supervisor_log": "agent.log",
+    "true_pose": "truth.jsonl",
+    "live_evidence": "live_evidence.json"
+  }
+}
